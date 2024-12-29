@@ -92,32 +92,31 @@ func (d *Dispatcher) RegisterBugCreateListener(listeners ...BugCreateListener) {
 	d.bugCreateListeners = append(d.bugCreateListeners, listeners...)
 }
 
-func (d *Dispatcher) processStoryCreate(ctx context.Context, event *StoryCreateEvent) error {
+func processEvent[L, E any](ctx context.Context, listeners []L, event E, fn func(L, E) error) error {
 	eg, ctx := errgroup.WithContext(ctx)
-	for _, listener := range d.storyCreateListeners {
+	for _, listener := range listeners {
+		listener := listener
 		eg.Go(func() error {
-			return listener.OnStoryCreate(ctx, event)
+			return fn(listener, event)
 		})
 	}
 	return eg.Wait()
+}
+
+func (d *Dispatcher) processStoryCreate(ctx context.Context, event *StoryCreateEvent) error {
+	return processEvent(ctx, d.storyCreateListeners, event, func(listener StoryCreateListener, event *StoryCreateEvent) error {
+		return listener.OnStoryCreate(ctx, event)
+	})
 }
 
 func (d *Dispatcher) processStoryUpdate(ctx context.Context, event *StoryUpdateEvent) error {
-	eg, ctx := errgroup.WithContext(ctx)
-	for _, listener := range d.storyUpdateListeners {
-		eg.Go(func() error {
-			return listener.OnStoryUpdate(ctx, event)
-		})
-	}
-	return eg.Wait()
+	return processEvent(ctx, d.storyUpdateListeners, event, func(listener StoryUpdateListener, event *StoryUpdateEvent) error {
+		return listener.OnStoryUpdate(ctx, event)
+	})
 }
 
 func (d *Dispatcher) processBugCreate(ctx context.Context, event *BugCreateEvent) error {
-	eg, ctx := errgroup.WithContext(ctx)
-	for _, listener := range d.bugCreateListeners {
-		eg.Go(func() error {
-			return listener.OnBugCreate(ctx, event)
-		})
-	}
-	return eg.Wait()
+	return processEvent(ctx, d.bugCreateListeners, event, func(listener BugCreateListener, event *BugCreateEvent) error {
+		return listener.OnBugCreate(ctx, event)
+	})
 }
