@@ -65,7 +65,10 @@ func (m Multi[T]) MarshalJSON() ([]byte, error) {
 
 type Enum[T any] []T
 
-var _ query.Encoder = (*Enum[string])(nil)
+var (
+	_ query.Encoder  = (*Enum[string])(nil)
+	_ json.Marshaler = (*Enum[string])(nil)
+)
 
 // NewEnum creates a new enum value.
 //
@@ -79,13 +82,25 @@ func NewEnum[T any](values ...T) *Enum[T] {
 
 func (e Enum[T]) EncodeValues(key string, v *url.Values) error {
 	if len(e) > 0 {
-		var values []string
+		values := make([]string, 0, len(e))
 		for _, value := range e {
 			values = append(values, fmt.Sprint(value))
 		}
 		v.Add(key, strings.Join(values, "|"))
 	}
 	return nil
+}
+
+func (e Enum[T]) MarshalJSON() ([]byte, error) {
+	if len(e) <= 0 {
+		return json.Marshal(nil)
+	}
+
+	values := make([]string, 0, len(e))
+	for _, value := range e {
+		values = append(values, fmt.Sprint(value))
+	}
+	return json.Marshal(strings.Join(values, "|"))
 }
 
 // -----------------------------------------------------------------------------

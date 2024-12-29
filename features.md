@@ -76,7 +76,7 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
 
 ### 迭代
 
-- [ ] 创建迭代
+- [x] 创建迭代
 - [ ] 获取迭代自定义字段配置
 - [x] 获取迭代
 - [x] 获取迭代数量
