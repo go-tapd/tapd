@@ -1,0 +1,17 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "WorkitemType": {
+        "id": "1111110502001000111",
+        "workspace_id": "11112222",
+        "entity_type": "iteration",
+        "name": "Tapd Iteration",
+        "creator": "TAPD system",
+        "created": "2024-09-04 15:20:06",
+        "modified": "2024-09-04 15:20:06"
+      }
+    }
+  ],
+  "info": "success"
+}
