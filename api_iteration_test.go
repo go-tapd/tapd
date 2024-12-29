@@ -42,6 +42,22 @@ func TestIterationService_GetIterations(t *testing.T) {
 	assert.Equal(t, "11111222001000218", iteration.TemplatedID)
 }
 
+func TestIterationService_GetIterationsCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iterations/count", r.URL.Path)
+		assert.Equal(t, "111", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, ".testdata/api/iteration/get_iterations_count.json"))
+	}))
+
+	count, _, err := client.IterationService.GetIterationsCount(ctx, &GetIterationsCountRequest{
+		WorkspaceID: Ptr(111),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 106, count)
+}
+
 func TestIterationService_GetWorkitemTypes(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
