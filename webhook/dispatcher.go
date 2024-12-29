@@ -95,7 +95,6 @@ func (d *Dispatcher) RegisterBugCreateListener(listeners ...BugCreateListener) {
 func processEvent[L, E any](ctx context.Context, listeners []L, event E, fn func(L, E) error) error {
 	eg, ctx := errgroup.WithContext(ctx)
 	for _, listener := range listeners {
-		listener := listener
 		eg.Go(func() error {
 			return fn(listener, event)
 		})
