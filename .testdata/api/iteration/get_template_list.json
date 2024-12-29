@@ -1,0 +1,17 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "WorkitemTemplate": {
+        "id": "1111110502001000111",
+        "workspace_id": "11112222",
+        "type": "iteration",
+        "name": "Tapd Template",
+        "creator": "Tapd System",
+        "created": "2022-06-10 10:04:08",
+        "modified": "2022-06-10 10:04:08"
+      }
+    }
+  ],
+  "info": "success"
+}

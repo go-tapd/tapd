@@ -34,3 +34,30 @@ func TestIterationService_GetWorkitemTypes(t *testing.T) {
 		},
 	}, workitemTypes)
 }
+
+func TestIterationService_GetTemplateList(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iterations/template_list", r.URL.Path)
+		assert.Equal(t, "111", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, ".testdata/api/iteration/get_template_list.json"))
+	}))
+
+	templates, _, err := client.IterationService.GetTemplateList(ctx, &GetTemplateListRequest{
+		WorkspaceID: Ptr(111),
+	})
+	assert.NoError(t, err)
+	require.NotNil(t, templates)
+	assert.ElementsMatch(t, []*WorkitemTemplate{
+		{
+			ID:          "1111110502001000111",
+			WorkspaceID: "11112222",
+			Type:        "iteration",
+			Name:        "Tapd Template",
+			Creator:     "Tapd System",
+			Created:     "2022-06-10 10:04:08",
+			Modified:    "2022-06-10 10:04:08",
+		},
+	}, templates)
+}
