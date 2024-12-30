@@ -6,24 +6,53 @@ import (
 	"strings"
 )
 
-// Event represents the type of webhook event.
-type Event string
+// EventType represents the type of webhook event.
+type EventType string
 
 const (
-	EventTypeStoryCreate      Event = "story::create"
-	EventTypeStoryUpdate      Event = "story::update"
-	EventTypeTaskUpdate       Event = "task::update"
-	EventTypeBugCreate        Event = "bug::create"
-	EventTypeBugUpdate        Event = "bug::update"
-	EventTypeBugCommentUpdate Event = "bug_comment::update"
+	// ========================================
+	// 需求/任务/缺陷类
+	// ========================================
+
+	EventTypeStoryCreate EventType = "story::create"
+	EventTypeStoryUpdate EventType = "story::update"
+	EventTypeStoryDelete EventType = "story::delete"
+	EventTypeTaskCreate  EventType = "task::create"
+	EventTypeTaskUpdate  EventType = "task::update"
+	EventTypeTaskDelete  EventType = "task::delete"
+	EventTypeBugCreate   EventType = "bug::create"
+	EventTypeBugUpdate   EventType = "bug::update"
+	EventTypeBugDelete   EventType = "bug::delete"
+
+	// ========================================
+	// 评论类：需求/任务/缺陷
+	// ========================================
+
+	EventTypeStoryCommentAdd    EventType = "story_comment::add"
+	EventTypeStoryCommentUpdate EventType = "story_comment::update"
+	EventTypeStoryCommentDelete EventType = "story_comment::delete"
+	EventTypeTaskCommentAdd     EventType = "task_comment::add"
+	EventTypeTaskCommentUpdate  EventType = "task_comment::update"
+	EventTypeTaskCommentDelete  EventType = "task_comment::delete"
+	EventTypeBugCommentAdd      EventType = "bug_comment::add"
+	EventTypeBugCommentUpdate   EventType = "bug_comment::update"
+	EventTypeBugCommentDelete   EventType = "bug_comment::delete"
+
+	// ========================================
+	// 迭代
+	// ========================================
+
+	EventTypeIterationCreate EventType = "iteration::create"
+	EventTypeIterationUpdate EventType = "iteration::update"
+	EventTypeIterationDelete EventType = "iteration::delete"
 )
 
-func (e Event) String() string {
+func (e EventType) String() string {
 	return string(e)
 }
 
 // ParseWebhookEvent parses the webhook event from the payload.
-func ParseWebhookEvent(payload []byte) (Event, any, error) {
+func ParseWebhookEvent(payload []byte) (EventType, any, error) {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(payload, &raw); err != nil {
 		return "", nil, err
@@ -36,21 +65,30 @@ func ParseWebhookEvent(payload []byte) (Event, any, error) {
 	}
 
 	// decode event
-	switch Event(event) {
-	// todo: add more event types
+	switch EventType(event) {
 	case EventTypeStoryCreate:
 		return decodeWebhookEvent[StoryCreateEvent](EventTypeStoryCreate, payload)
 	case EventTypeStoryUpdate:
 		return decodeWebhookEvent[StoryUpdateEvent](EventTypeStoryUpdate, payload)
+	case EventTypeTaskUpdate:
+		return decodeWebhookEvent[TaskUpdateEvent](EventTypeTaskUpdate, payload)
+	case EventTypeStoryCommentAdd:
+		return decodeWebhookEvent[StoryCommentAddEvent](EventTypeStoryCommentAdd, payload)
 	case EventTypeBugCreate:
 		return decodeWebhookEvent[BugCreateEvent](EventTypeBugCreate, payload)
-	default:
+	case EventTypeBugUpdate:
+		return decodeWebhookEvent[BugUpdateEvent](EventTypeBugUpdate, payload)
+	case EventTypeBugCommentAdd:
+		return decodeWebhookEvent[BugCommentAddEvent](EventTypeBugCommentAdd, payload)
+	case EventTypeBugCommentUpdate:
+		return decodeWebhookEvent[BugCommentUpdateEvent](EventTypeBugCommentUpdate, payload)
+	default: // todo: add more event types
 		return "", nil, errors.New("tapd: webhook event not supported")
 	}
 }
 
 // decodeWebhookEvent decodes the webhook event from the payload.
-func decodeWebhookEvent[T any](eventType Event, payload []byte) (Event, *T, error) {
+func decodeWebhookEvent[T any](eventType EventType, payload []byte) (EventType, *T, error) {
 	var event T
 	if err := json.Unmarshal(payload, &event); err != nil {
 		return eventType, nil, err

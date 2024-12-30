@@ -10,11 +10,12 @@ import (
 func TestWebhookEvent_EventType(t *testing.T) {
 	tests := []struct {
 		name string
-		want Event
+		want EventType
 	}{
 		{"story::create", EventTypeStoryCreate},
 		{"story::update", EventTypeStoryUpdate},
 		{"task::update", EventTypeTaskUpdate},
+		{"story_comment::add", EventTypeStoryCommentAdd},
 		{"bug::create", EventTypeBugCreate},
 		{"bug::update", EventTypeBugUpdate},
 		{"bug_comment::update", EventTypeBugCommentUpdate},
@@ -22,7 +23,7 @@ func TestWebhookEvent_EventType(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, Event(tt.name))
+			assert.Equal(t, tt.want, EventType(tt.name))
 			assert.Equal(t, tt.name, tt.want.String())
 		})
 	}
@@ -31,7 +32,7 @@ func TestWebhookEvent_EventType(t *testing.T) {
 func TestWebhookEvent_ParseWebhookEvent(t *testing.T) {
 	tests := []struct {
 		filename  string
-		eventType Event
+		eventType EventType
 		event     any
 	}{
 		{"story_create_event.json", EventTypeStoryCreate, &StoryCreateEvent{}},

@@ -1,0 +1,17 @@
+{
+  "event": "bug_comment::delete",
+  "event_from": "web",
+  "referer": "https://www.tapd.cn/111111/comments/delete_comment/",
+  "workspace_id": "111111",
+  "current_user": "李四",
+  "id": "11111111001035977",
+  "description": "<p>這個可能是需求</p>",
+  "author": "李四",
+  "entity_id": "11111111001039882",
+  "secret": "",
+  "rio_token": "",
+  "devproxy_host": "http://websocket-proxy",
+  "queue_id": "318938077",
+  "event_id": "183726824",
+  "created": "2024-12-30 17:55:19"
+}

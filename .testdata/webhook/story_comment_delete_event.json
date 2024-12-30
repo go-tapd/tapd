@@ -1,0 +1,17 @@
+{
+  "event": "story_comment::delete",
+  "event_from": "web",
+  "referer": "https://www.tapd.cn/tapd_fe/111222/story/list?useScene=storyList&groupType=&conf_id=11111222001035191&dialog_preview_id=story_11111222001112724",
+  "workspace_id": "111222",
+  "current_user": "张三",
+  "id": "11111222001036005",
+  "description": "<p>123123123123</p>",
+  "author": "张三",
+  "entity_id": "11111222001112724",
+  "secret": "",
+  "rio_token": "",
+  "devproxy_host": "http://websocket-proxy",
+  "queue_id": "318947018",
+  "event_id": "183730338",
+  "created": "2024-12-30 18:08:15"
+}

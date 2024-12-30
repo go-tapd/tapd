@@ -1,0 +1,15 @@
+{
+  "event": "iteration::delete",
+  "event_from": "web",
+  "referer": "https://www.tapd.cn/111222333/prong/iterations/card_view/11111222333001002244?q=7e09c11b30332326c641664c4fce56c8",
+  "workspace_id": "111222333",
+  "current_user": "张三",
+  "id": "11111222333001002244",
+  "op_type": "delete",
+  "secret": "",
+  "rio_token": "",
+  "devproxy_host": "http://websocket-proxy",
+  "queue_id": "318953897",
+  "event_id": "183733251",
+  "created": "2024-12-30 18:15:14"
+}

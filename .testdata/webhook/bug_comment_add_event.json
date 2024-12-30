@@ -1,0 +1,18 @@
+{
+  "event": "bug_comment::add",
+  "event_from": "web",
+  "referer": "https://www.tapd.cn/tapd_fe/111222/bug/list?confId=11111222001048467&dialog_preview_id=bug_11111222001037212",
+  "workspace_id": "111222",
+  "current_user": "张三",
+  "id": "11111222001036001",
+  "title": "在状态 [新] 添加",
+  "description": "<p>123123</p>",
+  "author": "张三",
+  "entity_id": "11111222001037212",
+  "secret": "",
+  "rio_token": "",
+  "devproxy_host": "http://websocket-proxy",
+  "queue_id": "318928285",
+  "event_id": "183722797",
+  "created": "2024-12-30 17:41:02"
+}
