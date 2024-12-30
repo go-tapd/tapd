@@ -279,9 +279,9 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
   - [ ] `story::create`
   - [ ] `story::update`
   - [ ] `story::delete`
-  - [ ] `task::create`
-  - [ ] `task::update`
-  - [ ] `task::delete`
+  - [x] `task::create`
+  - [x] `task::update`
+  - [x] `task::delete`
   - [x] `bug::create`
   - [x] `bug::update`
   - [x] `bug::delete`
