@@ -1,6 +1,5 @@
 package webhook
 
-// StoryCommentAddEvent story comment add event
 type StoryCommentAddEvent struct {
 	Event        string `json:"event,omitempty"`
 	EventFrom    string `json:"event_from,omitempty"`
@@ -18,4 +17,10 @@ type StoryCommentAddEvent struct {
 	QueueID      string `json:"queue_id,omitempty"`
 	EventID      string `json:"event_id,omitempty"`
 	Created      string `json:"created,omitempty"`
+}
+
+type StoryCommentUpdateEvent struct {
+}
+
+type StoryCommentDeleteEvent struct {
 }

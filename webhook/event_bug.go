@@ -56,3 +56,6 @@ type BugCreateEvent struct {
 
 type BugUpdateEvent struct {
 }
+
+type BugDeleteEvent struct {
+}

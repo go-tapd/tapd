@@ -3,6 +3,7 @@ package webhook
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -70,20 +71,42 @@ func ParseWebhookEvent(payload []byte) (EventType, any, error) {
 		return decodeWebhookEvent[StoryCreateEvent](EventTypeStoryCreate, payload)
 	case EventTypeStoryUpdate:
 		return decodeWebhookEvent[StoryUpdateEvent](EventTypeStoryUpdate, payload)
+	case EventTypeStoryDelete:
+		return decodeWebhookEvent[StoryDeleteEvent](EventTypeStoryDelete, payload)
+	case EventTypeTaskCreate:
+		return decodeWebhookEvent[TaskCreateEvent](EventTypeTaskCreate, payload)
 	case EventTypeTaskUpdate:
 		return decodeWebhookEvent[TaskUpdateEvent](EventTypeTaskUpdate, payload)
-	case EventTypeStoryCommentAdd:
-		return decodeWebhookEvent[StoryCommentAddEvent](EventTypeStoryCommentAdd, payload)
+	case EventTypeTaskDelete:
+		return decodeWebhookEvent[TaskDeleteEvent](EventTypeTaskDelete, payload)
 	case EventTypeBugCreate:
 		return decodeWebhookEvent[BugCreateEvent](EventTypeBugCreate, payload)
 	case EventTypeBugUpdate:
 		return decodeWebhookEvent[BugUpdateEvent](EventTypeBugUpdate, payload)
+	case EventTypeBugDelete:
+		return decodeWebhookEvent[BugDeleteEvent](EventTypeBugDelete, payload)
+	case EventTypeStoryCommentAdd:
+		return decodeWebhookEvent[StoryCommentAddEvent](EventTypeStoryCommentAdd, payload)
+	case EventTypeStoryCommentUpdate:
+		return decodeWebhookEvent[StoryCommentUpdateEvent](EventTypeStoryCommentUpdate, payload)
+	case EventTypeStoryCommentDelete:
+		return decodeWebhookEvent[StoryCommentDeleteEvent](EventTypeStoryCommentDelete, payload)
+	case EventTypeTaskCommentAdd:
+		return decodeWebhookEvent[TaskCommentAddEvent](EventTypeTaskCommentAdd, payload)
 	case EventTypeBugCommentAdd:
 		return decodeWebhookEvent[BugCommentAddEvent](EventTypeBugCommentAdd, payload)
 	case EventTypeBugCommentUpdate:
 		return decodeWebhookEvent[BugCommentUpdateEvent](EventTypeBugCommentUpdate, payload)
+	case EventTypeBugCommentDelete:
+		return decodeWebhookEvent[BugCommentDeleteEvent](EventTypeBugCommentDelete, payload)
+	case EventTypeIterationCreate:
+		return decodeWebhookEvent[IterationCreateEvent](EventTypeIterationCreate, payload)
+	case EventTypeIterationUpdate:
+		return decodeWebhookEvent[IterationUpdateEvent](EventTypeIterationUpdate, payload)
+	case EventTypeIterationDelete:
+		return decodeWebhookEvent[IterationDeleteEvent](EventTypeIterationDelete, payload)
 	default: // todo: add more event types
-		return "", nil, errors.New("tapd: webhook event not supported")
+		return "", nil, fmt.Errorf("tapd: webhook event type [%s] not supported", event)
 	}
 }
 

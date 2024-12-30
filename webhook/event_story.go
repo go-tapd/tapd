@@ -263,3 +263,5 @@ type StoryUpdateEventNewFields struct {
 	Label               *string `json:"new_label,omitempty"`
 	NewStoryID          *string `json:"new_new_story_id,omitempty"`
 }
+
+type StoryDeleteEvent struct{}
