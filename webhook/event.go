@@ -123,22 +123,23 @@ func decodeWebhookEvent[T any](eventType EventType, payload []byte) (EventType, 
 	return eventType, &event, nil
 }
 
-// EventChangeFields represents the changed fields in the webhook event.
-type EventChangeFields []string
+// ChangeFields represents the changed fields in the webhook event.
+// Deprecated: todo remove
+type ChangeFields []string
 
 var (
-	_ json.Marshaler   = (*EventChangeFields)(nil)
-	_ json.Unmarshaler = (*EventChangeFields)(nil)
+	_ json.Marshaler   = (*ChangeFields)(nil)
+	_ json.Unmarshaler = (*ChangeFields)(nil)
 )
 
-func (f EventChangeFields) MarshalJSON() ([]byte, error) {
+func (f ChangeFields) MarshalJSON() ([]byte, error) {
 	if f == nil {
 		return json.Marshal(nil)
 	}
 	return json.Marshal(strings.Join(f, ","))
 }
 
-func (f *EventChangeFields) UnmarshalJSON(data []byte) error {
+func (f *ChangeFields) UnmarshalJSON(data []byte) error {
 	if f == nil {
 		return errors.New("tapd: unmarshal nil pointer")
 	}

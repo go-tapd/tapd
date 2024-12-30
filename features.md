@@ -295,10 +295,10 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
   - [ ] bug_comment::add
   - [ ] bug_comment::update
   - [ ] bug_comment::delete
-- [ ] 迭代
-  - [ ] iteration::create
-  - [ ] iteration::update
-  - [ ] iteration::delete
+- [x] 迭代
+  - [x] iteration::create
+  - [x] iteration::update
+  - [x] iteration::delete
 
 ### 用户
 

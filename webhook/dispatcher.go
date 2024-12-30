@@ -203,12 +203,31 @@ func (d *Dispatcher) DispatchPayload(ctx context.Context, payload []byte) error 
 	return d.Dispatch(ctx, event)
 }
 
-func (d *Dispatcher) DispatchRequest(req *http.Request) error {
+type dispatchRequestOptions struct {
+	ctx context.Context
+}
+
+type DispatchRequestOption func(*dispatchRequestOptions)
+
+func WithDispatchRequestContext(ctx context.Context) DispatchRequestOption {
+	return func(o *dispatchRequestOptions) {
+		o.ctx = ctx
+	}
+}
+
+func (d *Dispatcher) DispatchRequest(req *http.Request, opts ...DispatchRequestOption) error {
+	o := &dispatchRequestOptions{
+		ctx: req.Context(),
+	}
+	for _, opt := range opts {
+		opt(o)
+	}
+
 	payload, err := io.ReadAll(req.Body)
 	if err != nil {
 		return err
 	}
-	return d.DispatchPayload(req.Context(), payload)
+	return d.DispatchPayload(o.ctx, payload)
 }
 
 func (d *Dispatcher) RegisterStoryCreateListener(listeners ...StoryCreateListener) {

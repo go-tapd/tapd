@@ -91,12 +91,12 @@ func TestWebhookEvent_ParseWebhookEvent(t *testing.T) {
 }
 
 func TestWebhookEvent_EventChangeFields(t *testing.T) {
-	fields := EventChangeFields{"field1", "field2"}
+	fields := ChangeFields{"field1", "field2"}
 	bytes, err := json.Marshal(fields)
 	assert.NoError(t, err)
 	assert.Equal(t, `"field1,field2"`, string(bytes))
 
-	var fields2 EventChangeFields
+	var fields2 ChangeFields
 	assert.NoError(t, json.Unmarshal(bytes, &fields2))
 	assert.Equal(t, fields, fields2)
 
@@ -105,13 +105,13 @@ func TestWebhookEvent_EventChangeFields(t *testing.T) {
 
 func TestWebhookEvent_EventChangeFields_Extends(t *testing.T) {
 	type Extends struct {
-		Name   string            `json:"name"`
-		Fields EventChangeFields `json:"fields,omitempty"`
+		Name   string       `json:"name"`
+		Fields ChangeFields `json:"fields,omitempty"`
 	}
 
 	extends := Extends{
 		Name:   "extends",
-		Fields: EventChangeFields{"field1", "field2"},
+		Fields: ChangeFields{"field1", "field2"},
 	}
 
 	bytes, err := json.Marshal(extends)

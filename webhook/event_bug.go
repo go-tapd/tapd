@@ -55,7 +55,9 @@ type BugCreateEvent struct {
 }
 
 type BugUpdateEvent struct {
+	Event EventType `json:"event,omitempty"`
 }
 
 type BugDeleteEvent struct {
+	Event EventType `json:"event,omitempty"`
 }
