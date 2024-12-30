@@ -27,7 +27,7 @@ func TestStoryEvent_StoryDeleteEvent(t *testing.T) {
 	var event StoryDeleteEvent
 	loadAndParseWebhookData(t, "story/delete.json", &event)
 
-	assert.Equal(t, EventTypeStoryDelete.String(), event.Event)
+	assert.Equal(t, EventTypeStoryDelete, event.Event)
 	assert.Equal(t, "web", event.EventFrom)
 	assert.Equal(t, "https://www.tapd.cn/tapd_fe/111222333/story/list?useScene=storyList&groupType=&conf_id=11111222333001035191", event.Referer)
 	assert.Equal(t, "111222333", event.WorkspaceID)

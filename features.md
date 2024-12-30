@@ -276,29 +276,29 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
 ### webhook
 
 - [ ] 需求/任务/缺陷类
-  - [ ] story::create
-  - [ ] story::update
-  - [ ] story::delete
-  - [ ] task::create
-  - [ ] task::update
-  - [ ] task::delete
-  - [ ] bug::create
-  - [ ] bug::update
-  - [ ] bug::delete
+  - [ ] `story::create`
+  - [ ] `story::update`
+  - [ ] `story::delete`
+  - [ ] `task::create`
+  - [ ] `task::update`
+  - [ ] `task::delete`
+  - [x] `bug::create`
+  - [x] `bug::update`
+  - [x] `bug::delete`
 - [ ] 评论类：需求/任务/缺陷
-  - [ ] story_comment::add
-  - [ ] story_comment::update
-  - [ ] story_comment::delete
-  - [ ] task_comment::add
-  - [ ] task_comment::update
-  - [ ] task_comment::delete
-  - [ ] bug_comment::add
-  - [ ] bug_comment::update
-  - [ ] bug_comment::delete
+  - [ ] `story_comment::add`
+  - [ ] `story_comment::update`
+  - [ ] `story_comment::delete`
+  - [ ] `task_comment::add`
+  - [ ] `task_comment::update`
+  - [ ] `task_comment::delete`
+  - [ ] `bug_comment::add`
+  - [ ] `bug_comment::update`
+  - [ ] `bug_comment::delete`
 - [x] 迭代
-  - [x] iteration::create
-  - [x] iteration::update
-  - [x] iteration::delete
+  - [x] `iteration::create`
+  - [x] `iteration::update`
+  - [x] `iteration::delete`
 
 ### 用户
 
