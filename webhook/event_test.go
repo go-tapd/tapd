@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestWebhookEvent_EventType(t *testing.T) {
@@ -12,13 +13,30 @@ func TestWebhookEvent_EventType(t *testing.T) {
 		name string
 		want EventType
 	}{
+		// 需求/任务/缺陷类
 		{"story::create", EventTypeStoryCreate},
 		{"story::update", EventTypeStoryUpdate},
+		{"story::delete", EventTypeStoryDelete},
+		{"task::create", EventTypeTaskCreate},
 		{"task::update", EventTypeTaskUpdate},
-		{"story_comment::add", EventTypeStoryCommentAdd},
+		{"task::delete", EventTypeTaskDelete},
 		{"bug::create", EventTypeBugCreate},
 		{"bug::update", EventTypeBugUpdate},
+		{"bug::delete", EventTypeBugDelete},
+		// 评论类：需求/任务/缺陷
+		{"story_comment::add", EventTypeStoryCommentAdd},
+		{"story_comment::update", EventTypeStoryCommentUpdate},
+		{"story_comment::delete", EventTypeStoryCommentDelete},
+		{"task_comment::add", EventTypeTaskCommentAdd},
+		{"task_comment::update", EventTypeTaskCommentUpdate},
+		{"task_comment::delete", EventTypeTaskCommentDelete},
+		{"bug_comment::add", EventTypeBugCommentAdd},
 		{"bug_comment::update", EventTypeBugCommentUpdate},
+		{"bug_comment::delete", EventTypeBugCommentDelete},
+		// 迭代
+		{"iteration::create", EventTypeIterationCreate},
+		{"iteration::update", EventTypeIterationUpdate},
+		{"iteration::delete", EventTypeIterationDelete},
 	}
 
 	for _, tt := range tests {
@@ -35,16 +53,37 @@ func TestWebhookEvent_ParseWebhookEvent(t *testing.T) {
 		eventType EventType
 		event     any
 	}{
-		{"story_create_event.json", EventTypeStoryCreate, &StoryCreateEvent{}},
-		{"story_update_event.json", EventTypeStoryUpdate, &StoryUpdateEvent{}},
-		{"bug_create_event.json", EventTypeBugCreate, &BugCreateEvent{}},
+		// 需求/任务/缺陷类
+		{"story/create.json", EventTypeStoryCreate, &StoryCreateEvent{}},
+		{"story/update.json", EventTypeStoryUpdate, &StoryUpdateEvent{}},
+		{"story/delete.json", EventTypeStoryDelete, &StoryDeleteEvent{}},
+		{"task/create.json", EventTypeTaskCreate, &TaskCreateEvent{}},
+		{"task/update.json", EventTypeTaskUpdate, &TaskUpdateEvent{}},
+		{"task/delete.json", EventTypeTaskDelete, &TaskDeleteEvent{}},
+		{"bug/create.json", EventTypeBugCreate, &BugCreateEvent{}},
+		{"bug/update.json", EventTypeBugUpdate, &BugUpdateEvent{}},
+		{"bug/delete.json", EventTypeBugDelete, &BugDeleteEvent{}},
+		// 评论类：需求/任务/缺陷
+		{"story_comment/add.json", EventTypeStoryCommentAdd, &StoryCommentAddEvent{}},
+		{"story_comment/update.json", EventTypeStoryCommentUpdate, &StoryCommentUpdateEvent{}},
+		{"story_comment/delete.json", EventTypeStoryCommentDelete, &StoryCommentDeleteEvent{}},
+		{"task_comment/add.json", EventTypeTaskCommentAdd, &TaskCommentAddEvent{}},
+		{"task_comment/update.json", EventTypeTaskCommentUpdate, &TaskCommentUpdateEvent{}},
+		{"task_comment/delete.json", EventTypeTaskCommentDelete, &TaskCommentDeleteEvent{}},
+		{"bug_comment/add.json", EventTypeBugCommentAdd, &BugCommentAddEvent{}},
+		{"bug_comment/update.json", EventTypeBugCommentUpdate, &BugCommentUpdateEvent{}},
+		{"bug_comment/delete.json", EventTypeBugCommentDelete, &BugCommentDeleteEvent{}},
+		// 迭代
+		{"iteration/create.json", EventTypeIterationCreate, &IterationCreateEvent{}},
+		{"iteration/update.json", EventTypeIterationUpdate, &IterationUpdateEvent{}},
+		{"iteration/delete.json", EventTypeIterationDelete, &IterationDeleteEvent{}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.filename, func(t *testing.T) {
-			payload := loadData(t, "../.testdata/webhook/"+tt.filename)
+			payload := loadWebhookData(t, tt.filename)
 			eventType, event, err := ParseWebhookEvent(payload)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.eventType, eventType)
 			assert.IsType(t, tt.event, event)
 		})

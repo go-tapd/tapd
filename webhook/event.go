@@ -93,6 +93,10 @@ func ParseWebhookEvent(payload []byte) (EventType, any, error) {
 		return decodeWebhookEvent[StoryCommentDeleteEvent](EventTypeStoryCommentDelete, payload)
 	case EventTypeTaskCommentAdd:
 		return decodeWebhookEvent[TaskCommentAddEvent](EventTypeTaskCommentAdd, payload)
+	case EventTypeTaskCommentUpdate:
+		return decodeWebhookEvent[TaskCommentUpdateEvent](EventTypeTaskCommentUpdate, payload)
+	case EventTypeTaskCommentDelete:
+		return decodeWebhookEvent[TaskCommentDeleteEvent](EventTypeTaskCommentDelete, payload)
 	case EventTypeBugCommentAdd:
 		return decodeWebhookEvent[BugCommentAddEvent](EventTypeBugCommentAdd, payload)
 	case EventTypeBugCommentUpdate:
