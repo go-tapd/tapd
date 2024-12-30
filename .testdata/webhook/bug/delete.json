@@ -1,0 +1,16 @@
+{
+  "event": "bug::delete",
+  "event_from": "web",
+  "referer": "https://www.tapd.cn/tapd_fe/111222333/bug/list?confId=11111222333001048467",
+  "workspace_id": "111222333",
+  "current_user": "张三",
+  "id": "11111222333001039910",
+  "op_type": "delete",
+  "old_iteration_id": "0",
+  "secret": "",
+  "rio_token": "",
+  "devproxy_host": "http://websocket-proxy",
+  "queue_id": "318961099",
+  "event_id": "183736224",
+  "created": "2024-12-30 18:25:29"
+}

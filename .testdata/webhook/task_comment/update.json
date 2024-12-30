@@ -1,0 +1,17 @@
+{
+  "event": "task_comment::update",
+  "event_from": "web",
+  "referer": "https://www.tapd.cn/111222333/comments/edit_workitem_comment/11111222333001036008?keepThis=true&TB_iframe=true&height=750&width=1120&entity_type=task&rand=1735554507185",
+  "workspace_id": "111222333",
+  "current_user": "张三",
+  "id": "11111222333001036008",
+  "description": "<p><span style=\"color: #3f4a56;\">123222</span><br></p>",
+  "author": "张三",
+  "entity_id": "11111222333001116478",
+  "secret": "",
+  "rio_token": "",
+  "devproxy_host": "http://websocket-proxy",
+  "queue_id": "318963265",
+  "event_id": "183737120",
+  "created": "2024-12-30 18:28:29"
+}

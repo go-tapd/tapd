@@ -1,0 +1,16 @@
+{
+  "event": "story::delete",
+  "event_from": "web",
+  "referer": "https://www.tapd.cn/tapd_fe/111222333/story/list?useScene=storyList&groupType=&conf_id=11111222333001035191",
+  "workspace_id": "111222333",
+  "current_user": "张三",
+  "id": "11111222333001078517",
+  "op_type": "delete",
+  "old_iteration_id": "0",
+  "secret": "",
+  "rio_token": "",
+  "devproxy_host": "http://websocket-proxy",
+  "queue_id": "318959744",
+  "event_id": "183735666",
+  "created": "2024-12-30 18:22:57"
+}
