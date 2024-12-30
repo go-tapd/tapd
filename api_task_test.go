@@ -18,7 +18,7 @@ func TestTaskService_GetTasks(t *testing.T) {
 
 	tasks, _, err := client.TaskService.GetTasks(ctx, &GetTasksRequest{
 		WorkspaceID: Ptr(11112222),
-		Status:      NewEnum(TaskStatusOpen, TaskStatusDone),
+		Status:      NewEnum(TaskStatusOpen.String(), TaskStatusDone.String()),
 		Fields:      NewMulti("id", "workspace_id"),
 	})
 	assert.NoError(t, err)

@@ -16,6 +16,10 @@ const (
 	TaskStatusDone        TaskStatus = "done"        // 已完成
 )
 
+func (s TaskStatus) String() string {
+	return string(s)
+}
+
 // Task 任务
 type Task struct {
 	ID                string        `json:"id,omitempty"`               // 任务ID
