@@ -49,7 +49,7 @@ func TestIterationEvent_IterationUpdateEvent(t *testing.T) {
 	assert.Equal(t, "0", event.OldSort)
 	assert.Equal(t, "111112223001000128", event.OldWorkitemTypeID)
 	assert.Equal(t, "iteration", event.OldEntityType)
-	assert.Nil(t, event.NewCustomField47)
+	assert.Empty(t, event.NewCustomField47)
 	assert.Equal(t, "sort,ancestor_id,path,modified", event.ChangeFields)
 	assert.Equal(t, "318950437", event.QueueID)
 }
