@@ -12,7 +12,7 @@
 The Go-Tapd-SDK is a Go client library for accessing the [Tapd API](https://www.tapd.cn/).
 
 > [!WARNING]  
-> ⚠️⚠️ **This is currently still a non-stable version, is not recommended for production use.** ⚠️⚠️ 
+> This is currently still a non-stable version, is not recommended for production use. 
 
 If you encounter any issues, you are welcome to [submit an issue](https://github.com/go-tapd/tapd/issues/new).
 
