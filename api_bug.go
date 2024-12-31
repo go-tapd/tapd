@@ -249,6 +249,31 @@ type BugService struct {
 // 获取缺陷变更次数
 // 获取缺陷自定义字段配置
 
+// GetBugs 获取缺陷
+//
+// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bugs.html
+func (s *BugService) GetBugs(ctx context.Context, request *GetBugsRequest, opts ...RequestOption) ([]*Bug, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		Bug *Bug `json:"Bug"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	bugs := make([]*Bug, 0, len(items))
+	for _, item := range items {
+		bugs = append(bugs, item.Bug)
+	}
+
+	return bugs, resp, nil
+}
+
 type GetBugsRequest struct {
 	ID                *Multi[int]    `url:"id,omitempty"`               // ID 支持多ID查询
 	Title             *string        `url:"title,omitempty"`            // 标题 支持模糊匹配
@@ -469,31 +494,6 @@ type GetBugsRequest struct {
 	Page              *int           `url:"page,omitempty"`   // 返回当前数量限制下第N页的数据，默认为1（第一页）
 	Order             *Order         `url:"order,omitempty"`  // 排序规则，规则：字段名 ASC或者DESC，然后 urlencode 如按创建时间逆序：order=created%20desc
 	Fields            *Multi[string] `url:"fields,omitempty"` // 设置获取的字段，多个字段间以','逗号隔开
-}
-
-// GetBugs 获取缺陷
-//
-// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bugs.html
-func (s *BugService) GetBugs(ctx context.Context, request *GetBugsRequest, opts ...RequestOption) ([]*Bug, *Response, error) {
-	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs", request, opts)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var items []struct {
-		Bug *Bug `json:"Bug"`
-	}
-	resp, err := s.client.Do(req, &items)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	bugs := make([]*Bug, 0, len(items))
-	for _, item := range items {
-		bugs = append(bugs, item.Bug)
-	}
-
-	return bugs, resp, nil
 }
 
 // 获取缺陷数量

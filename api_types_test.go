@@ -93,10 +93,10 @@ func TestTypes_PriorityLabel(t *testing.T) {
 		expect string
 	}{
 		{"", "", ""},
-		{"", High, "High"},
-		{"", Middle, "Middle"},
-		{"", Low, "Low"},
-		{"", NiceToHave, "Nice To Have"},
+		{"", PriorityLabelHigh, "High"},
+		{"", PriorityLabelMiddle, "Middle"},
+		{"", PriorityLabelLow, "Low"},
+		{"", PriorityLabelNiceToHave, "Nice To Have"},
 	}
 
 	for _, tt := range tests {

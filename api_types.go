@@ -110,10 +110,10 @@ func (e Enum[T]) MarshalJSON() ([]byte, error) {
 type PriorityLabel string
 
 const (
-	High       PriorityLabel = "High"
-	Middle     PriorityLabel = "Middle"
-	Low        PriorityLabel = "Low"
-	NiceToHave PriorityLabel = "Nice To Have"
+	PriorityLabelHigh       PriorityLabel = "High"
+	PriorityLabelMiddle     PriorityLabel = "Middle"
+	PriorityLabelLow        PriorityLabel = "Low"
+	PriorityLabelNiceToHave PriorityLabel = "Nice To Have"
 )
 
 func (p PriorityLabel) String() string {
