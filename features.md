@@ -276,9 +276,9 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
 ### webhook
 
 - [ ] 需求/任务/缺陷类
-  - [ ] `story::create`
-  - [ ] `story::update`
-  - [ ] `story::delete`
+  - [x] `story::create`
+  - [x] `story::update`
+  - [x] `story::delete`
   - [x] `task::create`
   - [x] `task::update`
   - [x] `task::delete`
