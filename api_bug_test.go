@@ -1,6 +1,7 @@
 package tapd
 
 import (
+	"encoding/json"
 	"net/http"
 	"testing"
 
@@ -44,4 +45,36 @@ func TestBugService_GetBugs(t *testing.T) {
 	assert.Equal(t, "", bug.Auditer)
 	assert.Equal(t, "张三;", bug.De)
 	assert.Equal(t, "张三", bug.Fixer)
+}
+
+func TestBugService_UpdateBug(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/bugs", r.URL.Path)
+
+		var req struct {
+			WorkspaceID   int           `json:"workspace_id"`
+			ID            int           `json:"id"`
+			PriorityLabel PriorityLabel `json:"priority_label"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, 11111222330268, req.ID)
+		assert.Equal(t, PriorityLabelHigh, req.PriorityLabel)
+
+		_, _ = w.Write(loadData(t, ".testdata/api/bug/update_bug.json"))
+	}))
+
+	bug, _, err := client.BugService.UpdateBug(ctx, &UpdateBugRequest{
+		WorkspaceID:   Ptr(11112222),
+		ID:            Ptr(11111222330268),
+		PriorityLabel: Ptr(PriorityLabelHigh),
+	})
+	require.NoError(t, err)
+
+	assert.Equal(t, "11111222333001037077", bug.ID)
+	assert.Equal(t, "计算不正确222", bug.Title)
+	assert.Equal(t, "", bug.Description)
+	assert.Equal(t, "", bug.Priority)
+	assert.Equal(t, "", bug.Severity)
 }
