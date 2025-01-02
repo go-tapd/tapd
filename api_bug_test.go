@@ -78,11 +78,13 @@ func TestBugService_UpdateBug(t *testing.T) {
 			WorkspaceID   int           `json:"workspace_id"`
 			ID            int           `json:"id"`
 			PriorityLabel PriorityLabel `json:"priority_label"`
+			Severity      string        `json:"severity"`
 		}
 		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
 		assert.Equal(t, 11112222, req.WorkspaceID)
 		assert.Equal(t, 11111222330268, req.ID)
 		assert.Equal(t, PriorityLabelHigh, req.PriorityLabel)
+		assert.Equal(t, "fatal|serious", req.Severity)
 
 		_, _ = w.Write(loadData(t, ".testdata/api/bug/update_bug.json"))
 	}))
@@ -91,6 +93,7 @@ func TestBugService_UpdateBug(t *testing.T) {
 		WorkspaceID:   Ptr(11112222),
 		ID:            Ptr(11111222330268),
 		PriorityLabel: Ptr(PriorityLabelHigh),
+		Severity:      NewEnum(BugSeverityFatal, BugSeveritySerious),
 	})
 	require.NoError(t, err)
 
@@ -98,5 +101,5 @@ func TestBugService_UpdateBug(t *testing.T) {
 	assert.Equal(t, "计算不正确222", bug.Title)
 	assert.Equal(t, "", bug.Description)
 	assert.Equal(t, "", bug.Priority)
-	assert.Equal(t, "", bug.Severity)
+	assert.Equal(t, BugSeverityNormal, bug.Severity)
 }
