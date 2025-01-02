@@ -9,6 +9,28 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestBugService_BugSeverity(t *testing.T) {
+	tests := []struct {
+		severity   BugSeverity
+		wantString string
+		wantHuman  string
+	}{
+		{BugSeverityFatal, "fatal", "致命"},
+		{BugSeveritySerious, "serious", "严重"},
+		{BugSeverityNormal, "normal", "一般"},
+		{BugSeverityPrompt, "prompt", "提示"},
+		{BugSeverityAdvice, "advice", "建议"},
+		{BugSeverity(""), "", ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.severity.String(), func(t *testing.T) {
+			assert.Equal(t, tt.wantString, tt.severity.String())
+			assert.Equal(t, tt.wantHuman, tt.severity.Human())
+		})
+	}
+}
+
 func TestBugService_GetBugs(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
