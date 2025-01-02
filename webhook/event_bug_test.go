@@ -3,6 +3,7 @@ package webhook
 import (
 	"testing"
 
+	"github.com/go-tapd/tapd"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,7 +26,7 @@ func TestBugEvent_BugCreateEvent(t *testing.T) {
 	assert.Equal(t, "11111222333001000400", event.TemplateID)
 	assert.Equal(t, "", event.Description)
 	assert.Equal(t, "0", event.IterationID)
-	assert.Equal(t, "", event.Severity)
+	assert.Equal(t, tapd.BugSeverity(""), event.Severity)
 	assert.Equal(t, "", event.Priority)
 	assert.Equal(t, "", event.CustomFieldOne)
 	assert.Equal(t, "", event.CustomFieldThree)
@@ -101,7 +102,7 @@ func TestBugEvent_BugUpdateEvent(t *testing.T) {
 	assert.Equal(t, "new", event.OldStatus)
 	assert.Equal(t, "", event.OldResolution)
 	assert.Equal(t, "", event.OldPriority)
-	assert.Equal(t, "", event.OldSeverity)
+	assert.Equal(t, tapd.BugSeverity(""), event.OldSeverity)
 	assert.Equal(t, "", event.OldCc)
 	assert.Equal(t, "", event.OldEstimate)
 	assert.Equal(t, "new", event.OldFlows)
