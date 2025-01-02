@@ -13,7 +13,7 @@ func TestTaskService_GetTasks(t *testing.T) {
 		assert.Equal(t, http.MethodGet, r.Method)
 		assert.Equal(t, "/tasks", r.URL.Path)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/task/get_tasks.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_tasks.json"))
 	}))
 
 	tasks, _, err := client.TaskService.GetTasks(ctx, &GetTasksRequest{
@@ -32,7 +32,7 @@ func TestTaskService_GetTasksCount(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "open|done", r.URL.Query().Get("status"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/task/get_tasks_count.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_tasks_count.json"))
 	}))
 
 	count, _, err := client.TaskService.GetTasksCount(ctx, &GetTasksCountRequest{
@@ -49,7 +49,7 @@ func TestTaskService_GetTaskChanges(t *testing.T) {
 		assert.Equal(t, "/task_changes", r.URL.Path)
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/task/get_task_changes.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_task_changes.json"))
 	}))
 
 	changes, _, err := client.TaskService.GetTaskChanges(context.Background(), &GetTaskChangesRequest{
@@ -87,7 +87,7 @@ func TestTaskService_GetTaskChangesCount(t *testing.T) {
 		assert.Equal(t, "/task_changes/count", r.URL.Path)
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/task/get_task_changes_count.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_task_changes_count.json"))
 	}))
 
 	count, _, err := client.TaskService.GetTaskChangesCount(context.Background(), &GetTaskChangesCountRequest{
@@ -103,7 +103,7 @@ func TestTaskService_GetTaskFieldsInfo(t *testing.T) {
 		assert.Equal(t, "/tasks/get_fields_info", r.URL.Path)
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/task/get_task_fields_info.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_task_fields_info.json"))
 	}))
 
 	fields, _, err := client.TaskService.GetTaskFieldsInfo(ctx, &GetTaskFieldsInfoRequest{

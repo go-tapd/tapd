@@ -39,7 +39,7 @@ func TestBugService_GetBugs(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, PriorityLabelHigh.String(), r.URL.Query().Get("priority_label"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/bug/get_bugs.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bugs.json"))
 	}))
 
 	bugs, _, err := client.BugService.GetBugs(ctx, &GetBugsRequest{
@@ -86,7 +86,7 @@ func TestBugService_UpdateBug(t *testing.T) {
 		assert.Equal(t, PriorityLabelHigh, req.PriorityLabel)
 		assert.Equal(t, "fatal|serious", req.Severity)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/bug/update_bug.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/update_bug.json"))
 	}))
 
 	bug, _, err := client.BugService.UpdateBug(ctx, &UpdateBugRequest{

@@ -21,7 +21,7 @@ func loadData(t *testing.T, filepath string) []byte {
 }
 
 func loadWebhookData(t *testing.T, filename string) []byte {
-	return loadData(t, "../.testdata/webhook/"+filename)
+	return loadData(t, "../internal/testdata/webhook/"+filename)
 }
 
 func loadAndParseWebhookData(t *testing.T, filename string, v interface{}) {

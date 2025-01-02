@@ -19,7 +19,7 @@ func TestAttachmentService_GetAttachments(t *testing.T) {
 		assert.Equal(t, "demo.jpg", r.URL.Query().Get("filename"))
 		assert.Equal(t, "go-tapd", r.URL.Query().Get("owner"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/attachment/get_attachments.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/attachment/get_attachments.json"))
 	}))
 
 	attachments, _, err := client.AttachmentService.GetAttachments(ctx, &GetAttachmentsRequest{
@@ -52,7 +52,7 @@ func TestAttachmentService_GetAttachmentDownloadURL(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "33334444", r.URL.Query().Get("id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/attachment/get_attachment_download_url.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/attachment/get_attachment_download_url.json"))
 	}))
 
 	attachment, _, err := client.AttachmentService.GetAttachmentDownloadURL(ctx, &GetAttachmentDownloadURLRequest{
@@ -80,7 +80,7 @@ func TestAttachmentService_GetImageDownloadURL(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "/demo/demo.jpg", r.URL.Query().Get("image_path"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/attachment/get_image_download_url.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/attachment/get_image_download_url.json"))
 	}))
 
 	attachment, _, err := client.AttachmentService.GetImageDownloadURL(ctx, &GetImageDownloadURLRequest{
@@ -103,7 +103,7 @@ func TestAttachmentService_GetDocumentDownloadURL(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "33334444", r.URL.Query().Get("id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/attachment/get_document_download_url.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/attachment/get_document_download_url.json"))
 	}))
 
 	attachment, _, err := client.AttachmentService.GetDocumentDownloadURL(ctx, &GetDocumentDownloadURLRequest{

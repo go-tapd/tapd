@@ -31,7 +31,7 @@ func TestIterationService_CreateIteration(t *testing.T) {
 		assert.Equal(t, "creator name", req.Creator)
 		assert.Equal(t, "label1|label2", req.Label)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/iteration/create_iteration.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/create_iteration.json"))
 	}))
 
 	iteration, _, err := client.IterationService.CreateIteration(ctx, &CreateIterationRequest{
@@ -68,7 +68,7 @@ func TestIterationService_GetIterations(t *testing.T) {
 		assert.Equal(t, "/iterations", r.URL.Path)
 		assert.Equal(t, "111", r.URL.Query().Get("workspace_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/iteration/get_iterations.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iterations.json"))
 	}))
 
 	iterations, _, err := client.IterationService.GetIterations(ctx, &GetIterationsRequest{
@@ -102,7 +102,7 @@ func TestIterationService_GetIterationsCount(t *testing.T) {
 		assert.Equal(t, "/iterations/count", r.URL.Path)
 		assert.Equal(t, "111", r.URL.Query().Get("workspace_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/iteration/get_iterations_count.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iterations_count.json"))
 	}))
 
 	count, _, err := client.IterationService.GetIterationsCount(ctx, &GetIterationsCountRequest{
@@ -134,7 +134,7 @@ func TestIterationService_UpdateIteration(t *testing.T) {
 		assert.Equal(t, "creator name", req.Creator)
 		assert.Equal(t, "label1|label2", req.Label)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/iteration/update_iteration.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/update_iteration.json"))
 	}))
 
 	iteration, _, err := client.IterationService.UpdateIteration(ctx, &UpdateIterationRequest{
@@ -173,7 +173,7 @@ func TestIterationService_GetWorkitemTypes(t *testing.T) {
 		assert.Equal(t, "/iterations/workitem_types", r.URL.Path)
 		assert.Equal(t, "111", r.URL.Query().Get("workspace_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/iteration/get_workitem_types.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_workitem_types.json"))
 	}))
 
 	workitemTypes, _, err := client.IterationService.GetWorkitemTypes(ctx, &GetWorkitemTypesRequest{
@@ -200,7 +200,7 @@ func TestIterationService_GetTemplateList(t *testing.T) {
 		assert.Equal(t, "/iterations/template_list", r.URL.Path)
 		assert.Equal(t, "111", r.URL.Query().Get("workspace_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/iteration/get_template_list.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_template_list.json"))
 	}))
 
 	templates, _, err := client.IterationService.GetTemplateList(ctx, &GetTemplateListRequest{

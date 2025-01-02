@@ -21,7 +21,7 @@ func TestLabelService_GetLabels(t *testing.T) {
 		assert.Equal(t, "1", r.URL.Query().Get("page"))
 		assert.Equal(t, "id asc", r.URL.Query().Get("order"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/label/get_labels.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/label/get_labels.json"))
 	}))
 
 	labels, _, err := client.LabelService.GetLabels(ctx, &GetLabelsRequest{
@@ -58,7 +58,7 @@ func TestLabelService_GetLabelCount(t *testing.T) {
 		assert.Equal(t, "tapd-username", r.URL.Query().Get("creator"))
 		assert.Equal(t, "2024-08-26", r.URL.Query().Get("created"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/label/get_label_count.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/label/get_label_count.json"))
 	}))
 
 	count, _, err := client.LabelService.GetLabelsCount(ctx, &GetLabelCountRequest{
@@ -90,7 +90,7 @@ func TestLabelService_CreateLabel(t *testing.T) {
 		assert.Equal(t, LabelColor1, req.Color)
 		assert.Equal(t, "tapd-username", req.Creator)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/label/create_label.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/label/create_label.json"))
 	}))
 
 	label, _, err := client.LabelService.CreateLabel(ctx, &CreateLabelRequest{
@@ -130,7 +130,7 @@ func TestLabelService_UpdateLabel(t *testing.T) {
 		assert.Equal(t, LabelColor1, req.Color)
 		assert.Equal(t, "tapd-username", req.Modifier)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/label/update_label.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/label/update_label.json"))
 	}))
 
 	label, _, err := client.LabelService.UpdateLabel(ctx, &UpdateLabelRequest{

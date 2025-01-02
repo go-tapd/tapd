@@ -13,7 +13,7 @@ func TestUserService_GetRoles(t *testing.T) {
 		assert.Equal(t, "/roles", r.URL.Path)
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/user/get_roles.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/user/get_roles.json"))
 	}))
 
 	roles, _, err := client.UserService.GetRoles(ctx, &GetRolesRequest{

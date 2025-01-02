@@ -19,7 +19,7 @@ func TestMeasureService_LifeTimes(t *testing.T) {
 		assert.Equal(t, "1", r.URL.Query().Get("page"))
 		assert.Equal(t, "id,workspace_id", r.URL.Query().Get("fields"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/measure/life-times.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/measure/life-times.json"))
 	}))
 
 	lifeTimes, _, err := client.MeasureService.LifeTimes(ctx, &LifeTimesRequest{

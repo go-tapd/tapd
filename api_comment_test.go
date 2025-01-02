@@ -42,7 +42,7 @@ func TestCommentService_CreateComment(t *testing.T) {
 		assert.Equal(t, 111, req.RootID)
 		assert.Equal(t, 111, req.WorkspaceID)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/comment/create_comment.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/comment/create_comment.json"))
 	}))
 
 	comment, _, err := client.CommentService.CreateComment(ctx, &CreateCommentRequest{
@@ -90,7 +90,7 @@ func TestCommentService_GetComments(t *testing.T) {
 		assert.Equal(t, "id desc", r.URL.Query().Get("order"))
 		assert.Equal(t, "id,title", r.URL.Query().Get("fields"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/comment/get_comments.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/comment/get_comments.json"))
 	}))
 
 	comments, _, err := client.CommentService.GetComments(ctx, &GetCommentsRequest{
@@ -142,7 +142,7 @@ func TestCommentService_GetCommentsCount(t *testing.T) {
 		assert.Equal(t, "222", r.URL.Query().Get("root_id"))
 		assert.Equal(t, "333", r.URL.Query().Get("reply_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/comment/get_comments_count.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/comment/get_comments_count.json"))
 	}))
 
 	count, _, err := client.CommentService.GetCommentsCount(ctx, &GetCommentsCountRequest{
@@ -180,7 +180,7 @@ func TestCommentService_UpdateComment(t *testing.T) {
 		assert.Equal(t, "test description 2", req.Description)
 		assert.Equal(t, "test creator", req.ChangeCreator)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/comment/update_comment.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/comment/update_comment.json"))
 	}))
 
 	comment, _, err := client.CommentService.UpdateComment(ctx, &UpdateCommentRequest{

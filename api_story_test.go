@@ -25,7 +25,7 @@ func TestStoryService_GetStoryCategories(t *testing.T) {
 		assert.Equal(t, "id asc", r.URL.Query().Get("order"))
 		assert.Equal(t, "id,name", r.URL.Query().Get("fields"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/story/get_story_categories.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_categories.json"))
 	}))
 
 	categories, _, err := client.StoryService.GetStoryCategories(ctx, &GetStoryCategoriesRequest{
@@ -67,7 +67,7 @@ func TestStoryService_GetStoryCategoriesCount(t *testing.T) {
 		assert.Equal(t, "2021-01-01", r.URL.Query().Get("created"))
 		assert.Equal(t, "2021-01-02", r.URL.Query().Get("modified"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/story/get_story_categories_count.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_categories_count.json"))
 	}))
 
 	count, _, err := client.StoryService.GetStoryCategoriesCount(ctx, &GetStoryCategoriesCountRequest{
@@ -91,7 +91,7 @@ func TestStoryService_GetStoriesCountByCategories(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "1111112222001000103,1111112222001000108", r.URL.Query().Get("category_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/story/get_stories_count_by_categories.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_stories_count_by_categories.json"))
 	}))
 
 	counts, _, err := client.StoryService.GetStoriesCountByCategories(ctx, &GetStoriesCountByCategoriesRequest{
@@ -114,7 +114,7 @@ func TestStoryService_GetStoryChanges(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "1111112222001000103,1111112222001000108", r.URL.Query().Get("story_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/story/get_story_changes.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_changes.json"))
 	}))
 
 	storyChanges, _, err := client.StoryService.GetStoryChanges(ctx, &GetStoryChangesRequest{
@@ -152,7 +152,7 @@ func TestStoryService_GetStoryCustomFieldsSettings(t *testing.T) {
 
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/story/get_story_custom_fields_settings.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_custom_fields_settings.json"))
 	}))
 
 	settings, _, err := client.StoryService.GetStoryCustomFieldsSettings(ctx, &GetStoryCustomFieldsSettingsRequest{
@@ -187,7 +187,7 @@ func TestStoryService_GetStoryRelatedBugs(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "33334444,55556666", r.URL.Query().Get("story_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/story/get_story_related_bugs.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_related_bugs.json"))
 	}))
 
 	relatedBugs, _, err := client.StoryService.GetStoryRelatedBugs(ctx, &GetStoryRelatedBugsRequest{
@@ -209,7 +209,7 @@ func TestStoryService_GetStoryTemplates(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "1", r.URL.Query().Get("workitem_type_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/story/get_story_templates.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_templates.json"))
 	}))
 
 	templates, _, err := client.StoryService.GetStoryTemplates(ctx, &GetStoryTemplatesRequest{
@@ -235,7 +235,7 @@ func TestStoryService_GetStoryTemplateFields(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "1111111111111", r.URL.Query().Get("template_id"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/story/get_story_template_fields.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_template_fields.json"))
 	}))
 
 	fields, _, err := client.StoryService.GetStoryTemplateFields(ctx, &GetStoryTemplateFieldsRequest{
@@ -269,7 +269,7 @@ func TestStoryService_GetRemovedStories(t *testing.T) {
 		assert.Equal(t, "10", r.URL.Query().Get("limit"))
 		assert.Equal(t, "1", r.URL.Query().Get("page"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/story/get_removed_stories.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_removed_stories.json"))
 	}))
 
 	stories, _, err := client.StoryService.GetRemovedStories(ctx, &GetRemovedStoriesRequest{
@@ -306,7 +306,7 @@ func TestStoryService_GetConvertStoryIDsToQueryToken(t *testing.T) {
 		assert.Equal(t, 11112222, req.WorkspaceID)
 		assert.Equal(t, "33334444,55556666", req.StoryIDs)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/story/get_convert_story_ids_to_query_token.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_convert_story_ids_to_query_token.json"))
 	}))
 
 	response, _, err := client.StoryService.GetConvertStoryIDsToQueryToken(ctx, &GetConvertStoryIDsToQueryTokenRequest{

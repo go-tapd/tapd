@@ -34,7 +34,7 @@ func TestTimesheetService_CreateTimesheet(t *testing.T) {
 		assert.Equal(t, 11112222, req.WorkspaceID)
 		assert.Equal(t, "1", req.Memo)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/timesheet/create_timesheet.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/timesheet/create_timesheet.json"))
 	}))
 
 	timesheet, _, err := client.TimesheetService.CreateTimesheet(ctx, &CreateTimesheetRequest{
@@ -82,7 +82,7 @@ func TestTimesheetService_GetTimesheets(t *testing.T) {
 		assert.Equal(t, "id,workspace_id", r.URL.Query().Get("fields"))
 		assert.Equal(t, "id desc", r.URL.Query().Get("order"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/timesheet/get_timesheets.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/timesheet/get_timesheets.json"))
 	}))
 
 	timesheets, _, err := client.TimesheetService.GetTimesheets(ctx, &GetTimesheetsRequest{
@@ -135,7 +135,7 @@ func TestTimesheetService_GetTimesheetsCount(t *testing.T) {
 		assert.Equal(t, "1", r.URL.Query().Get("memo"))
 		assert.Equal(t, "0", r.URL.Query().Get("is_delete"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/timesheet/get_timesheets_count.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/timesheet/get_timesheets_count.json"))
 	}))
 
 	count, _, err := client.TimesheetService.GetTimesheetsCount(ctx, &GetTimesheetsCountRequest{
@@ -174,7 +174,7 @@ func TestTimesheetService_UpdateTimesheet(t *testing.T) {
 		assert.Equal(t, 11112222, req.WorkspaceID)
 		assert.Equal(t, "1", req.Memo)
 
-		_, _ = w.Write(loadData(t, ".testdata/api/timesheet/update_timesheet.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/timesheet/update_timesheet.json"))
 	}))
 
 	timesheet, _, err := client.TimesheetService.UpdateTimesheet(ctx, &UpdateTimesheetRequest{

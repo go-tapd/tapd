@@ -20,7 +20,7 @@ func TestReportService_GetReports(t *testing.T) {
 		assert.Equal(t, "1", r.URL.Query().Get("page"))
 		assert.Equal(t, "id,title", r.URL.Query().Get("fields"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/report/get_reports.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/report/get_reports.json"))
 	}))
 
 	reports, _, err := client.ReportService.GetReports(ctx, &GetReportsRequest{

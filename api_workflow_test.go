@@ -15,7 +15,7 @@ func TestWorkflowService_GetAllLastSteps(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "story", r.URL.Query().Get("system"))
 
-		_, _ = w.Write(loadData(t, ".testdata/api/workflow/get_all_last_steps.json"))
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workflow/get_all_last_steps.json"))
 	}))
 
 	steps, _, err := client.WorkflowService.GetAllLastSteps(ctx, &GetAllLastStepsRequest{
