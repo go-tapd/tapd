@@ -6,6 +6,8 @@ import (
 )
 
 // BugSeverity 缺陷严重程度(severity)
+//
+// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/bug.html#%E7%BC%BA%E9%99%B7%E4%B8%A5%E9%87%8D%E7%A8%8B%E5%BA%A6-severity-%E5%AD%97%E6%AE%B5%E8%AF%B4%E6%98%8E
 type BugSeverity string
 
 const (
