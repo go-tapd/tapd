@@ -7,7 +7,7 @@
         "title": "计算不正确",
         "description": "<strong>前置条件</div><br  />",
         "priority": "",
-        "severity": "",
+        "severity": "normal",
         "module": "",
         "status": "closed",
         "reporter": "测试人员",

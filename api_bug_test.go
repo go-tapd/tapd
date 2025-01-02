@@ -32,7 +32,7 @@ func TestBugService_GetBugs(t *testing.T) {
 	assert.Equal(t, "计算不正确", bug.Title)
 	assert.Equal(t, "<strong>前置条件</div><br  />", bug.Description)
 	assert.Equal(t, "", bug.Priority)
-	assert.Equal(t, "", bug.Severity)
+	assert.Equal(t, BugSeverityNormal, bug.Severity)
 	assert.Equal(t, "", bug.Module)
 	assert.Equal(t, "closed", bug.Status)
 	assert.Equal(t, "测试人员", bug.Reporter)
