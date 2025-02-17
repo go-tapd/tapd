@@ -298,9 +298,9 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
   - [ ] `task_comment::add`
   - [ ] `task_comment::update`
   - [ ] `task_comment::delete`
-  - [ ] `bug_comment::add`
-  - [ ] `bug_comment::update`
-  - [ ] `bug_comment::delete`
+  - [x] `bug_comment::add`
+  - [x] `bug_comment::update`
+  - [x] `bug_comment::delete`
 - [x] 迭代
   - [x] `iteration::create`
   - [x] `iteration::update`
