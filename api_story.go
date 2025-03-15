@@ -988,8 +988,8 @@ func (s *StoryService) GetStoryCategoriesCount(
 // -----------------------------------------------------------------------------
 
 type GetStoriesCountByCategoriesRequest struct {
-	WorkspaceID *int        `url:"workspace_id,omitempty"` // [必须]项目ID
-	CategoryID  *Multi[int] `url:"category_id,omitempty"`  // 需求分类 支持多ID。比如 id1,id2,id3
+	WorkspaceID *int          `url:"workspace_id,omitempty"` // [必须]项目ID
+	CategoryID  *Multi[int64] `url:"category_id,omitempty"`  // 需求分类 支持多ID。比如 id1,id2,id3
 }
 
 type StoriesCountByCategory struct {

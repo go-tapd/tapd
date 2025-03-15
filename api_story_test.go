@@ -96,7 +96,7 @@ func TestStoryService_GetStoriesCountByCategories(t *testing.T) {
 
 	counts, _, err := client.StoryService.GetStoriesCountByCategories(ctx, &GetStoriesCountByCategoriesRequest{
 		WorkspaceID: Ptr(11112222),
-		CategoryID:  NewMulti(1111112222001000103, 1111112222001000108),
+		CategoryID:  NewMulti[int64](1111112222001000103, 1111112222001000108),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(counts) > 0)
