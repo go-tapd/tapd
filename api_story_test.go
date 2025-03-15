@@ -192,7 +192,7 @@ func TestStoryService_GetStoryRelatedBugs(t *testing.T) {
 
 	relatedBugs, _, err := client.StoryService.GetStoryRelatedBugs(ctx, &GetStoryRelatedBugsRequest{
 		WorkspaceID: Ptr(11112222),
-		StoryID:     NewMulti(33334444, 55556666),
+		StoryID:     NewMulti[int64](33334444, 55556666),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(relatedBugs) > 0)

@@ -1639,8 +1639,8 @@ func (s *StoryService) GetStoryRelatedBugs(
 }
 
 type GetStoryRelatedBugsRequest struct {
-	WorkspaceID *int        `url:"workspace_id,omitempty"`
-	StoryID     *Multi[int] `url:"story_id,omitempty"`
+	WorkspaceID *int          `url:"workspace_id,omitempty"`
+	StoryID     *Multi[int64] `url:"story_id,omitempty"`
 }
 
 type StoryRelatedBug struct {
