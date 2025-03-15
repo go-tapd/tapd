@@ -1550,8 +1550,8 @@ func (s *StoryService) GetStoryTemplateFields(
 }
 
 type GetStoryTemplateFieldsRequest struct {
-	WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
-	TemplateID  *int `url:"template_id,omitempty"`  // [必须]模板ID
+	WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+	TemplateID  *int64 `url:"template_id,omitempty"`  // [必须]模板ID
 }
 
 type StoryTemplateField struct {

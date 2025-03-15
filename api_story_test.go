@@ -240,7 +240,7 @@ func TestStoryService_GetStoryTemplateFields(t *testing.T) {
 
 	fields, _, err := client.StoryService.GetStoryTemplateFields(ctx, &GetStoryTemplateFieldsRequest{
 		WorkspaceID: Ptr(11112222),
-		TemplateID:  Ptr(1111111111111),
+		TemplateID:  Ptr(int64(1111111111111)),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(fields) > 0)
