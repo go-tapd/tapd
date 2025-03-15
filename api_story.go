@@ -1078,8 +1078,8 @@ const (
 )
 
 type GetStoryChangesRequest struct {
-	ID               *Multi[int]      `url:"id,omitempty"`
-	StoryID          *Multi[int]      `url:"story_id,omitempty"`           // 需求id	支持多ID查询
+	ID               *Multi[int64]    `url:"id,omitempty"`
+	StoryID          *Multi[int64]    `url:"story_id,omitempty"`           // 需求id	支持多ID查询
 	WorkspaceID      *int             `url:"workspace_id,omitempty"`       // [必须]项目ID
 	Creator          *string          `url:"creator,omitempty"`            // 创建人（操作人）
 	Created          *string          `url:"created,omitempty"`            // 创建时间（变更时间）	支持时间查询

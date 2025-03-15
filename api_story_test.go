@@ -118,7 +118,7 @@ func TestStoryService_GetStoryChanges(t *testing.T) {
 	}))
 
 	storyChanges, _, err := client.StoryService.GetStoryChanges(ctx, &GetStoryChangesRequest{
-		StoryID:     NewMulti(1111112222001000103, 1111112222001000108),
+		StoryID:     NewMulti[int64](1111112222001000103, 1111112222001000108),
 		WorkspaceID: Ptr(11112222),
 	})
 	assert.NoError(t, err)
