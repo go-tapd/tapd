@@ -197,9 +197,9 @@ func decodeGetTaskChangesFieldChangesValue(v any) (string, error) {
 // ↑↑↑↑ 这段代码是为了解决 Tapd API 返回的不同数据类型问题，官方的 API 写的非常好 🙂🙂----结束(再次👏）
 
 type GetTaskChangesRequest struct {
-	ID               *Multi[int]    `url:"id,omitempty"`                 // 支持多ID查询
+	ID               *Multi[int64]  `url:"id,omitempty"`                 // 支持多ID查询
 	WorkspaceID      *int           `url:"workspace_id,omitempty"`       // [必须]项目ID
-	TaskID           *int           `url:"task_id,omitempty"`            // 任务ID
+	TaskID           *int64         `url:"task_id,omitempty"`            // 任务ID
 	Creator          *string        `url:"creator,omitempty"`            // 创建人（操作人）
 	Created          *string        `url:"created,omitempty"`            // 创建时间（变更时间）	支持时间查询
 	ChangeSummary    *string        `url:"change_summary,omitempty"`     // 需求变更描述
@@ -245,15 +245,15 @@ func (s *TaskService) GetTaskChanges(
 }
 
 type GetTaskChangesCountRequest struct {
-	ID            *Multi[int] `url:"id,omitempty"`             // 支持多ID查询
-	WorkspaceID   *int        `url:"workspace_id,omitempty"`   // [必须]项目ID
-	TaskID        *int        `url:"task_id,omitempty"`        // 任务ID
-	Creator       *string     `url:"creator,omitempty"`        // 创建人（操作人）
-	Created       *string     `url:"created,omitempty"`        // 创建时间（变更时间）	支持时间查询
-	ChangeSummary *string     `url:"change_summary,omitempty"` // 需求变更描述
-	Comment       *string     `url:"comment,omitempty"`        // 评论
-	Changes       *string     `url:"changes,omitempty"`        // 变更详细记录
-	EntityType    *string     `url:"entity_type,omitempty"`    // 变更的对象类型
+	ID            *Multi[int64] `url:"id,omitempty"`             // 支持多ID查询
+	WorkspaceID   *int          `url:"workspace_id,omitempty"`   // [必须]项目ID
+	TaskID        *int64        `url:"task_id,omitempty"`        // 任务ID
+	Creator       *string       `url:"creator,omitempty"`        // 创建人（操作人）
+	Created       *string       `url:"created,omitempty"`        // 创建时间（变更时间）	支持时间查询
+	ChangeSummary *string       `url:"change_summary,omitempty"` // 需求变更描述
+	Comment       *string       `url:"comment,omitempty"`        // 评论
+	Changes       *string       `url:"changes,omitempty"`        // 变更详细记录
+	EntityType    *string       `url:"entity_type,omitempty"`    // 变更的对象类型
 }
 
 // GetTaskChangesCount 获取任务变更次数
@@ -283,7 +283,7 @@ func (s *TaskService) GetTaskChangesCount(
 // -----------------------------------------------------------------------------
 
 type GetTasksRequest struct {
-	ID               *Multi[string] `url:"id,omitempty"`               // 支持多ID查询、模糊匹配
+	ID               *Multi[int64]  `url:"id,omitempty"`               // 支持多ID查询、模糊匹配
 	Name             *string        `url:"name,omitempty"`             // 任务标题	支持模糊匹配
 	Description      *string        `url:"description,omitempty"`      // 任务详细描述
 	WorkspaceID      *int           `url:"workspace_id,omitempty"`     // [必须]项目ID
@@ -390,7 +390,7 @@ func (s *TaskService) GetTasks(
 }
 
 type GetTasksCountRequest struct {
-	ID               *Multi[int]       `url:"id,omitempty"`               // 支持多ID查询、模糊匹配
+	ID               *Multi[int64]     `url:"id,omitempty"`               // 支持多ID查询、模糊匹配
 	Name             *string           `url:"name,omitempty"`             // 任务标题	支持模糊匹配
 	Description      *string           `url:"description,omitempty"`      // 任务详细描述
 	WorkspaceID      *int              `url:"workspace_id,omitempty"`     // [必须]项目ID
@@ -403,8 +403,8 @@ type GetTasksCountRequest struct {
 	CC               *string           `url:"cc,omitempty"`               // 抄送人
 	Begin            *string           `url:"begin,omitempty"`            // 预计开始	支持时间查询
 	Due              *string           `url:"due,omitempty"`              // 预计结束	支持时间查询
-	StoryID          *Multi[int]       `url:"story_id,omitempty"`         // 关联需求的ID	支持多ID查询
-	IterationID      *Enum[int]        `url:"iteration_id,omitempty"`     // 所属迭代的ID	支持枚举查询
+	StoryID          *Multi[int64]     `url:"story_id,omitempty"`         // 关联需求的ID	支持多ID查询
+	IterationID      *Enum[int64]      `url:"iteration_id,omitempty"`     // 所属迭代的ID	支持枚举查询
 	Priority         *string           `url:"priority,omitempty"`         //nolint:lll // 优先级。为了兼容自定义优先级，请使用 priority_label 字段，详情参考：如何兼容自定义优先级
 	PriorityLabel    *PriorityLabel    `url:"priority_label,omitempty"`   // 优先级。推荐使用这个字段
 	Progress         *int              `url:"progress,omitempty"`         // 进度
