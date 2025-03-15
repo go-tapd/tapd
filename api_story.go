@@ -368,7 +368,7 @@ func (s *StoryService) GetStories(
 }
 
 type GetStoriesRequest struct {
-	ID                *Multi[int]        `url:"id,omitempty"`               // ID	支持多ID查询,多个ID用逗号分隔
+	ID                *Multi[int64]      `url:"id,omitempty"`               // ID	支持多ID查询,多个ID用逗号分隔
 	Name              *string            `url:"name,omitempty"`             // 标题	支持模糊匹配
 	Priority          *string            `url:"priority,omitempty"`         // 优先级
 	PriorityLabel     *PriorityLabel     `url:"priority_label,omitempty"`   // 优先级。推荐使用这个字段
