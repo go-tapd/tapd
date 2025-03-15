@@ -1226,7 +1226,7 @@ func (s *StoryService) UpdateStory(
 }
 
 type UpdateStoryRequest struct {
-	ID                *int           `json:"id"`                           // 必须
+	ID                *int64         `json:"id"`                           // 必须
 	WorkspaceID       *int           `json:"workspace_id"`                 // 必须
 	Name              *string        `json:"name,omitempty"`               // 标题
 	Priority          *string        `json:"priority,omitempty"`           // 优先级。
@@ -1249,7 +1249,7 @@ type UpdateStoryRequest struct {
 	EffortCompleted   *string        `json:"effort_completed,omitempty"`   // 完成工时
 	Remain            *float64       `json:"remain,omitempty"`             // 剩余工时
 	Exceed            *float64       `json:"exceed,omitempty"`             // 超出工时
-	CategoryID        *int           `json:"category_id,omitempty"`        // 需求分类ID
+	CategoryID        *int64         `json:"category_id,omitempty"`        // 需求分类ID
 	ReleaseID         *int           `json:"release_id,omitempty"`         // 发布计划ID
 	Source            *string        `json:"source,omitempty"`             // 来源
 	Type              *string        `json:"type,omitempty"`               // 类型
