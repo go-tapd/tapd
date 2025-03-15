@@ -311,7 +311,7 @@ func (s *BugService) GetBugs(
 }
 
 type GetBugsRequest struct {
-	ID                *Multi[int]        `url:"id,omitempty"`               // ID 支持多ID查询
+	ID                *Multi[int64]      `url:"id,omitempty"`               // ID 支持多ID查询
 	Title             *string            `url:"title,omitempty"`            // 标题 支持模糊匹配
 	Priority          *string            `url:"priority,omitempty"`         // 优先级。为了兼容自定义优先级，请使用 priority_label 字段，详情参考：如何兼容自定义优先级
 	PriorityLabel     *PriorityLabel     `url:"priority_label,omitempty"`   // 优先级。推荐使用这个字段
@@ -563,7 +563,7 @@ func (s *BugService) UpdateBug(
 }
 
 type UpdateBugRequest struct {
-	ID                *int               `json:"id,omitempty"`               // ID 支持多ID查询
+	ID                *int64             `json:"id,omitempty"`               // ID 支持多ID查询
 	Title             *string            `json:"title,omitempty"`            // 标题 支持模糊匹配
 	Priority          *string            `json:"priority,omitempty"`         // 优先级。为了兼容自定义优先级，请使用 priority_label 字段，详情参考：如何兼容自定义优先级
 	PriorityLabel     *PriorityLabel     `json:"priority_label,omitempty"`   // 优先级。推荐使用这个字段

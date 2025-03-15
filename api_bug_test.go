@@ -91,7 +91,7 @@ func TestBugService_UpdateBug(t *testing.T) {
 
 	bug, _, err := client.BugService.UpdateBug(ctx, &UpdateBugRequest{
 		WorkspaceID:   Ptr(11112222),
-		ID:            Ptr(11111222330268),
+		ID:            Ptr(int64(11111222330268)),
 		PriorityLabel: Ptr(PriorityLabelHigh),
 		Severity:      NewEnum(BugSeverityFatal, BugSeveritySerious),
 	})
