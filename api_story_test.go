@@ -30,7 +30,7 @@ func TestStoryService_GetStoryCategories(t *testing.T) {
 
 	categories, _, err := client.StoryService.GetStoryCategories(ctx, &GetStoryCategoriesRequest{
 		WorkspaceID: Ptr(11112222),
-		ID:          NewMulti(1111111111111, 1111111111112),
+		ID:          NewMulti[int64](1111111111111, 1111111111112),
 		Name:        Ptr("test name"),
 		Description: Ptr("test description"),
 		ParentID:    Ptr(1111111111111),

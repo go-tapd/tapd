@@ -925,7 +925,7 @@ func (s *StoryService) GetStoryCategories(
 
 type GetStoryCategoriesRequest struct {
 	WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
-	ID          *Multi[int]    `url:"id,omitempty"`           // ID 支持多ID查询，多个ID用逗号分隔
+	ID          *Multi[int64]  `url:"id,omitempty"`           // ID 支持多ID查询，多个ID用逗号分隔
 	Name        *string        `url:"name,omitempty"`         // 需求分类名称	支持模糊匹配
 	Description *string        `url:"description,omitempty"`  // 需求分类描述
 	ParentID    *int           `url:"parent_id,omitempty"`    // 父分类ID
