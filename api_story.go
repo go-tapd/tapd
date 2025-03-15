@@ -1694,8 +1694,8 @@ func (s *StoryService) GetConvertStoryIDsToQueryToken(
 }
 
 type GetConvertStoryIDsToQueryTokenRequest struct {
-	WorkspaceID *int        `json:"workspace_id,omitempty"` // 项目ID
-	StoryIDs    *Multi[int] `json:"ids,omitempty"`          // 需求ID
+	WorkspaceID *int          `json:"workspace_id,omitempty"` // 项目ID
+	StoryIDs    *Multi[int64] `json:"ids,omitempty"`          // 需求ID
 }
 
 type GetConvertStoryIDsToQueryTokenResponse struct {

@@ -311,7 +311,7 @@ func TestStoryService_GetConvertStoryIDsToQueryToken(t *testing.T) {
 
 	response, _, err := client.StoryService.GetConvertStoryIDsToQueryToken(ctx, &GetConvertStoryIDsToQueryTokenRequest{
 		WorkspaceID: Ptr(11112222),
-		StoryIDs:    NewMulti(33334444, 55556666),
+		StoryIDs:    NewMulti[int64](33334444, 55556666),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "11111111111", response.QueryToken)
