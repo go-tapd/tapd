@@ -206,7 +206,7 @@ func (s *IterationService) GetIterations(
 }
 
 type GetIterationsRequest struct {
-	ID             *Multi[int]    `url:"id,omitempty"`               // ID 支持多ID查询
+	ID             *Multi[int64]  `url:"id,omitempty"`               // ID 支持多ID查询
 	Name           *string        `url:"name,omitempty"`             // 标题 支持模糊匹配
 	WorkspaceID    *int           `url:"workspace_id,omitempty"`     // 项目 ID
 	Description    *string        `url:"description,omitempty"`      // 详细描述
@@ -298,69 +298,69 @@ func (s *IterationService) GetIterationsCount(
 }
 
 type GetIterationsCountRequest struct {
-	ID             *Multi[int] `url:"id,omitempty"`               // ID 支持多ID查询
-	WorkspaceID    *int        `url:"workspace_id,omitempty"`     // 项目 ID
-	Name           *string     `url:"name,omitempty"`             // 标题 支持模糊匹配
-	Description    *string     `url:"description,omitempty"`      // 详细描述
-	StartDate      *string     `url:"startdate,omitempty"`        // 开始时间 支持时间查询
-	EndDate        *string     `url:"enddate,omitempty"`          // 结束时间 支持时间查询
-	WorkitemTypeID *int        `url:"workitem_type_id,omitempty"` // 迭代类别
-	PlanAppID      *int        `url:"plan_app_id,omitempty"`      // 计划应用 ID
-	Status         *string     `url:"status,omitempty"`           // 状态（系统状态 open/done，自定义状态可传中文）
-	Creator        *string     `url:"creator,omitempty"`          // 创建人
-	Created        *string     `url:"created,omitempty"`          // 创建时间 支持时间查询
-	Modified       *string     `url:"modified,omitempty"`         // 最后修改时间 支持时间查询
-	Completed      *string     `url:"completed,omitempty"`        // 完成时间
-	CustomField1   *string     `url:"custom_field_1,omitempty"`   // 自定义字段参数
-	CustomField2   *string     `url:"custom_field_2,omitempty"`   // 自定义字段参数
-	CustomField3   *string     `url:"custom_field_3,omitempty"`   // 自定义字段参数
-	CustomField4   *string     `url:"custom_field_4,omitempty"`   // 自定义字段参数
-	CustomField5   *string     `url:"custom_field_5,omitempty"`   // 自定义字段参数
-	CustomField6   *string     `url:"custom_field_6,omitempty"`   // 自定义字段参数
-	CustomField7   *string     `url:"custom_field_7,omitempty"`   // 自定义字段参数
-	CustomField8   *string     `url:"custom_field_8,omitempty"`   // 自定义字段参数
-	CustomField9   *string     `url:"custom_field_9,omitempty"`   // 自定义字段参数
-	CustomField10  *string     `url:"custom_field_10,omitempty"`  // 自定义字段参数
-	CustomField11  *string     `url:"custom_field_11,omitempty"`  // 自定义字段参数
-	CustomField12  *string     `url:"custom_field_12,omitempty"`  // 自定义字段参数
-	CustomField13  *string     `url:"custom_field_13,omitempty"`  // 自定义字段参数
-	CustomField14  *string     `url:"custom_field_14,omitempty"`  // 自定义字段参数
-	CustomField15  *string     `url:"custom_field_15,omitempty"`  // 自定义字段参数
-	CustomField16  *string     `url:"custom_field_16,omitempty"`  // 自定义字段参数
-	CustomField17  *string     `url:"custom_field_17,omitempty"`  // 自定义字段参数
-	CustomField18  *string     `url:"custom_field_18,omitempty"`  // 自定义字段参数
-	CustomField19  *string     `url:"custom_field_19,omitempty"`  // 自定义字段参数
-	CustomField20  *string     `url:"custom_field_20,omitempty"`  // 自定义字段参数
-	CustomField21  *string     `url:"custom_field_21,omitempty"`  // 自定义字段参数
-	CustomField22  *string     `url:"custom_field_22,omitempty"`  // 自定义字段参数
-	CustomField23  *string     `url:"custom_field_23,omitempty"`  // 自定义字段参数
-	CustomField24  *string     `url:"custom_field_24,omitempty"`  // 自定义字段参数
-	CustomField25  *string     `url:"custom_field_25,omitempty"`  // 自定义字段参数
-	CustomField26  *string     `url:"custom_field_26,omitempty"`  // 自定义字段参数
-	CustomField27  *string     `url:"custom_field_27,omitempty"`  // 自定义字段参数
-	CustomField28  *string     `url:"custom_field_28,omitempty"`  // 自定义字段参数
-	CustomField29  *string     `url:"custom_field_29,omitempty"`  // 自定义字段参数
-	CustomField30  *string     `url:"custom_field_30,omitempty"`  // 自定义字段参数
-	CustomField31  *string     `url:"custom_field_31,omitempty"`  // 自定义字段参数
-	CustomField32  *string     `url:"custom_field_32,omitempty"`  // 自定义字段参数
-	CustomField33  *string     `url:"custom_field_33,omitempty"`  // 自定义字段参数
-	CustomField34  *string     `url:"custom_field_34,omitempty"`  // 自定义字段参数
-	CustomField35  *string     `url:"custom_field_35,omitempty"`  // 自定义字段参数
-	CustomField36  *string     `url:"custom_field_36,omitempty"`  // 自定义字段参数
-	CustomField37  *string     `url:"custom_field_37,omitempty"`  // 自定义字段参数
-	CustomField38  *string     `url:"custom_field_38,omitempty"`  // 自定义字段参数
-	CustomField39  *string     `url:"custom_field_39,omitempty"`  // 自定义字段参数
-	CustomField40  *string     `url:"custom_field_40,omitempty"`  // 自定义字段参数
-	CustomField41  *string     `url:"custom_field_41,omitempty"`  // 自定义字段参数
-	CustomField42  *string     `url:"custom_field_42,omitempty"`  // 自定义字段参数
-	CustomField43  *string     `url:"custom_field_43,omitempty"`  // 自定义字段参数
-	CustomField44  *string     `url:"custom_field_44,omitempty"`  // 自定义字段参数
-	CustomField45  *string     `url:"custom_field_45,omitempty"`  // 自定义字段参数
-	CustomField46  *string     `url:"custom_field_46,omitempty"`  // 自定义字段参数
-	CustomField47  *string     `url:"custom_field_47,omitempty"`  // 自定义字段参数
-	CustomField48  *string     `url:"custom_field_48,omitempty"`  // 自定义字段参数
-	CustomField49  *string     `url:"custom_field_49,omitempty"`  // 自定义字段参数
-	CustomField50  *string     `url:"custom_field_50,omitempty"`  // 自定义字段参数
+	ID             *Multi[int64] `url:"id,omitempty"`               // ID 支持多ID查询
+	WorkspaceID    *int          `url:"workspace_id,omitempty"`     // 项目 ID
+	Name           *string       `url:"name,omitempty"`             // 标题 支持模糊匹配
+	Description    *string       `url:"description,omitempty"`      // 详细描述
+	StartDate      *string       `url:"startdate,omitempty"`        // 开始时间 支持时间查询
+	EndDate        *string       `url:"enddate,omitempty"`          // 结束时间 支持时间查询
+	WorkitemTypeID *int          `url:"workitem_type_id,omitempty"` // 迭代类别
+	PlanAppID      *int          `url:"plan_app_id,omitempty"`      // 计划应用 ID
+	Status         *string       `url:"status,omitempty"`           // 状态（系统状态 open/done，自定义状态可传中文）
+	Creator        *string       `url:"creator,omitempty"`          // 创建人
+	Created        *string       `url:"created,omitempty"`          // 创建时间 支持时间查询
+	Modified       *string       `url:"modified,omitempty"`         // 最后修改时间 支持时间查询
+	Completed      *string       `url:"completed,omitempty"`        // 完成时间
+	CustomField1   *string       `url:"custom_field_1,omitempty"`   // 自定义字段参数
+	CustomField2   *string       `url:"custom_field_2,omitempty"`   // 自定义字段参数
+	CustomField3   *string       `url:"custom_field_3,omitempty"`   // 自定义字段参数
+	CustomField4   *string       `url:"custom_field_4,omitempty"`   // 自定义字段参数
+	CustomField5   *string       `url:"custom_field_5,omitempty"`   // 自定义字段参数
+	CustomField6   *string       `url:"custom_field_6,omitempty"`   // 自定义字段参数
+	CustomField7   *string       `url:"custom_field_7,omitempty"`   // 自定义字段参数
+	CustomField8   *string       `url:"custom_field_8,omitempty"`   // 自定义字段参数
+	CustomField9   *string       `url:"custom_field_9,omitempty"`   // 自定义字段参数
+	CustomField10  *string       `url:"custom_field_10,omitempty"`  // 自定义字段参数
+	CustomField11  *string       `url:"custom_field_11,omitempty"`  // 自定义字段参数
+	CustomField12  *string       `url:"custom_field_12,omitempty"`  // 自定义字段参数
+	CustomField13  *string       `url:"custom_field_13,omitempty"`  // 自定义字段参数
+	CustomField14  *string       `url:"custom_field_14,omitempty"`  // 自定义字段参数
+	CustomField15  *string       `url:"custom_field_15,omitempty"`  // 自定义字段参数
+	CustomField16  *string       `url:"custom_field_16,omitempty"`  // 自定义字段参数
+	CustomField17  *string       `url:"custom_field_17,omitempty"`  // 自定义字段参数
+	CustomField18  *string       `url:"custom_field_18,omitempty"`  // 自定义字段参数
+	CustomField19  *string       `url:"custom_field_19,omitempty"`  // 自定义字段参数
+	CustomField20  *string       `url:"custom_field_20,omitempty"`  // 自定义字段参数
+	CustomField21  *string       `url:"custom_field_21,omitempty"`  // 自定义字段参数
+	CustomField22  *string       `url:"custom_field_22,omitempty"`  // 自定义字段参数
+	CustomField23  *string       `url:"custom_field_23,omitempty"`  // 自定义字段参数
+	CustomField24  *string       `url:"custom_field_24,omitempty"`  // 自定义字段参数
+	CustomField25  *string       `url:"custom_field_25,omitempty"`  // 自定义字段参数
+	CustomField26  *string       `url:"custom_field_26,omitempty"`  // 自定义字段参数
+	CustomField27  *string       `url:"custom_field_27,omitempty"`  // 自定义字段参数
+	CustomField28  *string       `url:"custom_field_28,omitempty"`  // 自定义字段参数
+	CustomField29  *string       `url:"custom_field_29,omitempty"`  // 自定义字段参数
+	CustomField30  *string       `url:"custom_field_30,omitempty"`  // 自定义字段参数
+	CustomField31  *string       `url:"custom_field_31,omitempty"`  // 自定义字段参数
+	CustomField32  *string       `url:"custom_field_32,omitempty"`  // 自定义字段参数
+	CustomField33  *string       `url:"custom_field_33,omitempty"`  // 自定义字段参数
+	CustomField34  *string       `url:"custom_field_34,omitempty"`  // 自定义字段参数
+	CustomField35  *string       `url:"custom_field_35,omitempty"`  // 自定义字段参数
+	CustomField36  *string       `url:"custom_field_36,omitempty"`  // 自定义字段参数
+	CustomField37  *string       `url:"custom_field_37,omitempty"`  // 自定义字段参数
+	CustomField38  *string       `url:"custom_field_38,omitempty"`  // 自定义字段参数
+	CustomField39  *string       `url:"custom_field_39,omitempty"`  // 自定义字段参数
+	CustomField40  *string       `url:"custom_field_40,omitempty"`  // 自定义字段参数
+	CustomField41  *string       `url:"custom_field_41,omitempty"`  // 自定义字段参数
+	CustomField42  *string       `url:"custom_field_42,omitempty"`  // 自定义字段参数
+	CustomField43  *string       `url:"custom_field_43,omitempty"`  // 自定义字段参数
+	CustomField44  *string       `url:"custom_field_44,omitempty"`  // 自定义字段参数
+	CustomField45  *string       `url:"custom_field_45,omitempty"`  // 自定义字段参数
+	CustomField46  *string       `url:"custom_field_46,omitempty"`  // 自定义字段参数
+	CustomField47  *string       `url:"custom_field_47,omitempty"`  // 自定义字段参数
+	CustomField48  *string       `url:"custom_field_48,omitempty"`  // 自定义字段参数
+	CustomField49  *string       `url:"custom_field_49,omitempty"`  // 自定义字段参数
+	CustomField50  *string       `url:"custom_field_50,omitempty"`  // 自定义字段参数
 }
 
 // UpdateIteration 更新迭代
@@ -386,7 +386,7 @@ func (s *IterationService) UpdateIteration(
 }
 
 type UpdateIterationRequest struct {
-	ID            *int          `json:"id,omitempty"`              // [必须] ID
+	ID            *int64        `json:"id,omitempty"`              // [必须] ID
 	WorkspaceID   *int          `json:"workspace_id,omitempty"`    // [必须] 项目 ID
 	CurrentUser   *string       `json:"current_user,omitempty"`    // [必须]变更人
 	Name          *string       `json:"name,omitempty"`            // 标题 支持模糊匹配

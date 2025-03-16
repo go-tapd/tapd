@@ -139,7 +139,7 @@ func TestIterationService_UpdateIteration(t *testing.T) {
 
 	iteration, _, err := client.IterationService.UpdateIteration(ctx, &UpdateIterationRequest{
 		WorkspaceID: Ptr(111),
-		ID:          Ptr(11111222001002235),
+		ID:          Ptr(int64(11111222001002235)),
 		CurrentUser: Ptr("current user"),
 		Name:        Ptr("测试迭代1"),
 		StartDate:   Ptr("2025-01-01"),
