@@ -50,9 +50,9 @@ func TestCommentService_CreateComment(t *testing.T) {
 		Description: Ptr("description"),
 		Author:      Ptr("author"),
 		EntryType:   Ptr(CommentEntryTypeStories),
-		EntryID:     Ptr(123),
-		ReplyID:     Ptr(0),
-		RootID:      Ptr(111),
+		EntryID:     Ptr[int64](123),
+		ReplyID:     Ptr[int64](0),
+		RootID:      Ptr[int64](111),
 		WorkspaceID: Ptr(111),
 	})
 	assert.NoError(t, err)
@@ -94,17 +94,17 @@ func TestCommentService_GetComments(t *testing.T) {
 	}))
 
 	comments, _, err := client.CommentService.GetComments(ctx, &GetCommentsRequest{
-		ID:          NewMulti(111, 222),
+		ID:          NewMulti[int64](111, 222),
 		Title:       Ptr("title"),
 		Description: Ptr("description"),
 		Author:      Ptr("author"),
 		EntryType:   Ptr(CommentEntryTypeStories),
-		EntryID:     Ptr(123),
+		EntryID:     Ptr[int64](123),
 		Created:     Ptr("created"),
 		Modified:    Ptr("modified"),
 		WorkspaceID: Ptr(111),
-		RootID:      Ptr(222),
-		ReplyID:     Ptr(333),
+		RootID:      Ptr[int64](222),
+		ReplyID:     Ptr[int64](333),
 		Limit:       Ptr(10),
 		Page:        Ptr(1),
 		Order:       NewOrder("id", OrderByDesc),
@@ -146,17 +146,17 @@ func TestCommentService_GetCommentsCount(t *testing.T) {
 	}))
 
 	count, _, err := client.CommentService.GetCommentsCount(ctx, &GetCommentsCountRequest{
-		ID:          NewMulti(111, 222),
+		ID:          NewMulti[int64](111, 222),
 		Title:       Ptr("test title"),
 		Description: Ptr("test description"),
 		Author:      Ptr("test author"),
 		EntryType:   Ptr(CommentEntryTypeStories),
-		EntryID:     Ptr(123),
+		EntryID:     Ptr[int64](123),
 		Created:     Ptr("2024-08-28"),
 		Modified:    Ptr("2024-08-28"),
 		WorkspaceID: Ptr(111),
-		RootID:      Ptr(222),
-		ReplyID:     Ptr(333),
+		RootID:      Ptr[int64](222),
+		ReplyID:     Ptr[int64](333),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, count)
@@ -185,7 +185,7 @@ func TestCommentService_UpdateComment(t *testing.T) {
 
 	comment, _, err := client.CommentService.UpdateComment(ctx, &UpdateCommentRequest{
 		WorkspaceID:   Ptr(111),
-		ID:            Ptr(111),
+		ID:            Ptr[int64](111),
 		Description:   Ptr("test description 2"),
 		ChangeCreator: Ptr("test creator"),
 	})
