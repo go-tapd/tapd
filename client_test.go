@@ -57,6 +57,7 @@ func TestClient_BasicAuth(t *testing.T) {
 		assert.Equal(t, apiUsername, username)
 		assert.Equal(t, apiPassword, password)
 
+		// nolint:errcheck
 		fmt.Fprint(w, `{
   "status": 1,
   "data": {},
@@ -77,6 +78,7 @@ func TestClient_ErrorResponse(t *testing.T) {
 		assert.Equal(t, http.MethodGet, r.Method)
 		assert.Equal(t, "/__/error-response", r.URL.Path)
 
+		// nolint:errcheck
 		fmt.Fprint(w, `{
   "status": 0,
   "data": {},
@@ -106,7 +108,7 @@ func TestClient_NormalRequest(t *testing.T) {
 		assert.Equal(t, apiUsername, username)
 		assert.Equal(t, apiPassword, password)
 
-		fmt.Fprint(w, successResponse)
+		fmt.Fprint(w, successResponse) // nolint:errcheck
 	}))
 
 	req, err := client.NewRequest(ctx, http.MethodGet, "__/normal-request", nil, nil)
@@ -136,7 +138,7 @@ func TestClient_WithRequestOption(t *testing.T) {
 		assert.Equal(t, "test-username", username)
 		assert.Equal(t, "test-password", password)
 
-		fmt.Fprint(w, successResponse)
+		fmt.Fprint(w, successResponse) // nolint:errcheck
 	}))
 
 	req, err := client.NewRequest(ctx, http.MethodGet, "__/request-option", nil, []RequestOption{

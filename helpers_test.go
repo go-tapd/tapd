@@ -9,7 +9,7 @@ import (
 func TestHelpers_Ptr(t *testing.T) {
 	tests := []struct {
 		name string
-		v    interface{}
+		v    any
 	}{
 		{"", 1},
 		{"", "foo"},

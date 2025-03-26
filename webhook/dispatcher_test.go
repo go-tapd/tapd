@@ -24,7 +24,7 @@ func loadWebhookData(t *testing.T, filename string) []byte {
 	return loadData(t, "../internal/testdata/webhook/"+filename)
 }
 
-func loadAndParseWebhookData(t *testing.T, filename string, v interface{}) {
+func loadAndParseWebhookData(t *testing.T, filename string, v any) {
 	require.NoError(t, json.Unmarshal(loadWebhookData(t, filename), v))
 }
 

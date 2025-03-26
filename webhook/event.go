@@ -54,7 +54,7 @@ func (e EventType) String() string {
 
 // ParseWebhookEvent parses the webhook event from the payload.
 func ParseWebhookEvent(payload []byte) (EventType, any, error) {
-	var raw map[string]interface{}
+	var raw map[string]any
 	if err := json.Unmarshal(payload, &raw); err != nil {
 		return "", nil, err
 	}
