@@ -11,11 +11,11 @@ func WithBaseURL(urlStr string) ClientOption {
 	}
 }
 
-// WithBasicAuth sets the username and password for the client
-func WithBasicAuth(username, password string) ClientOption {
+// WithBasicAuth sets the clientID and clientSecret for the client
+func WithBasicAuth(clientID, clientSecret string) ClientOption {
 	return func(c *Client) error {
-		c.username = username
-		c.password = password
+		c.clientID = clientID
+		c.clientSecret = clientSecret
 		return nil
 	}
 }

@@ -24,8 +24,8 @@ type Client struct {
 	// baseURL for API requests.
 	baseURL *url.URL
 
-	// username, password for basic authentication.
-	username, password string
+	// clientID, clientSecret for basic authentication.
+	clientID, clientSecret string
 
 	// userAgent used for HTTP requests
 	userAgent string
@@ -52,14 +52,14 @@ type Client struct {
 
 // NewClient returns a new Tapd API client.
 // Alias for NewBasicAuthClient.
-func NewClient(username, password string, opts ...ClientOption) (*Client, error) {
-	return NewBasicAuthClient(username, password, opts...)
+func NewClient(clientID, clientSecret string, opts ...ClientOption) (*Client, error) {
+	return NewBasicAuthClient(clientID, clientSecret, opts...)
 }
 
 // NewBasicAuthClient returns a new Tapd API client with basic authentication.
-func NewBasicAuthClient(username, password string, opts ...ClientOption) (*Client, error) {
+func NewBasicAuthClient(clientID, clientSecret string, opts ...ClientOption) (*Client, error) {
 	return newClient(append(opts,
-		WithBasicAuth(username, password))...)
+		WithBasicAuth(clientID, clientSecret))...)
 }
 
 // newClient returns a new Tapd API client.
@@ -170,8 +170,8 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, data any, 
 	}
 
 	// basic auth
-	if c.username != "" && c.password != "" {
-		req.SetBasicAuth(c.username, c.password)
+	if c.clientID != "" && c.clientSecret != "" {
+		req.SetBasicAuth(c.clientID, c.clientSecret)
 	}
 
 	// Set the request specific headers.

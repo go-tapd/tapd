@@ -6,9 +6,9 @@ import (
 
 type RequestOption func(*http.Request) error
 
-func WithRequestBasicAuth(username, password string) RequestOption {
+func WithRequestBasicAuth(clientID, clientSecret string) RequestOption {
 	return func(req *http.Request) error {
-		req.SetBasicAuth(username, password)
+		req.SetBasicAuth(clientID, clientSecret)
 		return nil
 	}
 }

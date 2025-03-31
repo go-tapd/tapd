@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	apiUsername     = "tapd-username"
-	apiPassword     = "tapd-password"
+	apiClientID     = "tapd-client-id"
+	apiClientSecret = "tapd-client-secret"
 	successResponse = `{
   "status": 1,
   "data": {},
@@ -29,7 +29,7 @@ func createServerClient(t *testing.T, handler http.Handler) (*httptest.Server, *
 	t.Cleanup(srv.Close)
 
 	client, err := NewClient(
-		apiUsername, apiPassword,
+		apiClientID, apiClientSecret,
 		WithBaseURL(srv.URL),
 		WithHTTPClient(NewRetryableHTTPClient(
 			WithRetryableHTTPClientLogger(log.New(os.Stderr, "", log.LstdFlags)),
@@ -52,10 +52,10 @@ func TestClient_BasicAuth(t *testing.T) {
 		assert.Equal(t, "/__/basic-auth", r.URL.Path)
 
 		// check basic auth
-		username, password, ok := r.BasicAuth()
+		clientID, clientSecret, ok := r.BasicAuth()
 		assert.True(t, ok)
-		assert.Equal(t, apiUsername, username)
-		assert.Equal(t, apiPassword, password)
+		assert.Equal(t, apiClientID, clientID)
+		assert.Equal(t, apiClientSecret, clientSecret)
 
 		// nolint:errcheck
 		fmt.Fprint(w, `{
@@ -103,10 +103,10 @@ func TestClient_NormalRequest(t *testing.T) {
 		assert.Equal(t, defaultUserAgent, r.Header.Get("User-Agent"))
 
 		// check basic auth
-		username, password, ok := r.BasicAuth()
+		clientID, clientSecret, ok := r.BasicAuth()
 		assert.True(t, ok)
-		assert.Equal(t, apiUsername, username)
-		assert.Equal(t, apiPassword, password)
+		assert.Equal(t, apiClientID, clientID)
+		assert.Equal(t, apiClientSecret, clientSecret)
 
 		fmt.Fprint(w, successResponse) // nolint:errcheck
 	}))
@@ -133,16 +133,16 @@ func TestClient_WithRequestOption(t *testing.T) {
 		assert.Equal(t, "test-user-agent", r.Header.Get("User-Agent"))
 
 		// check basic auth
-		username, password, ok := r.BasicAuth()
+		clientID, clientSecret, ok := r.BasicAuth()
 		assert.True(t, ok)
-		assert.Equal(t, "test-username", username)
-		assert.Equal(t, "test-password", password)
+		assert.Equal(t, "test-client-id", clientID)
+		assert.Equal(t, "test-client-secret", clientSecret)
 
 		fmt.Fprint(w, successResponse) // nolint:errcheck
 	}))
 
 	req, err := client.NewRequest(ctx, http.MethodGet, "__/request-option", nil, []RequestOption{
-		WithRequestBasicAuth("test-username", "test-password"),
+		WithRequestBasicAuth("test-clientID", "test-clientSecret"),
 		WithRequestHeader("header-name", "header-value"),
 		WithRequestHeaders(map[string]string{
 			"headers-name": "headers-value",

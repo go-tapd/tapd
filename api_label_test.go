@@ -15,7 +15,7 @@ func TestLabelService_GetLabels(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "111,222", r.URL.Query().Get("id"))
 		assert.Equal(t, "test", r.URL.Query().Get("name"))
-		assert.Equal(t, "tapd-username", r.URL.Query().Get("creator"))
+		assert.Equal(t, "tapd-clientID", r.URL.Query().Get("creator"))
 		assert.Equal(t, "2024-08-26", r.URL.Query().Get("created"))
 		assert.Equal(t, "10", r.URL.Query().Get("limit"))
 		assert.Equal(t, "1", r.URL.Query().Get("page"))
@@ -28,7 +28,7 @@ func TestLabelService_GetLabels(t *testing.T) {
 		WorkspaceID: Ptr(11112222),
 		ID:          NewMulti(111, 222),
 		Name:        Ptr("test"),
-		Creator:     Ptr("tapd-username"),
+		Creator:     Ptr("tapd-clientID"),
 		Created:     Ptr("2024-08-26"),
 		Limit:       Ptr(10),
 		Page:        Ptr(1),
@@ -41,8 +41,8 @@ func TestLabelService_GetLabels(t *testing.T) {
 	assert.Equal(t, "test2", labels[0].Name)
 	assert.Equal(t, LabelColor2, labels[0].Color)
 	assert.Equal(t, "workspace", labels[0].Category)
-	assert.Equal(t, "tapd-username", labels[0].Creator)
-	assert.Equal(t, "tapd-username", labels[0].Modifier)
+	assert.Equal(t, "tapd-clientID", labels[0].Creator)
+	assert.Equal(t, "tapd-clientID", labels[0].Modifier)
 	assert.Equal(t, "2024-08-26 21:38:29", labels[0].Created)
 	assert.Equal(t, "2024-08-26 21:41:59", labels[0].Modified)
 	assert.Equal(t, "#FF6770", labels[0].ColorValue)
@@ -55,7 +55,7 @@ func TestLabelService_GetLabelCount(t *testing.T) {
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 		assert.Equal(t, "111,222", r.URL.Query().Get("id"))
 		assert.Equal(t, "test", r.URL.Query().Get("name"))
-		assert.Equal(t, "tapd-username", r.URL.Query().Get("creator"))
+		assert.Equal(t, "tapd-clientID", r.URL.Query().Get("creator"))
 		assert.Equal(t, "2024-08-26", r.URL.Query().Get("created"))
 
 		_, _ = w.Write(loadData(t, "internal/testdata/api/label/get_label_count.json"))
@@ -65,7 +65,7 @@ func TestLabelService_GetLabelCount(t *testing.T) {
 		WorkspaceID: Ptr(11112222),
 		ID:          NewMulti(111, 222),
 		Name:        Ptr("test"),
-		Creator:     Ptr("tapd-username"),
+		Creator:     Ptr("tapd-clientID"),
 		Created:     Ptr("2024-08-26"),
 	})
 	assert.NoError(t, err)
@@ -88,7 +88,7 @@ func TestLabelService_CreateLabel(t *testing.T) {
 		assert.Equal(t, 11112222, req.WorkspaceID)
 		assert.Equal(t, "test", req.Name)
 		assert.Equal(t, LabelColor1, req.Color)
-		assert.Equal(t, "tapd-username", req.Creator)
+		assert.Equal(t, "tapd-clientID", req.Creator)
 
 		_, _ = w.Write(loadData(t, "internal/testdata/api/label/create_label.json"))
 	}))
@@ -97,7 +97,7 @@ func TestLabelService_CreateLabel(t *testing.T) {
 		WorkspaceID: Ptr(11112222),
 		Name:        Ptr("test"),
 		Color:       Ptr(LabelColor1),
-		Creator:     Ptr("tapd-username"),
+		Creator:     Ptr("tapd-clientID"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1134190502001000812", label.ID)
@@ -105,7 +105,7 @@ func TestLabelService_CreateLabel(t *testing.T) {
 	assert.Equal(t, "test3", label.Name)
 	assert.Equal(t, LabelColor1, label.Color)
 	assert.Equal(t, "workspace", label.Category)
-	assert.Equal(t, "tapd-username", label.Creator)
+	assert.Equal(t, "tapd-clientID", label.Creator)
 	assert.Equal(t, "", label.Modifier)
 	assert.Equal(t, "2024-08-26 22:33:14", label.Created)
 	assert.Equal(t, "2024-08-26 22:33:14", label.Modified)
@@ -128,7 +128,7 @@ func TestLabelService_UpdateLabel(t *testing.T) {
 		assert.Equal(t, 1134190502001000812, req.ID)
 		assert.Equal(t, 11112222, req.WorkspaceID)
 		assert.Equal(t, LabelColor1, req.Color)
-		assert.Equal(t, "tapd-username", req.Modifier)
+		assert.Equal(t, "tapd-clientID", req.Modifier)
 
 		_, _ = w.Write(loadData(t, "internal/testdata/api/label/update_label.json"))
 	}))
@@ -137,7 +137,7 @@ func TestLabelService_UpdateLabel(t *testing.T) {
 		ID:          Ptr(1134190502001000812),
 		WorkspaceID: Ptr(11112222),
 		Color:       Ptr(LabelColor1),
-		Modifier:    Ptr("tapd-username"),
+		Modifier:    Ptr("tapd-clientID"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1134190502001000812", label.ID)
@@ -145,7 +145,7 @@ func TestLabelService_UpdateLabel(t *testing.T) {
 	assert.Equal(t, "test3", label.Name)
 	assert.Equal(t, LabelColor1, label.Color)
 	assert.Equal(t, "workspace", label.Category)
-	assert.Equal(t, "tapd-username", label.Creator)
+	assert.Equal(t, "tapd-clientID", label.Creator)
 	assert.Equal(t, "", label.Modifier)
 	assert.Equal(t, "2024-08-26 22:33:14", label.Created)
 	assert.Equal(t, "2024-08-26 22:33:14", label.Modified)

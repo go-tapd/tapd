@@ -41,7 +41,7 @@ import (
 )
 
 func main() {
-	client, err := tapd.NewClient("username", "password")
+	client, err := tapd.NewClient("client_id", "client_secret")
 	if err != nil {
 		log.Fatal(err)
 	}
