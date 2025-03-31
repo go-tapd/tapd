@@ -142,7 +142,7 @@ func TestClient_WithRequestOption(t *testing.T) {
 	}))
 
 	req, err := client.NewRequest(ctx, http.MethodGet, "__/request-option", nil, []RequestOption{
-		WithRequestBasicAuth("test-clientID", "test-clientSecret"),
+		WithRequestBasicAuth("test-client-id", "test-client-secret"),
 		WithRequestHeader("header-name", "header-value"),
 		WithRequestHeaders(map[string]string{
 			"headers-name": "headers-value",
