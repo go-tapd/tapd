@@ -1,0 +1,10 @@
+module-sets:
+  stable:
+    version: v0.10.0
+    modules:
+      - github.com/go-tapd/tapd
+      - github.com/go-tapd/tapd/webhook
+excluded-modules:
+  - github.com/go-tapd/tapd/internal/tools
+  - github.com/go-tapd/tapd/examples/basic
+  - github.com/go-tapd/tapd/examples/webhook

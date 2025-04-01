@@ -14,7 +14,7 @@
 # Dependency directories (remove the comment below to include it)
 vendor/
 .idea
-_example
+.tools
 .todo
 *_prod_test.go
 !api_types_test.go
