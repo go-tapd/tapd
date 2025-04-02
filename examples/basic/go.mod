@@ -1,6 +1,6 @@
 module github.com/go-tapd/tapd/examples/basic
 
-go 1.22
+go 1.23.0
 
 replace github.com/go-tapd/tapd => ../../
 
