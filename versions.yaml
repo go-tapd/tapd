@@ -4,7 +4,10 @@ module-sets:
     modules:
       - github.com/go-tapd/tapd
       - github.com/go-tapd/tapd/webhook
+      - github.com/go-tapd/tapd/mcp
+      - github.com/go-tapd/tapd/cmd/tapd-mcp-server
 excluded-modules:
   - github.com/go-tapd/tapd/internal/tools
   - github.com/go-tapd/tapd/examples/basic
   - github.com/go-tapd/tapd/examples/webhook
+  - github.com/go-tapd/tapd/examples/mcp/sse
