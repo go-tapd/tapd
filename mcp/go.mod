@@ -6,7 +6,7 @@ replace github.com/go-tapd/tapd => ../
 
 require (
 	github.com/go-tapd/tapd v0.10.0
-	github.com/mark3labs/mcp-go v0.20.1
+	github.com/mark3labs/mcp-go v0.21.0
 )
 
 require (
