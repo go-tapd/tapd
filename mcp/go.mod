@@ -6,7 +6,7 @@ replace github.com/go-tapd/tapd => ../
 
 require (
 	github.com/go-tapd/tapd v0.10.0
-	github.com/mark3labs/mcp-go v0.21.1
+	github.com/mark3labs/mcp-go v0.22.0
 )
 
 require (
@@ -14,5 +14,6 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.7 // indirect
+	github.com/spf13/cast v1.7.1 // indirect
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 )
