@@ -18,3 +18,4 @@ vendor/
 .todo
 *_prod_test.go
 !api_types_test.go
+_example
