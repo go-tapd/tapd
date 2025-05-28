@@ -18,6 +18,10 @@ const (
 	StoryStatusTesting    StoryStatus = "testing"     // 测试中
 )
 
+func (s StoryStatus) String() string {
+	return string(s)
+}
+
 type StoryService struct {
 	client *Client
 }

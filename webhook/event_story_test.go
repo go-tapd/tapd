@@ -3,6 +3,7 @@ package webhook
 import (
 	"testing"
 
+	"github.com/go-tapd/tapd"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,7 +26,7 @@ func TestStoryEvent_StoryCreateEvent(t *testing.T) {
 	assert.Equal(t, "creator", event.Creator)
 	assert.Equal(t, "Middle", event.Priority)
 	assert.Equal(t, "1111112222001000077", event.WorkitemTypeID)
-	assert.Equal(t, "planning", event.Status)
+	assert.Equal(t, tapd.StoryStatusPlanning, event.Status)
 	assert.Equal(t, "1111112222001000399", event.TemplatedID)
 	assert.Equal(t, "Story", event.EntityType)
 	assert.Equal(t, "0", event.Remain)
@@ -75,7 +76,7 @@ func TestStoryEvent_StoryUpdateEvent(t *testing.T) {
 	assert.Equal(t, "1111112222001069123:", event.OldPath)
 	assert.Equal(t, "0", event.OldLevel)
 	assert.Equal(t, "11112222", event.OldWorkspaceID)
-	assert.Equal(t, "audited", event.OldStatus)
+	assert.Equal(t, tapd.StoryStatusAudited, event.OldStatus)
 	assert.Equal(t, "1", event.OldAppID)
 	assert.Equal(t, "old owner", event.OldOwner)
 }
