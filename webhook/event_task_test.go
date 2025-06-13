@@ -3,6 +3,7 @@ package webhook
 import (
 	"testing"
 
+	"github.com/go-tapd/tapd"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +18,7 @@ func TestTaskEvent_TaskCreateEvent(t *testing.T) {
 	assert.Equal(t, "张三", event.CurrentUser)
 	assert.Equal(t, "1111122233001116469", event.ID)
 	assert.Equal(t, "任务合并-数据开发", event.Name)
-	assert.Equal(t, "open", event.Status)
+	assert.Equal(t, tapd.TaskStatusOpen, event.Status)
 	assert.Equal(t, "1111122233001116468", event.StoryID)
 	assert.Equal(t, "1111122233001002079", event.IterationID)
 	assert.Equal(t, "张三", event.Creator)
