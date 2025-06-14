@@ -39,7 +39,7 @@ type Client struct {
 	IterationService  *IterationService
 	TaskService       *TaskService
 	CommentService    CommentService
-	ReportService     *ReportService
+	ReportService     ReportService
 	AttachmentService AttachmentService
 	TimesheetService  TimesheetService
 	WorkspaceService  *WorkspaceService
@@ -85,7 +85,7 @@ func newClient(opts ...ClientOption) (*Client, error) {
 	c.IterationService = &IterationService{client: c}
 	c.TaskService = &TaskService{client: c}
 	c.CommentService = NewCommentService(c)
-	c.ReportService = &ReportService{client: c}
+	c.ReportService = NewReportService(c)
 	c.AttachmentService = NewAttachmentService(c)
 	c.TimesheetService = NewTimesheetService(c)
 	c.WorkspaceService = &WorkspaceService{client: c}
