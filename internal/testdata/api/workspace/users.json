@@ -1,0 +1,35 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "UserWorkspace": {
+        "user": "张三",
+        "role_id": [
+          "11111122222001000029"
+        ],
+        "name": "张三",
+        "join_project_time": null,
+        "real_join_time": "2018-07-03",
+        "status": "2",
+        "allocation": "100",
+        "leave_project_time": null
+      }
+    },
+    {
+      "UserWorkspace": {
+        "user": "李四",
+        "role_id": [
+          "11111122222001000028",
+          "11111122222001000143"
+        ],
+        "name": "李四",
+        "join_project_time": null,
+        "real_join_time": "2018-07-09",
+        "status": "1",
+        "allocation": "100",
+        "leave_project_time": null
+      }
+    }
+  ],
+  "info": "success"
+}
