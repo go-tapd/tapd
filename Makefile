@@ -3,8 +3,13 @@ init:
 	go install mvdan.cc/gofumpt@latest
 	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 
+.PHONY: go-mod-tidy
+go-mod-tidy:
+	go mod tidy -compat=1.23.0
+	@echo "✅ Go modules tidied"
+
 .PHONY: lint
-lint:
+lint: go-mod-tidy
 	golangci-lint run
 	@echo "✅ Linting completed"
 
