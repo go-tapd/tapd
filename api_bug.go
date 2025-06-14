@@ -743,7 +743,6 @@ type BugService interface {
 	// 获取缺陷关联的需求ID
 	// 转换缺陷ID成列表queryToken
 	// 缺陷说明
-
 }
 
 type bugService struct {
