@@ -13,6 +13,8 @@ type WorkspaceService struct {
 // 获取项目信息
 
 // GetUsers 获取指定项目成员
+//
+// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/users.html
 func (s *WorkspaceService) GetUsers(
 	ctx context.Context, request *GetUsersRequest, opts ...RequestOption,
 ) ([]*User, *Response, error) {
