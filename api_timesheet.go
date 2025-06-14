@@ -150,13 +150,19 @@ type TimesheetService interface {
 	UpdateTimesheet(ctx context.Context, request *UpdateTimesheetRequest, opts ...RequestOption) (*Timesheet, *Response, error)
 }
 
-type TimesheetServiceImpl struct {
+type timesheetService struct {
 	client *Client
 }
 
-var _ TimesheetService = (*TimesheetServiceImpl)(nil)
+var _ TimesheetService = (*timesheetService)(nil)
 
-func (s *TimesheetServiceImpl) CreateTimesheet(
+func NewTimesheetService(client *Client) TimesheetService {
+	return &timesheetService{
+		client: client,
+	}
+}
+
+func (s *timesheetService) CreateTimesheet(
 	ctx context.Context, request *CreateTimesheetRequest, opts ...RequestOption,
 ) (*Timesheet, *Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodPost, "timesheets", request, opts)
@@ -175,7 +181,7 @@ func (s *TimesheetServiceImpl) CreateTimesheet(
 	return response.Timesheet, resp, nil
 }
 
-func (s *TimesheetServiceImpl) GetTimesheets(
+func (s *timesheetService) GetTimesheets(
 	ctx context.Context, request *GetTimesheetsRequest, opts ...RequestOption,
 ) ([]*Timesheet, *Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodGet, "timesheets", request, opts)
@@ -199,7 +205,7 @@ func (s *TimesheetServiceImpl) GetTimesheets(
 	return timesheets, resp, nil
 }
 
-func (s *TimesheetServiceImpl) GetTimesheetsCount(
+func (s *timesheetService) GetTimesheetsCount(
 	ctx context.Context, request *GetTimesheetsCountRequest, opts ...RequestOption,
 ) (int, *Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodGet, "timesheets/count", request, opts)
@@ -216,7 +222,7 @@ func (s *TimesheetServiceImpl) GetTimesheetsCount(
 	return response.Count, resp, nil
 }
 
-func (s *TimesheetServiceImpl) UpdateTimesheet(
+func (s *timesheetService) UpdateTimesheet(
 	ctx context.Context, request *UpdateTimesheetRequest, opts ...RequestOption,
 ) (*Timesheet, *Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodPost, "timesheets", request, opts)
