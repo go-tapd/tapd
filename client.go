@@ -34,7 +34,7 @@ type Client struct {
 	httpClient *http.Client
 
 	// services used for talking to different parts of the Tapd API.
-	StoryService      *StoryService
+	StoryService      StoryService
 	BugService        BugService
 	IterationService  IterationService
 	TaskService       *TaskService
@@ -80,7 +80,7 @@ func newClient(opts ...ClientOption) (*Client, error) {
 	}
 
 	// services
-	c.StoryService = &StoryService{client: c}
+	c.StoryService = NewStoryService(c)
 	c.BugService = NewBugService(c)
 	c.IterationService = NewIterationService(c)
 	c.TaskService = &TaskService{client: c}
