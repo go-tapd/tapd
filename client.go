@@ -34,20 +34,20 @@ type Client struct {
 	httpClient *http.Client
 
 	// services used for talking to different parts of the Tapd API.
-	StoryService      *StoryService
-	BugService        *BugService
-	IterationService  *IterationService
-	TaskService       *TaskService
-	CommentService    *CommentService
-	ReportService     *ReportService
-	AttachmentService *AttachmentService
+	StoryService      StoryService
+	BugService        BugService
+	IterationService  IterationService
+	TaskService       TaskService
+	CommentService    CommentService
+	ReportService     ReportService
+	AttachmentService AttachmentService
 	TimesheetService  TimesheetService
-	WorkspaceService  *WorkspaceService
-	LabelService      *LabelService
-	MeasureService    *MeasureService
+	WorkspaceService  WorkspaceService
+	LabelService      LabelService
+	MeasureService    MeasureService
 	UserService       UserService
-	WorkflowService   *WorkflowService
-	SettingService    *SettingService
+	WorkflowService   WorkflowService
+	SettingService    SettingService
 }
 
 // NewClient returns a new Tapd API client.
@@ -80,20 +80,20 @@ func newClient(opts ...ClientOption) (*Client, error) {
 	}
 
 	// services
-	c.StoryService = &StoryService{client: c}
-	c.BugService = &BugService{client: c}
-	c.IterationService = &IterationService{client: c}
-	c.TaskService = &TaskService{client: c}
-	c.CommentService = &CommentService{client: c}
-	c.ReportService = &ReportService{client: c}
-	c.AttachmentService = &AttachmentService{client: c}
+	c.StoryService = NewStoryService(c)
+	c.BugService = NewBugService(c)
+	c.IterationService = NewIterationService(c)
+	c.TaskService = NewTaskService(c)
+	c.CommentService = NewCommentService(c)
+	c.ReportService = NewReportService(c)
+	c.AttachmentService = NewAttachmentService(c)
 	c.TimesheetService = NewTimesheetService(c)
-	c.WorkspaceService = &WorkspaceService{client: c}
-	c.LabelService = &LabelService{client: c}
-	c.MeasureService = &MeasureService{client: c}
+	c.WorkspaceService = NewWorkspaceService(c)
+	c.LabelService = NewLabelService(c)
+	c.MeasureService = NewMeasureService(c)
 	c.UserService = NewUserService(c)
-	c.WorkflowService = &WorkflowService{client: c}
-	c.SettingService = &SettingService{client: c}
+	c.WorkflowService = NewWorkflowService(c)
+	c.SettingService = NewSettingService(c)
 
 	return c, nil
 }
