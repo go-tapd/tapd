@@ -19,30 +19,150 @@ type (
 		Memo        string     `json:"memo,omitempty"`         // 花费描述
 		IsDelete    string     `json:"is_delete,omitempty"`    // 是否已删除
 	}
+
+	CreateTimesheetRequest struct {
+		EntityType  *EntityType `json:"entity_type,omitempty"`  // [必须]对象类型，如story、task、bug等
+		EntityID    *int64      `json:"entity_id,omitempty"`    // [必须]对象ID
+		Timespent   *string     `json:"timespent,omitempty"`    // [必须]花费工时
+		Timeremain  *string     `json:"timeremain,omitempty"`   // 剩余工时
+		Spentdate   *string     `json:"spentdate,omitempty"`    // 花费日期
+		Owner       *string     `json:"owner,omitempty"`        // [必须]花费创建人
+		WorkspaceID *int        `json:"workspace_id,omitempty"` // [必须]项目ID
+		Memo        *string     `json:"memo,omitempty"`         // 花费描述
+	}
+
+	GetTimesheetsRequest struct {
+		// [可选]id 支持多ID查询
+		ID *Multi[int64] `url:"id,omitempty"`
+
+		// [必选]项目ID
+		WorkspaceID *int `url:"workspace_id,omitempty"`
+
+		// [可选]对象类型，如story、task、bug等
+		EntityType *EntityType `url:"entity_type,omitempty"`
+
+		// [可选]对象ID
+		EntityID *int64 `url:"entity_id,omitempty"`
+
+		// [可选]花费工时
+		Timespent *string `url:"timespent,omitempty"`
+
+		// [可选]花费日期 支持时间查询
+		Spentdate *string `url:"spentdate,omitempty"`
+
+		// [可选]最后修改时间 支持时间查询
+		Modified *string `url:"modified,omitempty"`
+
+		// [可选]花费创建人
+		Owner *string `url:"owner,omitempty"`
+
+		// [可选]值=0不返回父需求的花费
+		IncludeParentStoryTimesheet *int `url:"include_parent_story_timesheet,omitempty"`
+
+		// [可选]创建时间 支持时间查询
+		Created *string `url:"created,omitempty"`
+
+		// [可选]花费描述
+		Memo *string `url:"memo,omitempty"`
+
+		// [可选]是否已删除。默认取 0，不返回已删除的工时记录。取 1 可以返回已删除的记录
+		IsDelete *int `url:"is_delete,omitempty"`
+
+		// [可选]设置返回数量限制，默认为30
+		Limit *int `url:"limit,omitempty"`
+
+		// [可选]返回当前数量限制下第N页的数据，默认为1（第一页）
+		Page *int `url:"page,omitempty"`
+
+		// [可选]排序规则，规则：字段名 ASC或者DESC，然后 urlencode 如按创建时间逆序
+		Order *Order `url:"order,omitempty"`
+
+		// [可选]设置获取的字段，多个字段间以','逗号隔开
+		Fields *Multi[string] `url:"fields,omitempty"`
+	}
+
+	GetTimesheetsCountRequest struct {
+		// [可选]id 支持多ID查询
+		ID *Multi[int64] `url:"id,omitempty"`
+
+		// [必选]项目ID
+		WorkspaceID *int `url:"workspace_id,omitempty"`
+
+		// [可选]对象类型，如story、task、bug等
+		EntityType *EntityType `url:"entity_type,omitempty"`
+
+		// [可选]对象ID
+		EntityID *int64 `url:"entity_id,omitempty"`
+
+		// [可选]花费工时
+		Timespent *string `url:"timespent,omitempty"`
+
+		// [可选]花费日期 支持时间查询
+		Spentdate *string `url:"spentdate,omitempty"`
+
+		// [可选]最后修改时间 支持时间查询
+		Modified *string `url:"modified,omitempty"`
+
+		// [可选]花费创建人
+		Owner *string `url:"owner,omitempty"`
+
+		// [可选]值=0不返回父需求的花费
+		IncludeParentStoryTimesheet *int `url:"include_parent_story_timesheet,omitempty"`
+
+		// [可选]创建时间 支持时间查询
+		Created *string `url:"created,omitempty"`
+
+		// [可选]花费描述
+		Memo *string `url:"memo,omitempty"`
+
+		// [可选]是否已删除。默认取 0，不返回已删除的工时记录。取 1 可以返回已删除的记录
+		IsDelete *int `url:"is_delete,omitempty"`
+	}
+
+	UpdateTimesheetRequest struct {
+		ID          *int64  `json:"id"`                     // [必须]工时花费ID
+		Timespent   *string `json:"timespent,omitempty"`    // [可选]花费工时
+		Timeremain  *string `json:"timeremain,omitempty"`   // [可选]剩余工时
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		Memo        *string `json:"memo,omitempty"`         // [可选]花费描述
+	}
 )
 
-type TimesheetService struct {
+type TimesheetService interface {
+	// CreateTimesheet 创建工时花费
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/add_timesheet.html
+	CreateTimesheet(ctx context.Context, request *CreateTimesheetRequest, opts ...RequestOption) (*Timesheet, *Response, error)
+
+	// GetTimesheets 获取工时花费
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/get_timesheets.html
+	GetTimesheets(ctx context.Context, request *GetTimesheetsRequest, opts ...RequestOption) ([]*Timesheet, *Response, error)
+
+	// GetTimesheetsCount 获取工时花费的数量
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/get_timesheets_count.html
+	GetTimesheetsCount(ctx context.Context, request *GetTimesheetsCountRequest, opts ...RequestOption) (int, *Response, error)
+
+	// UpdateTimesheet 更新工时花费
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/update_timesheet.html
+	UpdateTimesheet(ctx context.Context, request *UpdateTimesheetRequest, opts ...RequestOption) (*Timesheet, *Response, error)
+}
+
+type timesheetService struct {
 	client *Client
 }
 
-// -----------------------------------------------------------------------------
-// 创建工时花费
-// -----------------------------------------------------------------------------
+var _ TimesheetService = (*timesheetService)(nil)
 
-type CreateTimesheetRequest struct {
-	EntityType  *EntityType `json:"entity_type,omitempty"`  // [必须]对象类型，如story、task、bug等
-	EntityID    *int64      `json:"entity_id,omitempty"`    // [必须]对象ID
-	Timespent   *string     `json:"timespent,omitempty"`    // [必须]花费工时
-	Timeremain  *string     `json:"timeremain,omitempty"`   // 剩余工时
-	Spentdate   *string     `json:"spentdate,omitempty"`    // 花费日期
-	Owner       *string     `json:"owner,omitempty"`        // [必须]花费创建人
-	WorkspaceID *int        `json:"workspace_id,omitempty"` // [必须]项目ID
-	Memo        *string     `json:"memo,omitempty"`         // 花费描述
+func NewTimesheetService(client *Client) TimesheetService {
+	return &timesheetService{
+		client: client,
+	}
 }
 
-// CreateTimesheet 创建工时花费
-// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/add_timesheet.html
-func (s *TimesheetService) CreateTimesheet(
+func (s *timesheetService) CreateTimesheet(
 	ctx context.Context, request *CreateTimesheetRequest, opts ...RequestOption,
 ) (*Timesheet, *Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodPost, "timesheets", request, opts)
@@ -61,63 +181,7 @@ func (s *TimesheetService) CreateTimesheet(
 	return response.Timesheet, resp, nil
 }
 
-// -----------------------------------------------------------------------------
-// 获取工时花费
-// -----------------------------------------------------------------------------
-
-type GetTimesheetsRequest struct {
-	// [可选]id 支持多ID查询
-	ID *Multi[int64] `url:"id,omitempty"`
-
-	// [必选]项目ID
-	WorkspaceID *int `url:"workspace_id,omitempty"`
-
-	// [可选]对象类型，如story、task、bug等
-	EntityType *EntityType `url:"entity_type,omitempty"`
-
-	// [可选]对象ID
-	EntityID *int64 `url:"entity_id,omitempty"`
-
-	// [可选]花费工时
-	Timespent *string `url:"timespent,omitempty"`
-
-	// [可选]花费日期 支持时间查询
-	Spentdate *string `url:"spentdate,omitempty"`
-
-	// [可选]最后修改时间 支持时间查询
-	Modified *string `url:"modified,omitempty"`
-
-	// [可选]花费创建人
-	Owner *string `url:"owner,omitempty"`
-
-	// [可选]值=0不返回父需求的花费
-	IncludeParentStoryTimesheet *int `url:"include_parent_story_timesheet,omitempty"`
-
-	// [可选]创建时间 支持时间查询
-	Created *string `url:"created,omitempty"`
-
-	// [可选]花费描述
-	Memo *string `url:"memo,omitempty"`
-
-	// [可选]是否已删除。默认取 0，不返回已删除的工时记录。取 1 可以返回已删除的记录
-	IsDelete *int `url:"is_delete,omitempty"`
-
-	// [可选]设置返回数量限制，默认为30
-	Limit *int `url:"limit,omitempty"`
-
-	// [可选]返回当前数量限制下第N页的数据，默认为1（第一页）
-	Page *int `url:"page,omitempty"`
-
-	// [可选]排序规则，规则：字段名 ASC或者DESC，然后 urlencode 如按创建时间逆序
-	Order *Order `url:"order,omitempty"`
-
-	// [可选]设置获取的字段，多个字段间以','逗号隔开
-	Fields *Multi[string] `url:"fields,omitempty"`
-}
-
-// GetTimesheets 获取工时花费
-// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/get_timesheets.html
-func (s *TimesheetService) GetTimesheets(
+func (s *timesheetService) GetTimesheets(
 	ctx context.Context, request *GetTimesheetsRequest, opts ...RequestOption,
 ) ([]*Timesheet, *Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodGet, "timesheets", request, opts)
@@ -141,51 +205,7 @@ func (s *TimesheetService) GetTimesheets(
 	return timesheets, resp, nil
 }
 
-// -----------------------------------------------------------------------------
-// 获取工时花费的数量
-// -----------------------------------------------------------------------------
-
-type GetTimesheetsCountRequest struct {
-	// [可选]id 支持多ID查询
-	ID *Multi[int64] `url:"id,omitempty"`
-
-	// [必选]项目ID
-	WorkspaceID *int `url:"workspace_id,omitempty"`
-
-	// [可选]对象类型，如story、task、bug等
-	EntityType *EntityType `url:"entity_type,omitempty"`
-
-	// [可选]对象ID
-	EntityID *int64 `url:"entity_id,omitempty"`
-
-	// [可选]花费工时
-	Timespent *string `url:"timespent,omitempty"`
-
-	// [可选]花费日期 支持时间查询
-	Spentdate *string `url:"spentdate,omitempty"`
-
-	// [可选]最后修改时间 支持时间查询
-	Modified *string `url:"modified,omitempty"`
-
-	// [可选]花费创建人
-	Owner *string `url:"owner,omitempty"`
-
-	// [可选]值=0不返回父需求的花费
-	IncludeParentStoryTimesheet *int `url:"include_parent_story_timesheet,omitempty"`
-
-	// [可选]创建时间 支持时间查询
-	Created *string `url:"created,omitempty"`
-
-	// [可选]花费描述
-	Memo *string `url:"memo,omitempty"`
-
-	// [可选]是否已删除。默认取 0，不返回已删除的工时记录。取 1 可以返回已删除的记录
-	IsDelete *int `url:"is_delete,omitempty"`
-}
-
-// GetTimesheetsCount 获取工时花费的数量
-// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/get_timesheets_count.html
-func (s *TimesheetService) GetTimesheetsCount(
+func (s *timesheetService) GetTimesheetsCount(
 	ctx context.Context, request *GetTimesheetsCountRequest, opts ...RequestOption,
 ) (int, *Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodGet, "timesheets/count", request, opts)
@@ -202,21 +222,7 @@ func (s *TimesheetService) GetTimesheetsCount(
 	return response.Count, resp, nil
 }
 
-// -----------------------------------------------------------------------------
-// 更新工时花费
-// -----------------------------------------------------------------------------
-
-type UpdateTimesheetRequest struct {
-	ID          *int64  `json:"id"`                     // [必须]工时花费ID
-	Timespent   *string `json:"timespent,omitempty"`    // [可选]花费工时
-	Timeremain  *string `json:"timeremain,omitempty"`   // [可选]剩余工时
-	WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
-	Memo        *string `json:"memo,omitempty"`         // [可选]花费描述
-}
-
-// UpdateTimesheet 更新工时花费
-// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/update_timesheet.html
-func (s *TimesheetService) UpdateTimesheet(
+func (s *timesheetService) UpdateTimesheet(
 	ctx context.Context, request *UpdateTimesheetRequest, opts ...RequestOption,
 ) (*Timesheet, *Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodPost, "timesheets", request, opts)
