@@ -44,7 +44,7 @@ type Client struct {
 	TimesheetService  TimesheetService
 	WorkspaceService  *WorkspaceService
 	LabelService      *LabelService
-	MeasureService    *MeasureService
+	MeasureService    MeasureService
 	UserService       UserService
 	WorkflowService   *WorkflowService
 	SettingService    *SettingService
@@ -90,7 +90,7 @@ func newClient(opts ...ClientOption) (*Client, error) {
 	c.TimesheetService = NewTimesheetService(c)
 	c.WorkspaceService = &WorkspaceService{client: c}
 	c.LabelService = &LabelService{client: c}
-	c.MeasureService = &MeasureService{client: c}
+	c.MeasureService = NewMeasureService(c)
 	c.UserService = NewUserService(c)
 	c.WorkflowService = &WorkflowService{client: c}
 	c.SettingService = &SettingService{client: c}
