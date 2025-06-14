@@ -11,7 +11,49 @@ type WorkspaceService struct {
 
 // 获取子项目信息
 // 获取项目信息
-// 获取指定项目成员
+
+// GetUsers 获取指定项目成员
+func (s *WorkspaceService) GetUsers(
+	ctx context.Context, request *GetUsersRequest, opts ...RequestOption,
+) ([]*User, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workspaces/users", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		UserWorkspace *User `json:"UserWorkspace"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	users := make([]*User, 0, len(items))
+	for _, item := range items {
+		users = append(users, item.UserWorkspace)
+	}
+
+	return users, resp, nil
+}
+
+type GetUsersRequest struct {
+	WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
+	User        *Multi[string] `url:"user,omitempty"`         // [可选]用户昵称或ID
+	Fields      *Multi[string] `url:"fields,omitempty"`       // [可选]返回的字段列表，user,user_id,role_id,name,email,real_join_time 可选，以,分隔
+}
+
+type User struct {
+	User             string   `json:"user"`
+	RoleID           []string `json:"role_id"`
+	Name             string   `json:"name"`
+	JoinProjectTime  *string  `json:"join_project_time"`
+	RealJoinTime     string   `json:"real_join_time"`
+	Status           string   `json:"status"`
+	Allocation       string   `json:"allocation"`
+	LeaveProjectTime *string  `json:"leave_project_time"`
+}
+
 // 添加项目成员
 // 获取公司项目列表
 // 获取用户组ID对照关系
