@@ -31,7 +31,7 @@ type TimesheetService struct {
 
 type CreateTimesheetRequest struct {
 	EntityType  *EntityType `json:"entity_type,omitempty"`  // [必须]对象类型，如story、task、bug等
-	EntityID    *int        `json:"entity_id,omitempty"`    // [必须]对象ID
+	EntityID    *int64      `json:"entity_id,omitempty"`    // [必须]对象ID
 	Timespent   *string     `json:"timespent,omitempty"`    // [必须]花费工时
 	Timeremain  *string     `json:"timeremain,omitempty"`   // 剩余工时
 	Spentdate   *string     `json:"spentdate,omitempty"`    // 花费日期
@@ -67,7 +67,7 @@ func (s *TimesheetService) CreateTimesheet(
 
 type GetTimesheetsRequest struct {
 	// [可选]id 支持多ID查询
-	ID *Multi[int] `url:"id,omitempty"`
+	ID *Multi[int64] `url:"id,omitempty"`
 
 	// [必选]项目ID
 	WorkspaceID *int `url:"workspace_id,omitempty"`
@@ -76,7 +76,7 @@ type GetTimesheetsRequest struct {
 	EntityType *EntityType `url:"entity_type,omitempty"`
 
 	// [可选]对象ID
-	EntityID *int `url:"entity_id,omitempty"`
+	EntityID *int64 `url:"entity_id,omitempty"`
 
 	// [可选]花费工时
 	Timespent *string `url:"timespent,omitempty"`
@@ -147,7 +147,7 @@ func (s *TimesheetService) GetTimesheets(
 
 type GetTimesheetsCountRequest struct {
 	// [可选]id 支持多ID查询
-	ID *Multi[int] `url:"id,omitempty"`
+	ID *Multi[int64] `url:"id,omitempty"`
 
 	// [必选]项目ID
 	WorkspaceID *int `url:"workspace_id,omitempty"`
@@ -156,7 +156,7 @@ type GetTimesheetsCountRequest struct {
 	EntityType *EntityType `url:"entity_type,omitempty"`
 
 	// [可选]对象ID
-	EntityID *int `url:"entity_id,omitempty"`
+	EntityID *int64 `url:"entity_id,omitempty"`
 
 	// [可选]花费工时
 	Timespent *string `url:"timespent,omitempty"`
@@ -207,7 +207,7 @@ func (s *TimesheetService) GetTimesheetsCount(
 // -----------------------------------------------------------------------------
 
 type UpdateTimesheetRequest struct {
-	ID          *int    `json:"id"`                     // [必须]工时花费ID
+	ID          *int64  `json:"id"`                     // [必须]工时花费ID
 	Timespent   *string `json:"timespent,omitempty"`    // [可选]花费工时
 	Timeremain  *string `json:"timeremain,omitempty"`   // [可选]剩余工时
 	WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
