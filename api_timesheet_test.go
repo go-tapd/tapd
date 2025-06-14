@@ -39,7 +39,7 @@ func TestTimesheetService_CreateTimesheet(t *testing.T) {
 
 	timesheet, _, err := client.TimesheetService.CreateTimesheet(ctx, &CreateTimesheetRequest{
 		EntityType:  Ptr(EntityTypeStory),
-		EntityID:    Ptr(11223344),
+		EntityID:    Ptr[int64](11223344),
 		Timespent:   Ptr("2"),
 		Timeremain:  Ptr("0"),
 		Spentdate:   Ptr("2024-08-22"),
@@ -88,7 +88,7 @@ func TestTimesheetService_GetTimesheets(t *testing.T) {
 	timesheets, _, err := client.TimesheetService.GetTimesheets(ctx, &GetTimesheetsRequest{
 		WorkspaceID:                 Ptr(11112222),
 		EntityType:                  Ptr(EntityTypeStory),
-		EntityID:                    Ptr(111111222222),
+		EntityID:                    Ptr[int64](111111222222),
 		Timespent:                   Ptr("2"),
 		Spentdate:                   Ptr("2024-08-22"),
 		Modified:                    Ptr("2024-08-22"),
@@ -141,7 +141,7 @@ func TestTimesheetService_GetTimesheetsCount(t *testing.T) {
 	count, _, err := client.TimesheetService.GetTimesheetsCount(ctx, &GetTimesheetsCountRequest{
 		WorkspaceID:                 Ptr(11112222),
 		EntityType:                  Ptr(EntityTypeStory),
-		EntityID:                    Ptr(111111222222),
+		EntityID:                    Ptr[int64](111111222222),
 		Timespent:                   Ptr("2"),
 		Spentdate:                   Ptr("2024-08-22"),
 		Modified:                    Ptr("2024-08-22"),
@@ -178,7 +178,7 @@ func TestTimesheetService_UpdateTimesheet(t *testing.T) {
 	}))
 
 	timesheet, _, err := client.TimesheetService.UpdateTimesheet(ctx, &UpdateTimesheetRequest{
-		ID:          Ptr(1134190502001044767),
+		ID:          Ptr[int64](1134190502001044767),
 		Timespent:   Ptr("2"),
 		Timeremain:  Ptr("0"),
 		WorkspaceID: Ptr(11112222),
