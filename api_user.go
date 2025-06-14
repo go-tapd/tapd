@@ -5,25 +5,38 @@ import (
 	"net/http"
 )
 
-type UserRole struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+type (
+	UserRole struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+
+	// GetRolesRequest represents a request to get roles
+	GetRolesRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目 ID
+	}
+)
+
+type UserService interface {
+	// GetRoles 获取角色ID对照关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/user/get_roles.html
+	GetRoles(ctx context.Context, request *GetRolesRequest, opts ...RequestOption) ([]*UserRole, *Response, error)
 }
 
-// UserService is a service to interact with user related API
-type UserService struct {
+type userService struct {
 	client *Client
 }
 
-// GetRolesRequest represents a request to get roles
-type GetRolesRequest struct {
-	WorkspaceID *int `url:"workspace_id,omitempty"` // 项目 ID
+var _ UserService = (*userService)(nil)
+
+func NewUserService(client *Client) UserService {
+	return &userService{
+		client: client,
+	}
 }
 
-// GetRoles 获取角色ID对照关系
-//
-// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/user/get_roles.html
-func (s *UserService) GetRoles(
+func (s *userService) GetRoles(
 	ctx context.Context, request *GetRolesRequest, opts ...RequestOption,
 ) ([]*UserRole, *Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodGet, "roles", request, opts)
