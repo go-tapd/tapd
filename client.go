@@ -47,7 +47,7 @@ type Client struct {
 	MeasureService    MeasureService
 	UserService       UserService
 	WorkflowService   *WorkflowService
-	SettingService    *SettingService
+	SettingService    SettingService
 }
 
 // NewClient returns a new Tapd API client.
@@ -93,7 +93,7 @@ func newClient(opts ...ClientOption) (*Client, error) {
 	c.MeasureService = NewMeasureService(c)
 	c.UserService = NewUserService(c)
 	c.WorkflowService = &WorkflowService{client: c}
-	c.SettingService = &SettingService{client: c}
+	c.SettingService = NewSettingService(c)
 
 	return c, nil
 }
