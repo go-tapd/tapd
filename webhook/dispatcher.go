@@ -515,10 +515,16 @@ func (d *Dispatcher) processIterationUpdate(ctx context.Context, event *Iteratio
 }
 
 func (d *Dispatcher) processIterationDelete(ctx context.Context, event *IterationDeleteEvent) error {
+	return processListeners(ctx, d.iterationDeleteListeners, func(ctx context.Context, listener IterationDeleteListener, event *IterationDeleteEvent) error {
+		return listener.OnIterationDelete(ctx, event)
+	}, event)
+}
+
+func processListeners[T any, L any](ctx context.Context, listeners []L, handler func(context.Context, L, T) error, event T) error {
 	eg, ctx := errgroup.WithContext(ctx)
-	for _, listener := range d.iterationDeleteListeners {
+	for _, listener := range listeners {
 		eg.Go(func() error {
-			return listener.OnIterationDelete(ctx, event)
+			return handler(ctx, listener, event)
 		})
 	}
 	return eg.Wait()
