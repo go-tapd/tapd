@@ -150,6 +150,7 @@ type (
 		ValueAfterParsed  string `json:"value_after_parsed,omitempty"`
 		FieldLabel        string `json:"field_label,omitempty"`
 	}
+
 	GetTaskChangesRequest struct {
 		ID               *Multi[int64]  `url:"id,omitempty"`                 // 支持多ID查询
 		WorkspaceID      *int           `url:"workspace_id,omitempty"`       // [必须]项目ID
@@ -193,8 +194,8 @@ type (
 		CC               *string           `url:"cc,omitempty"`               // 抄送人
 		Begin            *string           `url:"begin,omitempty"`            // 预计开始	支持时间查询
 		Due              *string           `url:"due,omitempty"`              // 预计结束	支持时间查询
-		StoryID          *Multi[string]    `url:"story_id,omitempty"`         // 关联需求的ID	支持多ID查询
-		IterationID      *Enum[string]     `url:"iteration_id,omitempty"`     // 所属迭代的ID	支持枚举查询
+		StoryID          *Multi[int64]     `url:"story_id,omitempty"`         // 关联需求的ID	支持多ID查询
+		IterationID      *Enum[int64]      `url:"iteration_id,omitempty"`     // 所属迭代的ID	支持枚举查询
 		Priority         *string           `url:"priority,omitempty"`         //nolint:lll // 优先级。为了兼容自定义优先级，请使用 priority_label 字段，详情参考：如何兼容自定义优先级
 		PriorityLabel    *PriorityLabel    `url:"priority_label,omitempty"`   // 优先级。推荐使用这个字段
 		Progress         *int              `url:"progress,omitempty"`         // 进度
