@@ -1,7 +1,7 @@
 package webhook
 
 type TaskCommentAddEvent struct {
-	Event        EventType `json:"event,omitempty,omitempty"`
+	Event        EventType `json:"event,omitempty"`
 	EventFrom    string    `json:"event_from,omitempty"`
 	Referer      string    `json:"referer,omitempty"`
 	WorkspaceID  string    `json:"workspace_id,omitempty"`
@@ -20,7 +20,7 @@ type TaskCommentAddEvent struct {
 }
 
 type TaskCommentUpdateEvent struct {
-	Event        EventType `json:"event,omitempty,omitempty"`
+	Event        EventType `json:"event,omitempty"`
 	EventFrom    string    `json:"event_from,omitempty"`
 	Referer      string    `json:"referer,omitempty"`
 	WorkspaceID  string    `json:"workspace_id,omitempty"`
@@ -38,7 +38,7 @@ type TaskCommentUpdateEvent struct {
 }
 
 type TaskCommentDeleteEvent struct {
-	Event        EventType `json:"event,omitempty,omitempty"`
+	Event        EventType `json:"event,omitempty"`
 	EventFrom    string    `json:"event_from,omitempty"`
 	Referer      string    `json:"referer,omitempty"`
 	WorkspaceID  string    `json:"workspace_id,omitempty"`
