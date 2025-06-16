@@ -57,7 +57,7 @@ type (
 		Creator           string        `json:"creator,omitempty"`
 		Created           string        `json:"created,omitempty"`
 		Modified          string        `json:"modified,omitempty"`
-		Status            string        `json:"status,omitempty"`
+		Status            StoryStatus   `json:"status,omitempty"`
 		Step              string        `json:"step,omitempty"`
 		Owner             string        `json:"owner,omitempty"`
 		Cc                string        `json:"cc,omitempty"`
