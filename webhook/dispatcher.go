@@ -520,7 +520,7 @@ func (d *Dispatcher) processIterationDelete(ctx context.Context, event *Iteratio
 	}, event)
 }
 
-func processListeners[T any, L any](ctx context.Context, listeners []L, handler func(context.Context, L, T) error, event T) error {
+func processListeners[E any, L any](ctx context.Context, listeners []L, handler func(context.Context, L, E) error, event E) error {
 	eg, ctx := errgroup.WithContext(ctx)
 	for _, listener := range listeners {
 		eg.Go(func() error {
