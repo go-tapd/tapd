@@ -47,7 +47,7 @@ type (
 		Modified          string        `json:"modified,omitempty"`         // 最后修改时间
 		Status            TaskStatus    `json:"status,omitempty"`           // 状态
 		Owner             string        `json:"owner,omitempty"`            // 任务当前处理人
-		Cc                string        `json:"cc,omitempty"`               // 抄送人
+		CC                string        `json:"cc,omitempty"`               // 抄送人
 		Begin             string        `json:"begin,omitempty"`            // 预计开始
 		Due               string        `json:"due,omitempty"`              // 预计结束
 		StoryID           string        `json:"story_id,omitempty"`         // 关联需求的ID
