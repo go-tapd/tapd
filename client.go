@@ -210,8 +210,10 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, data any, 
 
 	// Apply request options
 	for _, opt := range opts {
-		if err := opt(req); err != nil {
-			return nil, err
+		if opt != nil {
+			if err := opt(req); err != nil {
+				return nil, err
+			}
 		}
 	}
 

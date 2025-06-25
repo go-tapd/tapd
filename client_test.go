@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -59,11 +60,7 @@ func TestClient_BasicAuth(t *testing.T) {
 		assert.Equal(t, apiClientSecret, clientSecret)
 
 		// nolint:errcheck
-		fmt.Fprint(w, `{
-  "status": 1,
-  "data": {},
-  "info": "success"
-}`)
+		fmt.Fprint(w, successResponse)
 	}))
 	assert.Equal(t, authTypeBasic, client.authType)
 
@@ -86,11 +83,7 @@ func TestClient_PATAuth(t *testing.T) {
 		assert.Equal(t, "Bearer "+apiAccessToken, authHeader)
 
 		// nolint:errcheck
-		fmt.Fprint(w, `{
-  "status": 1,
-  "data": {},
-  "info": "success"
-}`)
+		fmt.Fprint(w, successResponse)
 	}))
 	t.Cleanup(srv.Close)
 
@@ -192,4 +185,96 @@ func TestClient_WithRequestOption(t *testing.T) {
 	resp, err := client.Do(req, nil)
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+}
+
+func TestClient_WithRequestOption_WithAuth(t *testing.T) {
+	var (
+		assertBasicAuthFunc = func(expectedClientID, expectedClientSecret string) func(t *testing.T, r *http.Request) {
+			return func(t *testing.T, r *http.Request) {
+				clientID, clientSecret, ok := r.BasicAuth()
+				assert.True(t, ok)
+				assert.Equal(t, expectedClientID, clientID)
+				assert.Equal(t, expectedClientSecret, clientSecret)
+			}
+		}
+		assertPATAuthFunc = func(expectedAccessToken string) func(t *testing.T, r *http.Request) {
+			return func(t *testing.T, r *http.Request) {
+				authHeader := r.Header.Get("Authorization")
+				assert.NotEmpty(t, authHeader)
+				assert.Equal(t, "Bearer "+expectedAccessToken, authHeader)
+			}
+		}
+
+		createClientBasicAuthFunc = func(clientID, clientSecret string) func(srv *httptest.Server) (*Client, error) {
+			return func(srv *httptest.Server) (*Client, error) {
+				return NewClient(clientID, clientSecret, WithBaseURL(srv.URL))
+			}
+		}
+		createClientPATAuthFunc = func(accessToken string) func(srv *httptest.Server) (*Client, error) {
+			return func(srv *httptest.Server) (*Client, error) {
+				return NewPATClient(accessToken, WithBaseURL(srv.URL))
+			}
+		}
+	)
+
+	tests := []struct {
+		name             string
+		createClientFunc func(srv *httptest.Server) (*Client, error)
+		requestOption    RequestOption
+		wantFunc         func(t *testing.T, r *http.Request)
+	}{
+		{
+			"client is created with Basic Auth, but request option is nil",
+			createClientBasicAuthFunc("client-a", "secret-a"),
+			nil,
+			assertBasicAuthFunc("client-a", "secret-a"),
+		},
+		{
+			"client is created with PAT Auth, but request option is nil",
+			createClientPATAuthFunc("access-token-a"),
+			nil,
+			assertPATAuthFunc("access-token-a"),
+		},
+		{
+			"Use Basic Auth when client is created with Basic Auth",
+			createClientBasicAuthFunc("client-a", "secret-a"),
+			WithRequestBasicAuth("client-b", "secret-b"),
+			assertBasicAuthFunc("client-b", "secret-b"),
+		},
+		{
+			"Use Basic Auth when client is created with PAT Auth",
+			createClientBasicAuthFunc("client-a", "secret-a"),
+			WithRequestAccessToken("access-token-b"),
+			assertPATAuthFunc("access-token-b"),
+		},
+		{
+			"Use PAT Auth when client is created with PAT Auth",
+			createClientPATAuthFunc("access-token-a"),
+			WithRequestAccessToken("access-token-b"),
+			assertPATAuthFunc("access-token-b"),
+		},
+		{
+			"Use PAT Auth when client is created with Basic Auth",
+			createClientPATAuthFunc("access-token-a"),
+			WithRequestBasicAuth("client-b", "secret-b"),
+			assertBasicAuthFunc("client-b", "secret-b"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				tt.wantFunc(t, r)
+				fmt.Fprint(w, successResponse) // nolint:errcheck
+			}))
+
+			client, err := tt.createClientFunc(srv)
+			require.NoError(t, err)
+
+			_, _, _ = client.StoryService.GetStories(
+				ctx, nil,
+				tt.requestOption,
+			)
+		})
+	}
 }
