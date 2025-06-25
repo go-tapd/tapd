@@ -18,14 +18,28 @@ const (
 	defaultUserAgent = "go-tapd"
 )
 
+// authType represents the type of authentication used by the client.
+type authType string
+
+const (
+	authTypeBasic authType = "basic" // Basic Authentication
+	authTypePAT   authType = "pat"   // Personal Access Token (PAT)
+)
+
 var defaultHTTPClient = NewRetryableHTTPClient()
 
 type Client struct {
 	// baseURL for API requests.
 	baseURL *url.URL
 
+	// authType indicates the type of authentication used by the client.
+	authType authType
+
 	// clientID, clientSecret for basic authentication.
 	clientID, clientSecret string
+
+	// accessToken for Personal Access Token (PAT) authentication.
+	accessToken string
 
 	// userAgent used for HTTP requests
 	userAgent string
@@ -60,6 +74,12 @@ func NewClient(clientID, clientSecret string, opts ...ClientOption) (*Client, er
 func NewBasicAuthClient(clientID, clientSecret string, opts ...ClientOption) (*Client, error) {
 	return newClient(append(opts,
 		WithBasicAuth(clientID, clientSecret))...)
+}
+
+// NewPATClient returns a new Tapd API client with Personal Access Token (PAT) authentication.
+func NewPATClient(accessToken string, opts ...ClientOption) (*Client, error) {
+	return newClient(append(opts,
+		WithAccessToken(accessToken))...)
 }
 
 // newClient returns a new Tapd API client.
@@ -170,8 +190,17 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, data any, 
 	}
 
 	// basic auth
-	if c.clientID != "" && c.clientSecret != "" {
-		req.SetBasicAuth(c.clientID, c.clientSecret)
+	switch c.authType {
+	case authTypeBasic:
+		if c.clientID != "" && c.clientSecret != "" {
+			req.SetBasicAuth(c.clientID, c.clientSecret)
+		}
+	case authTypePAT:
+		if c.accessToken != "" {
+			reqHeaders.Set("Authorization", "Bearer "+c.accessToken)
+		}
+	default:
+		return nil, errors.New("tapd: unknown authentication type")
 	}
 
 	// Set the request specific headers.

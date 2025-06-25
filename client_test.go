@@ -15,6 +15,7 @@ import (
 const (
 	apiClientID     = "tapd-client-id"
 	apiClientSecret = "tapd-client-secret"
+	apiAccessToken  = "tapd-access-token"
 	successResponse = `{
   "status": 1,
   "data": {},
@@ -64,7 +65,39 @@ func TestClient_BasicAuth(t *testing.T) {
   "info": "success"
 }`)
 	}))
+	assert.Equal(t, authTypeBasic, client.authType)
 
+	req, err := client.NewRequest(ctx, http.MethodGet, "__/basic-auth", nil, nil)
+	assert.NoError(t, err)
+
+	resp, err := client.Do(req, nil)
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+}
+
+func TestClient_PATAuth(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/__/basic-auth", r.URL.Path)
+
+		// check Authorization header for PAT
+		authHeader := r.Header.Get("Authorization")
+		assert.NotEmpty(t, authHeader)
+		assert.Equal(t, "Bearer "+apiAccessToken, authHeader)
+
+		// nolint:errcheck
+		fmt.Fprint(w, `{
+  "status": 1,
+  "data": {},
+  "info": "success"
+}`)
+	}))
+	t.Cleanup(srv.Close)
+
+	client, err := NewPATClient(apiAccessToken, WithBaseURL(srv.URL))
+	assert.NoError(t, err)
+
+	// Check if the client is using PAT authentication
 	req, err := client.NewRequest(ctx, http.MethodGet, "__/basic-auth", nil, nil)
 	assert.NoError(t, err)
 
