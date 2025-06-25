@@ -73,7 +73,7 @@ import (
 )
 
 func main() {
-	client, err := tapd.NewPATClient("your_pat_token")
+	client, err := tapd.NewPATClient("your_access_token")
 	if err != nil {
 		log.Fatal(err)
 	}
