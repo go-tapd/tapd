@@ -30,6 +30,8 @@ see [features.md](features.md)
 
 ### API Service
 
+- Example of using the Basic Authentication API service:
+
 ```go
 package main
 
@@ -55,6 +57,36 @@ func main() {
 	}
 
 	log.Printf("labels: %+v", labels)
+}
+```
+
+- Example of using the Personal Access Token (PAT) API service:
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+
+	"github.com/go-tapd/tapd"
+)
+
+func main() {
+	client, err := tapd.NewPATClient("your_access_token")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// example: get stories
+	stories, _, err := client.StoryService.GetStories(context.Background(), &tapd.GetStoriesRequest{
+		WorkspaceID: tapd.Ptr(123456),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Printf("stories: %+v", stories)
 }
 ```
 

@@ -8,7 +8,16 @@ type RequestOption func(*http.Request) error
 
 func WithRequestBasicAuth(clientID, clientSecret string) RequestOption {
 	return func(req *http.Request) error {
+		// Note: It just happens that the Header has the same name(Authorization), so the assignment can be overwritten.
 		req.SetBasicAuth(clientID, clientSecret)
+		return nil
+	}
+}
+
+func WithRequestAccessToken(accessToken string) RequestOption {
+	return func(req *http.Request) error {
+		// Note: It just happens that the Header has the same name(Authorization), so the assignment can be overwritten.
+		req.Header.Set("Authorization", "Bearer "+accessToken)
 		return nil
 	}
 }
