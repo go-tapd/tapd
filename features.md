@@ -302,9 +302,9 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
   - [x] `story_comment::add`
   - [x] `story_comment::update`
   - [x] `story_comment::delete`
-  - [ ] `task_comment::add`
-  - [ ] `task_comment::update`
-  - [ ] `task_comment::delete`
+  - [x] `task_comment::add`
+  - [x] `task_comment::update`
+  - [x] `task_comment::delete`
   - [x] `bug_comment::add`
   - [x] `bug_comment::update`
   - [x] `bug_comment::delete`
