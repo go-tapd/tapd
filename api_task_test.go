@@ -2,11 +2,47 @@ package tapd
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestTaskService_CreateTask(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/tasks", r.URL.Path)
+
+		var req CreateTaskRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, "Test Task", *req.Name)
+		assert.Equal(t, "This is a test task", *req.Description)
+		assert.Equal(t, "testuser", *req.Creator)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/create_task.json"))
+	}))
+
+	task, _, err := client.TaskService.CreateTask(ctx, &CreateTaskRequest{
+		WorkspaceID: Ptr(11112222),
+		Name:        Ptr("Test Task"),
+		Description: Ptr("This is a test task"),
+		Creator:     Ptr("testuser"),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, task)
+
+	assert.Equal(t, "1111112222001138994", task.ID)
+	assert.Equal(t, "Test Task", task.Name)
+	assert.Equal(t, "This is a test task", task.Description)
+	assert.Equal(t, "11112222", task.WorkspaceID)
+	assert.Equal(t, "testuser", task.Creator)
+	assert.Equal(t, "2025-06-26 21:49:02", task.Created)
+	assert.Equal(t, "2025-06-26 21:49:02", task.Modified)
+	assert.Equal(t, TaskStatusOpen, task.Status)
+}
 
 func TestTaskService_GetTasks(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
