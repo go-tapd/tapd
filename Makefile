@@ -5,7 +5,7 @@ init:
 
 .PHONY: go-mod-tidy
 go-mod-tidy:
-	go mod tidy -compat=1.23.0
+	go mod tidy -compat=1.24.0
 	@echo "✅ Go modules tidied"
 
 .PHONY: lint
