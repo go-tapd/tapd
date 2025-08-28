@@ -1,6 +1,6 @@
 # 🚀 Go-Tapd-SDK
 
-![Supported Go Versions](https://img.shields.io/badge/Go-%3E%3D1.23-blue)
+![Supported Go Versions](https://img.shields.io/badge/Go-%3E%3D1.24-blue)
 [![Package Version](https://badgen.net/github/release/go-tapd/tapd/stable)](https://github.com/go-tapd/tapd/releases)
 [![GoDoc](https://pkg.go.dev/badge/github.com/go-tapd/tapd)](https://pkg.go.dev/github.com/go-tapd/tapd)
 [![codecov](https://codecov.io/gh/go-tapd/tapd/graph/badge.svg?token=QPTHZ5L9GT)](https://codecov.io/gh/go-tapd/tapd)
