@@ -38,4 +38,4 @@ jobs:
         run: make lint
 
       - name: check-clean-work
-        run: make check-clean-work-tree
+        run: make check-clean-work
