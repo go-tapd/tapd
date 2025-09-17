@@ -92,7 +92,7 @@ func (e Enum[T]) EncodeValues(key string, v *url.Values) error {
 }
 
 func (e Enum[T]) MarshalJSON() ([]byte, error) {
-	if len(e) <= 0 {
+	if len(e) == 0 {
 		return json.Marshal(nil)
 	}
 

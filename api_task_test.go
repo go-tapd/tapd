@@ -1,7 +1,6 @@
 package tapd
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
 	"testing"
@@ -88,7 +87,7 @@ func TestTaskService_GetTaskChanges(t *testing.T) {
 		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_task_changes.json"))
 	}))
 
-	changes, _, err := client.TaskService.GetTaskChanges(context.Background(), &GetTaskChangesRequest{
+	changes, _, err := client.TaskService.GetTaskChanges(t.Context(), &GetTaskChangesRequest{
 		WorkspaceID: Ptr(11112222),
 	})
 	assert.NoError(t, err)
@@ -126,7 +125,7 @@ func TestTaskService_GetTaskChangesCount(t *testing.T) {
 		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_task_changes_count.json"))
 	}))
 
-	count, _, err := client.TaskService.GetTaskChangesCount(context.Background(), &GetTaskChangesCountRequest{
+	count, _, err := client.TaskService.GetTaskChangesCount(t.Context(), &GetTaskChangesCountRequest{
 		WorkspaceID: Ptr(11112222),
 	})
 	assert.NoError(t, err)
