@@ -33,3 +33,6 @@ jobs:
           path: ~/.cache/golangci-lint
           key: ${{ runner.os }}-golangci-lint-${{ hashFiles('**/.golangci.yml') }}
           restore-keys: ${{ runner.os }}-golangci-lint-
+
+      - name: Run lint
+        run: make lint
