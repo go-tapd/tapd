@@ -124,6 +124,7 @@ func decodeWebhookEvent[T any](eventType EventType, payload []byte) (EventType, 
 }
 
 // ChangeFields represents the changed fields in the webhook event.
+//
 // Deprecated: todo remove
 type ChangeFields []string
 
