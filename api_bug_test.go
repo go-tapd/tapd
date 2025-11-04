@@ -103,3 +103,21 @@ func TestBugService_UpdateBug(t *testing.T) {
 	assert.Equal(t, "", bug.Priority)
 	assert.Equal(t, BugSeverityNormal, bug.Severity)
 }
+
+func TestBugService_GetBugsCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bugs/count", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "anyechen", r.URL.Query().Get("current_owner"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bugs_count.json"))
+	}))
+
+	count, _, err := client.BugService.GetBugsCount(ctx, &GetBugsCountRequest{
+		WorkspaceID:  Ptr(11112222),
+		CurrentOwner: Ptr("anyechen"),
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 2, count)
+}
