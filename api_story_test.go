@@ -179,6 +179,33 @@ func TestStoryService_GetStoryCustomFieldsSettings(t *testing.T) {
 	assert.Equal(t, "", settings[0].AppName)
 }
 
+func TestStoryService_GetStoryTestCaseRelation(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/stories/get_story_tcase", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "33334444", r.URL.Query().Get("story_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_tcase.json"))
+	}))
+
+	relations, _, err := client.StoryService.GetStoryTestCaseRelation(ctx, &GetStoryTestCaseRelationRequest{
+		WorkspaceID: Ptr(11112222),
+		StoryID:     Ptr[int64](33334444),
+	})
+	assert.NoError(t, err)
+	assert.True(t, len(relations) > 0)
+	assert.Equal(t, "111111112222001466738", relations[0].ID)
+	assert.Equal(t, "1111112222", relations[0].WorkspaceID)
+	assert.Equal(t, "0", relations[0].TestPlanID)
+	assert.Equal(t, "111111112222001152461", relations[0].StoryID)
+	assert.Equal(t, "111111112222001175632", relations[0].TcaseID)
+	assert.Equal(t, "0", relations[0].Sort)
+	assert.Equal(t, "张三", relations[0].Creator)
+	assert.Equal(t, "0000-00-00 00:00:00", relations[0].Created)
+}
+
 func TestStoryService_GetStoryRelatedBugs(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

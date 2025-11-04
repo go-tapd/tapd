@@ -937,6 +937,23 @@ type (
 		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目ID
 	}
 
+	GetStoryTestCaseRelationRequest struct {
+		WorkspaceID     *int   `url:"workspace_id,omitempty"`      // 项目ID
+		StoryID         *int64 `url:"story_id,omitempty"`          // 需求ID
+		IncludeTestPlan *int   `url:"include_test_plan,omitempty"` // 是否包含测试计划	取值为1或0，默认为1
+	}
+
+	StoryTestCaseRelation struct {
+		ID          string `json:"id,omitempty"`
+		WorkspaceID string `json:"workspace_id,omitempty"`
+		TestPlanID  string `json:"test_plan_id,omitempty"`
+		StoryID     string `json:"story_id,omitempty"`
+		TcaseID     string `json:"tcase_id,omitempty"`
+		Sort        string `json:"sort,omitempty"`
+		Creator     string `json:"creator,omitempty"`
+		Created     string `json:"created,omitempty"`
+	}
+
 	StoryCustomFieldsSetting struct {
 		ID              string  `json:"id,omitempty"`           // 自定义字段配置的ID
 		WorkspaceID     string  `json:"workspace_id,omitempty"` // 所属项目ID
@@ -1326,7 +1343,12 @@ type StoryService interface {
 	GetStoryCustomFieldsSettings(ctx context.Context, request *GetStoryCustomFieldsSettingsRequest, opts ...RequestOption) ([]*StoryCustomFieldsSetting, *Response, error)
 
 	// 获取需求变更次数
-	// 获取需求与测试用例关联关系
+
+	// GetStoryTestCaseRelation 获取需求与测试用例关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_tcase.html
+	GetStoryTestCaseRelation(ctx context.Context, request *GetStoryTestCaseRelationRequest, opts ...RequestOption) ([]*StoryTestCaseRelation, *Response, error)
+
 	// 获取需求前后置关系
 	// 批量新增或修改需求前后置关系
 	// 批量删除需求前后置关系
@@ -1566,6 +1588,30 @@ func (s *storyService) GetStoryCustomFieldsSettings(
 	}
 
 	return settings, resp, nil
+}
+
+func (s *storyService) GetStoryTestCaseRelation(
+	ctx context.Context, request *GetStoryTestCaseRelationRequest, opts ...RequestOption,
+) ([]*StoryTestCaseRelation, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_story_tcase", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		StoryTcase *StoryTestCaseRelation `json:"TestPlanStoryTcaseRelation,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	relations := make([]*StoryTestCaseRelation, 0, len(items))
+	for _, item := range items {
+		relations = append(relations, item.StoryTcase)
+	}
+
+	return relations, resp, nil
 }
 
 func (s *storyService) UpdateStory(
