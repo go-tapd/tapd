@@ -206,6 +206,35 @@ func TestStoryService_GetStoryTestCaseRelation(t *testing.T) {
 	assert.Equal(t, "0000-00-00 00:00:00", relations[0].Created)
 }
 
+func TestStoryService_GetStoryFieldsLabel(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/stories/get_fields_lable", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_fields_lable.json"))
+	}))
+
+	labels, _, err := client.StoryService.GetStoryFieldsLabel(ctx, &GetStoryFieldsLabelRequest{
+		WorkspaceID: Ptr(11112222),
+	})
+	assert.NoError(t, err)
+	assert.True(t, len(labels) > 0)
+
+	// Verify some of the field labels
+	labelMap := make(map[string]string)
+	for _, label := range labels {
+		labelMap[label.EN] = label.CN
+	}
+
+	assert.Equal(t, "ID", labelMap["id"])
+	assert.Equal(t, "标题", labelMap["name"])
+	assert.Equal(t, "详细描述", labelMap["description"])
+	assert.Equal(t, "项目ID", labelMap["workspace_id"])
+	assert.Equal(t, "创建人", labelMap["creator"])
+}
+
 func TestStoryService_GetStoryRelatedBugs(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

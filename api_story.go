@@ -954,6 +954,15 @@ type (
 		Created     string `json:"created,omitempty"`
 	}
 
+	GetStoryFieldsLabelRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目ID
+	}
+
+	StoryFieldLabel struct {
+		EN string `json:"en,omitempty"` // 字段英文名
+		CN string `json:"cn,omitempty"` // 字段中文标签
+	}
+
 	StoryCustomFieldsSetting struct {
 		ID              string  `json:"id,omitempty"`           // 自定义字段配置的ID
 		WorkspaceID     string  `json:"workspace_id,omitempty"` // 所属项目ID
@@ -1363,7 +1372,11 @@ type StoryService interface {
 
 	// 更新需求的需求类别
 	// 获取需求所有字段及候选值
-	// 获取需求所有字段的中英文
+
+	// GetStoryFieldsLabel 获取需求所有字段的中英文
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_fields_lable.html
+	GetStoryFieldsLabel(ctx context.Context, request *GetStoryFieldsLabelRequest, opts ...RequestOption) ([]*StoryFieldLabel, *Response, error)
 
 	// GetStoryTemplates 获取需求模板列表
 	//
@@ -1631,6 +1644,31 @@ func (s *storyService) UpdateStory(
 	}
 
 	return response.Story, resp, nil
+}
+
+func (s *storyService) GetStoryFieldsLabel(
+	ctx context.Context, request *GetStoryFieldsLabelRequest, opts ...RequestOption,
+) ([]*StoryFieldLabel, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_fields_lable", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var labelsMap map[string]string
+	resp, err := s.client.Do(req, &labelsMap)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	labels := make([]*StoryFieldLabel, 0, len(labelsMap))
+	for en, cn := range labelsMap {
+		labels = append(labels, &StoryFieldLabel{
+			EN: en,
+			CN: cn,
+		})
+	}
+
+	return labels, resp, nil
 }
 
 func (s *storyService) GetStoryTemplates(
