@@ -48,3 +48,26 @@ func TestWorkspaceService_GetUsers(t *testing.T) {
 		LeaveProjectTime: nil,
 	})
 }
+
+func TestWorkspaceService_GetWorkspaceInfo(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/workspaces/info", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/get_workspace_info.json"))
+	}))
+
+	workspace, _, err := client.WorkspaceService.GetWorkspaceInfo(ctx, &GetWorkspaceInfoRequest{
+		WorkspaceID: Ptr(11112222),
+	})
+	require.NoError(t, err)
+	assert.Equal(t, "1112222", workspace.ID)
+	assert.Equal(t, "T8", workspace.Name)
+	assert.Equal(t, "1112222", workspace.PrettyName)
+	assert.Equal(t, "project", workspace.Category)
+	assert.Equal(t, "normal", workspace.Status)
+	assert.Equal(t, "描述信息", workspace.Description)
+	assert.Equal(t, "张三", workspace.Creator)
+	assert.Equal(t, "2018-06-29 15:01:33", workspace.Created)
+}

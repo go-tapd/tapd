@@ -6,6 +6,35 @@ import (
 )
 
 type (
+	GetWorkspaceInfoRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	Workspace struct {
+		ID                string  `json:"id,omitempty"`
+		Name              string  `json:"name,omitempty"`
+		PrettyName        string  `json:"pretty_name,omitempty"`
+		Category          string  `json:"category,omitempty"`
+		Status            string  `json:"status,omitempty"`
+		Description       string  `json:"description,omitempty"`
+		Creator           string  `json:"creator,omitempty"`
+		Created           string  `json:"created,omitempty"`
+		BeginDate         *string `json:"begin_date,omitempty"`
+		EndDate           *string `json:"end_date,omitempty"`
+		Secrecy           string  `json:"secrecy,omitempty"`
+		ExternalOn        string  `json:"external_on,omitempty"`
+		NewTask           string  `json:"new_task,omitempty"`
+		CompanyID         string  `json:"company_id,omitempty"`
+		ProductType       *string `json:"product_type,omitempty"`
+		PlatformType      *string `json:"platform_type,omitempty"`
+		IsSelfDevelopment *string `json:"is_self_development,omitempty"`
+		Objective         string  `json:"objective,omitempty"`
+		Schedule          *string `json:"schedule,omitempty"`
+		Milestone         *string `json:"milestone,omitempty"`
+		Risk              *string `json:"risk,omitempty"`
+		Closed            *string `json:"closed,omitempty"`
+	}
+
 	GetUsersRequest struct {
 		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
 		User        *Multi[string] `url:"user,omitempty"`         // [可选]用户昵称或ID
@@ -83,6 +112,13 @@ type WorkspaceService interface {
 	// 获取子项目信息
 	// 获取项目信息
 
+	// GetWorkspaceInfo 获取项目信息
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/get_workspace_info.html
+	GetWorkspaceInfo(
+		ctx context.Context, request *GetWorkspaceInfoRequest, opts ...RequestOption,
+	) (*Workspace, *Response, error)
+
 	// GetUsers 获取指定项目成员
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/users.html
@@ -117,6 +153,25 @@ func NewWorkspaceService(client *Client) WorkspaceService {
 	return &workspaceService{
 		client: client,
 	}
+}
+
+func (s *workspaceService) GetWorkspaceInfo(
+	ctx context.Context, request *GetWorkspaceInfoRequest, opts ...RequestOption,
+) (*Workspace, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workspaces/get_workspace_info", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Workspace *Workspace `json:"Workspace"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Workspace, resp, nil
 }
 
 func (s *workspaceService) GetUsers(
