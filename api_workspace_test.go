@@ -52,7 +52,7 @@ func TestWorkspaceService_GetUsers(t *testing.T) {
 func TestWorkspaceService_GetWorkspaceInfo(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
-		assert.Equal(t, "/workspaces/info", r.URL.Path)
+		assert.Equal(t, "/workspaces/get_workspace_info", r.URL.Path)
 		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
 
 		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/get_workspace_info.json"))
