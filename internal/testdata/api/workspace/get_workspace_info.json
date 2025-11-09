@@ -1,0 +1,30 @@
+{
+  "status": 1,
+  "data": {
+    "Workspace": {
+      "id": "1112222",
+      "name": "T8",
+      "pretty_name": "1112222",
+      "category": "project",
+      "status": "normal",
+      "description": "描述信息",
+      "product_type": null,
+      "platform_type": null,
+      "is_self_development": null,
+      "objective": "",
+      "begin_date": null,
+      "end_date": null,
+      "secrecy": "0",
+      "external_on": "1",
+      "creator": "张三",
+      "created": "2018-06-29 15:01:33",
+      "schedule": null,
+      "milestone": null,
+      "risk": null,
+      "closed": null,
+      "new_task": "0",
+      "company_id": " 11122"
+    }
+  },
+  "info": "success"
+}
