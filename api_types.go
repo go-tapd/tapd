@@ -42,7 +42,7 @@ func (m Multi[T]) EncodeValues(key string, v *url.Values) error {
 
 func (m Multi[T]) String() string {
 	if len(m) > 0 {
-		var values []string
+		values := make([]string, 0, len(m))
 		for _, value := range m {
 			values = append(values, fmt.Sprint(value))
 		}
