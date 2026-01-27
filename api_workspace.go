@@ -107,10 +107,10 @@ type (
 		} `json:"operate_objects"`
 	}
 
-	GetCustomWorkCalendarRequest struct {
-		WorkspaceID *int    `url:"workspace_id,omitempty"` // [必须]项目ID
-		Year        *string `url:"year,omitempty"`         // [必须]表示哪一年
-	}
+GetCustomWorkCalendarRequest struct {
+	WorkspaceID int    `url:"workspace_id"` // [必须]项目ID
+	Year        string `url:"year"`         // [必须]表示哪一年
+}
 
 	CustomWorkCalendar struct {
 		Weekdays []string `json:"weekdays,omitempty"`
