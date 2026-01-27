@@ -242,7 +242,7 @@ func (s *workspaceService) GetCustomWorkCalendar(
 	}
 
 	response := new(CustomWorkCalendar)
-	resp, err := s.client.Do(req, &response)
+resp, err := s.client.Do(req, response)
 	if err != nil {
 		return nil, resp, err
 	}
