@@ -106,6 +106,17 @@ type (
 			MemberActivityLog string `json:"member_activity_log"`
 		} `json:"operate_objects"`
 	}
+
+GetCustomWorkCalendarRequest struct {
+	WorkspaceID int    `url:"workspace_id"` // [必须]项目ID
+	Year        string `url:"year"`         // [必须]表示哪一年
+}
+
+	CustomWorkCalendar struct {
+		Weekdays []string `json:"weekdays,omitempty"`
+		Holidays []string `json:"holidays,omitempty"`
+		Workdays []string `json:"workdays,omitempty"`
+	}
 )
 
 type WorkspaceService interface {
@@ -141,6 +152,13 @@ type WorkspaceService interface {
 	GetMemberActivityLog(
 		ctx context.Context, request *GetMemberActivityLogRequest, opts ...RequestOption,
 	) (*GetMemberActivityLogResponse, *Response, error)
+
+	// GetCustomWorkCalendar 获取自定义工作日历详情
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/get_custom_work_calendar.html
+	GetCustomWorkCalendar(
+		ctx context.Context, request *GetCustomWorkCalendarRequest, opts ...RequestOption,
+	) (*CustomWorkCalendar, *Response, error)
 }
 
 type workspaceService struct {
@@ -208,6 +226,23 @@ func (s *workspaceService) GetMemberActivityLog(
 
 	response := new(GetMemberActivityLogResponse)
 	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
+}
+
+func (s *workspaceService) GetCustomWorkCalendar(
+	ctx context.Context, request *GetCustomWorkCalendarRequest, opts ...RequestOption,
+) (*CustomWorkCalendar, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workspaces/get_custom_work_calendar", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	response := new(CustomWorkCalendar)
+resp, err := s.client.Do(req, response)
 	if err != nil {
 		return nil, resp, err
 	}
