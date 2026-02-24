@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Go-Tapd-SDK** is a Go client library for accessing the TAPD API, a Chinese Agile project management platform. The project is in active development but marked as non-stable (not recommended for production use).
 
 - **Module**: `github.com/go-tapd/tapd`
-- **Go Version**: 1.24.0
+- **Go Version**: 1.25.0
 - **Architecture**: Clean architecture with service-oriented design
 
 ## Development Commands
@@ -202,7 +202,7 @@ When adding new features:
 ## Important Notes
 
 - **Non-stable**: Not recommended for production use
-- **Go 1.24+ Required**: Uses modern Go features including generics
+- **Go 1.25+ Required**: Uses modern Go features including generics
 - **API Documentation**: https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
 - **Active Development**: Regular commits and CI/CD
 - **Community Contributions**: Welcome via issues and PRs

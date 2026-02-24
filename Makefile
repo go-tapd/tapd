@@ -4,7 +4,7 @@ GOLANGCI_LINT = $(GO) tool golangci-lint
 .PHONY: go-mod-tidy
 go-mod-tidy:
 	@echo "go mod tidy in all modules" && \
-		$(GO) mod tidy -compat=1.24.0
+		$(GO) mod tidy -compat=1.25.0
 
 .PHONY: lint
 lint: go-mod-tidy
