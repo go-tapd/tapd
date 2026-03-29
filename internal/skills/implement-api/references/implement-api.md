@@ -5,9 +5,10 @@
 - `api_*.go`, `api_*_test.go`: Reference implementations by resource type.
 
 ## Core Checklist
-- Collect API doc URL, service type, and description.
+- Start from the user input; if an API doc URL exists, infer the service type and endpoint behavior from the doc before asking follow-up questions.
 - Read `guide.md` before editing code.
 - Fetch and parse the API doc; list required params and response fields.
+- Record missing details or ambiguities that affect the implementation; stop to confirm only when they block a safe change.
 - Find a similar endpoint and copy its structure and test style.
 - Use pointer fields for request params with `url` tags and `omitempty`.
 - Use value fields for responses; only nullable fields are pointers; `json` tags.
@@ -16,9 +17,9 @@
 - Implement method using existing request/response helpers.
 - Create `internal/testdata/api/{resource}/{endpoint}.json` with status/data/info.
 - Write unit test with mock server assertions.
-- Write single integration test in `tests/` only for that endpoint.
+- Write single integration test in `tests/` only for that endpoint when the environment supports it.
 - Update `features.md`.
-- Run targeted tests and then full unit tests.
+- Run targeted tests and then full unit tests when available; report any skipped validation and the blocking condition.
 
 ## Quality Checklist
 - Request struct uses pointer fields for all params.
@@ -26,7 +27,7 @@
 - Method signature matches existing patterns in similar endpoints.
 - Test data matches API response shape and uses status/data/info keys.
 - Unit test asserts method/path/params plus 3-5 key fields.
-- Integration test is run alone and uses a real workspace ID.
+- Integration test is run alone and uses a real workspace ID when credentials and network access are available.
 
 ## Test Commands
 - Unit: `go test . -run Test{Service}_{Method} -v`
