@@ -1,0 +1,4 @@
+interface:
+  display_name: "Implement TAPD API"
+  short_description: "Add TAPD API endpoints in go-tapd"
+  default_prompt: "Use $implement-api to add a new TAPD API endpoint to this go-tapd repository."

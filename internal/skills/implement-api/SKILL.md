@@ -9,20 +9,21 @@ description: Implement a new TAPD API endpoint in the go-tapd SDK when a user pr
 Implement a TAPD API endpoint in this repo using the standard workflow and conventions.
 
 ## Workflow
-1. Collect inputs: API doc URL, service type, brief description.
+1. Start from the user input. If an API doc URL is provided, fetch it first and infer the service type and behavior from the document; ask follow-up questions only when the doc is missing key details.
 2. Read project guidance: `guide.md`; use `references/implement-api.md` as a checklist.
-3. Fetch the API doc content when a URL is provided; extract required params/response fields.
-4. Locate a similar implementation in `api_*.go` and `api_*_test.go`; mirror patterns and naming.
-5. Implement code:
+3. Extract required params, response fields, and any constraints from the API doc.
+4. List missing details or ambiguities that affect the request/response design, method signature, or tests. Stop to confirm only when those gaps block a safe implementation.
+5. Locate a similar implementation in `api_*.go` and `api_*_test.go`; mirror patterns and naming.
+6. Implement code:
    - Request struct: pointer fields, `url` tags, Chinese comments.
    - Response struct: value fields with nullable pointers, `json` tags, Chinese comments.
    - Service interface method and implementation with API doc link in the comment.
-6. Add tests:
+7. Add tests:
    - Test data in `internal/testdata/api/{resource}/{endpoint}.json`.
    - Unit test in `api_*_test.go` validating method/path/params and key fields.
-   - Integration test in `tests/api_*_prod_test.go` (single-test run only).
-7. Update docs: mark the endpoint in `features.md`.
-8. Run tests and report results.
+   - Integration test in `tests/api_*_prod_test.go` only when the environment has the required credentials, workspace, and network access; otherwise report the blocker explicitly.
+8. Update docs: mark the endpoint in `features.md`.
+9. Run the available tests and report results, including any skipped validation and why it was skipped.
 
 ## Conventions and checks
 - Follow `guide.md` exactly for naming, request/response types, and patterns.
@@ -30,6 +31,8 @@ Implement a TAPD API endpoint in this repo using the standard workflow and conve
 - Always include the API documentation link in the method comment.
 - Keep comments in Chinese for exported fields.
 - Do not run integration tests in batch.
+- Prefer inference from the API document over unnecessary user follow-up questions.
+- Treat missing credentials, network limits, or incomplete API docs as explicit blockers to report, not reasons to guess.
 
 ## Output expectations
 - Provide a short summary of the API implemented.
