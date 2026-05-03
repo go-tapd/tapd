@@ -1,6 +1,6 @@
 module github.com/go-tapd/tapd
 
-go 1.25.7
+go 1.26
 
 tool github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 
@@ -68,7 +68,7 @@ require (
 	github.com/daixiang0/gci v0.14.0 // indirect
 	github.com/dave/dst v0.27.4 // indirect
 	github.com/denis-tingaikin/go-header v0.5.0 // indirect
-	github.com/dlclark/regexp2 v1.12.0 // indirect
+	github.com/dlclark/regexp2/v2 v2.0.0 // indirect
 	github.com/ettle/strcase v0.2.0 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
