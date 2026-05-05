@@ -36,7 +36,8 @@ func TestDispatcher_Dispatch(t *testing.T) {
 	handler := func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
 		assert.Equal(t, "/webhook", r.URL.Path)
-		assert.NoError(t,
+		assert.NoError(
+			t,
 			dispatcher.DispatchRequest(r, WithDispatchRequestContext(
 				newDispatcherContext(r.Context()),
 			)),
