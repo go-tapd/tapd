@@ -2,10 +2,10 @@ name: Go Test
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 env:
   GOPROXY: "https://proxy.golang.org"
 
