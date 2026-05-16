@@ -1,0 +1,34 @@
+{
+  "status": 1,
+  "data": {
+    "id": {
+      "html_type": "input",
+      "options": [],
+      "label": "ID"
+    },
+    "name": {
+      "html_type": "input",
+      "options": [],
+      "label": "计划名称"
+    },
+    "status": {
+      "html_type": "select",
+      "options": {
+        "open": "开启",
+        "close": "关闭"
+      },
+      "label": "状态"
+    },
+    "type": {
+      "html_type": "select",
+      "options": {
+        "功能测试": "功能测试",
+        "性能测试": "性能测试",
+        "安全性测试": "安全性测试",
+        "其他": "其他"
+      },
+      "label": "测试类型"
+    }
+  },
+  "info": "success"
+}

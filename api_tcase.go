@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 // TestCaseStatus 测试用例状态
@@ -216,21 +217,33 @@ type (
 
 	// TestPlan 测试计划
 	TestPlan struct {
-		ID          string  `json:"id,omitempty"`           // 测试计划ID
-		WorkspaceID string  `json:"workspace_id,omitempty"` // 项目ID
-		Name        string  `json:"name,omitempty"`         // 测试计划标题
-		Description string  `json:"description,omitempty"`  // 测试计划详细描述
-		Version     string  `json:"version,omitempty"`      // 版本号
-		Owner       string  `json:"owner,omitempty"`        // 测试计划负责人
-		Status      string  `json:"status,omitempty"`       // 状态
-		Type        string  `json:"type,omitempty"`         // 测试类型
-		StartDate   *string `json:"start_date,omitempty"`   // 预计开始
-		EndDate     *string `json:"end_date,omitempty"`     // 预计结束
-		Creator     string  `json:"creator,omitempty"`      // 创建人
-		Created     string  `json:"created,omitempty"`      // 创建时间
-		Modified    string  `json:"modified,omitempty"`     // 最后修改时间
-		Modifier    string  `json:"modifier,omitempty"`     // 修改人
-		CreatedFrom string  `json:"created_from,omitempty"` // 创建来源
+		ID            string  `json:"id,omitempty"`             // 测试计划ID
+		WorkspaceID   string  `json:"workspace_id,omitempty"`   // 项目ID
+		Name          string  `json:"name,omitempty"`           // 测试计划标题
+		Description   string  `json:"description,omitempty"`    // 测试计划详细描述
+		Version       string  `json:"version,omitempty"`        // 版本号
+		Owner         string  `json:"owner,omitempty"`          // 测试计划负责人
+		Status        string  `json:"status,omitempty"`         // 状态
+		Type          string  `json:"type,omitempty"`           // 测试类型
+		StartDate     *string `json:"start_date,omitempty"`     // 预计开始
+		EndDate       *string `json:"end_date,omitempty"`       // 预计结束
+		Creator       string  `json:"creator,omitempty"`        // 创建人
+		Created       string  `json:"created,omitempty"`        // 创建时间
+		Modified      string  `json:"modified,omitempty"`       // 最后修改时间
+		Modifier      string  `json:"modifier,omitempty"`       // 修改人
+		IterationID   string  `json:"iteration_id,omitempty"`   // 关联迭代ID
+		TemplateID    string  `json:"template_id,omitempty"`    // 模板ID
+		CreatedFrom   string  `json:"created_from,omitempty"`   // 创建来源
+		CustomField1  *string `json:"custom_field_1,omitempty"` // 自定义字段
+		CustomField2  *string `json:"custom_field_2,omitempty"`
+		CustomField3  *string `json:"custom_field_3,omitempty"`
+		CustomField4  *string `json:"custom_field_4,omitempty"`
+		CustomField5  *string `json:"custom_field_5,omitempty"`
+		CustomField6  *string `json:"custom_field_6,omitempty"`
+		CustomField7  *string `json:"custom_field_7,omitempty"`
+		CustomField8  *string `json:"custom_field_8,omitempty"`
+		CustomField9  *string `json:"custom_field_9,omitempty"`
+		CustomField10 *string `json:"custom_field_10,omitempty"`
 	}
 
 	CreateTestPlanRequest struct {
@@ -495,6 +508,120 @@ type (
 		LastExecutor  *string `url:"last_executor,omitempty"`  // 最后执行人
 		IncludeRepeat *int    `url:"include_repeat,omitempty"` // 传1可以获取所有数据
 	}
+
+	GetTestPlanProgressRequest struct {
+		ID          *int64 `url:"id,omitempty"`           // [必须]测试计划ID
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	TestPlanProgress struct {
+		StoryCount    int                          `json:"story_count,omitempty"`    // 需求数量
+		TestCaseCount int                          `json:"tcase_count,omitempty"`    // 测试用例数量
+		StatusCounter map[TestCaseResultStatus]int `json:"status_counter,omitempty"` // 各结果状态数量
+		ExecutedRate  string                       `json:"executed_rate,omitempty"`  // 执行率
+	}
+
+	GetTestPlanTestCaseRelationsRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		TestPlanID  *int64 `url:"test_plan_id,omitempty"` // [必须]测试计划ID
+		Limit       *int   `url:"limit,omitempty"`        // 设置返回数量限制，默认为30
+		Page        *int   `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1
+		Order       *Order `url:"order,omitempty"`        // 排序规则
+	}
+
+	TestPlanTestCaseRelation struct {
+		ID          string `json:"id,omitempty"`           // 关系ID
+		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
+		TestPlanID  string `json:"test_plan_id,omitempty"` // 测试计划ID
+		StoryID     string `json:"story_id,omitempty"`     // 需求ID
+		TestCaseID  string `json:"tcase_id,omitempty"`     // 测试用例ID
+		Sort        string `json:"sort,omitempty"`         // 排序
+		Creator     string `json:"creator,omitempty"`      // 创建人
+		Created     string `json:"created,omitempty"`      // 创建时间
+	}
+
+	GetTestPlansRequest struct {
+		ID          *Multi[int64]  `url:"id,omitempty"`           // 测试计划ID，支持多ID查询
+		Name        *string        `url:"name,omitempty"`         // 测试计划标题
+		Description *string        `url:"description,omitempty"`  // 测试计划详细描述
+		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
+		Creator     *string        `url:"creator,omitempty"`      // 创建人
+		Created     *string        `url:"created,omitempty"`      // 创建时间
+		Modifier    *string        `url:"modifier,omitempty"`     // 修改人
+		Modified    *string        `url:"modified,omitempty"`     // 最后修改时间
+		Owner       *string        `url:"owner,omitempty"`        // 测试计划负责人
+		StartDate   *string        `url:"start_date,omitempty"`   // 预计开始
+		EndDate     *string        `url:"end_date,omitempty"`     // 预计结束
+		IterationID *int64         `url:"iteration_id,omitempty"` // 关联迭代ID
+		Version     *string        `url:"version,omitempty"`      // 版本号
+		Type        *string        `url:"type,omitempty"`         // 测试类型
+		Status      *string        `url:"status,omitempty"`       // 状态，默认open
+		Limit       *int           `url:"limit,omitempty"`        // 设置返回数量限制，默认为30，最大取200
+		Page        *int           `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1
+		Order       *Order         `url:"order,omitempty"`        // 排序规则
+		Fields      *Multi[string] `url:"fields,omitempty"`       // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	GetTestPlansCountRequest struct {
+		ID          *Multi[int64] `url:"id,omitempty"`           // 测试计划ID，支持多ID查询
+		Name        *string       `url:"name,omitempty"`         // 测试计划标题
+		Description *string       `url:"description,omitempty"`  // 测试计划详细描述
+		WorkspaceID *int          `url:"workspace_id,omitempty"` // [必须]项目ID
+		Creator     *string       `url:"creator,omitempty"`      // 创建人
+		Modifier    *string       `url:"modifier,omitempty"`     // 修改人
+		Owner       *string       `url:"owner,omitempty"`        // 测试计划负责人
+		StartDate   *string       `url:"start_date,omitempty"`   // 预计开始
+		EndDate     *string       `url:"end_date,omitempty"`     // 预计结束
+		IterationID *int64        `url:"iteration_id,omitempty"` // 关联迭代ID
+		Version     *string       `url:"version,omitempty"`      // 版本号
+		Type        *string       `url:"type,omitempty"`         // 测试类型
+		Status      *string       `url:"status,omitempty"`       // 状态，默认open
+	}
+
+	RemoveTestCaseFromTestPlanRequest struct {
+		TestPlanID  *int64        `json:"test_plan_id,omitempty"` // [必须]测试计划ID
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		StoryID     *int64        `json:"story_id,omitempty"`     // 需求ID
+		TestCaseID  *Multi[int64] `json:"tcase_id,omitempty"`     // [必须]测试用例ID，多个使用英文逗号分隔
+	}
+
+	UpdateTestCaseRequest = CreateTestCaseRequest
+
+	UpdateTestPlanRequest struct {
+		ID            *int64  `json:"id,omitempty"`             // [必须]测试计划ID
+		Name          *string `json:"name,omitempty"`           // 测试计划标题
+		Description   *string `json:"description,omitempty"`    // 测试计划详细描述
+		WorkspaceID   *int    `json:"workspace_id,omitempty"`   // [必须]项目ID
+		Modifier      *string `json:"modifier,omitempty"`       // 修改人
+		Owner         *string `json:"owner,omitempty"`          // 测试计划负责人
+		StartDate     *string `json:"start_date,omitempty"`     // 预计开始
+		EndDate       *string `json:"end_date,omitempty"`       // 预计结束
+		Version       *string `json:"version,omitempty"`        // 版本号
+		Type          *string `json:"type,omitempty"`           // 测试类型
+		Status        *string `json:"status,omitempty"`         // 状态，默认open
+		TemplateID    *int64  `json:"template_id,omitempty"`    // 模板ID
+		CustomField1  *string `json:"custom_field_1,omitempty"` // 自定义字段
+		CustomField2  *string `json:"custom_field_2,omitempty"`
+		CustomField3  *string `json:"custom_field_3,omitempty"`
+		CustomField4  *string `json:"custom_field_4,omitempty"`
+		CustomField5  *string `json:"custom_field_5,omitempty"`
+		CustomField6  *string `json:"custom_field_6,omitempty"`
+		CustomField7  *string `json:"custom_field_7,omitempty"`
+		CustomField8  *string `json:"custom_field_8,omitempty"`
+		CustomField9  *string `json:"custom_field_9,omitempty"`
+		CustomField10 *string `json:"custom_field_10,omitempty"`
+	}
+
+	GetTestPlanFieldsInfoRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	TestPlanFieldsInfo struct {
+		Name     string                     `json:"name,omitempty"`      // 字段名
+		HTMLType TestCaseFieldsInfoHTMLType `json:"html_type,omitempty"` // 类型
+		Label    string                     `json:"label,omitempty"`     // 中文名称
+		Options  []TestCaseFieldsInfoOption `json:"options,omitempty"`   // 候选值
+	}
 )
 
 // TestService 测试
@@ -635,6 +762,54 @@ type TestService interface {
 	GetTestPlanResult(
 		ctx context.Context, request *GetTestPlanResultRequest, opts ...RequestOption,
 	) ([]*TestCase, *Response, error)
+
+	// GetTestPlanProgress 获取测试计划执行进度
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plan_progress.html
+	GetTestPlanProgress(
+		ctx context.Context, request *GetTestPlanProgressRequest, opts ...RequestOption,
+	) (*TestPlanProgress, *Response, error)
+
+	// GetTestPlanTestCaseRelations 获取测试计划与测试用例关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plan_tcases.html
+	GetTestPlanTestCaseRelations(
+		ctx context.Context, request *GetTestPlanTestCaseRelationsRequest, opts ...RequestOption,
+	) ([]*TestPlanTestCaseRelation, *Response, error)
+
+	// GetTestPlans 获取测试计划
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plans.html
+	GetTestPlans(ctx context.Context, request *GetTestPlansRequest, opts ...RequestOption) ([]*TestPlan, *Response, error)
+
+	// GetTestPlansCount 获取测试计划数量
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plans_count.html
+	GetTestPlansCount(ctx context.Context, request *GetTestPlansCountRequest, opts ...RequestOption) (int, *Response, error)
+
+	// RemoveTestCaseFromTestPlan 测试用例移出测试计划
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/remove_tcase_instance.html
+	RemoveTestCaseFromTestPlan(
+		ctx context.Context, request *RemoveTestCaseFromTestPlanRequest, opts ...RequestOption,
+	) (bool, *Response, error)
+
+	// UpdateTestCase 更新测试用例
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/update_tcase.html
+	UpdateTestCase(ctx context.Context, request *UpdateTestCaseRequest, opts ...RequestOption) (*TestCase, *Response, error)
+
+	// UpdateTestPlan 编辑测试计划
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/update_test_plan.html
+	UpdateTestPlan(ctx context.Context, request *UpdateTestPlanRequest, opts ...RequestOption) (*TestPlan, *Response, error)
+
+	// GetTestPlanFieldsInfo 获取测试计划所有字段及候选值
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plan_fields_info.html
+	GetTestPlanFieldsInfo(
+		ctx context.Context, request *GetTestPlanFieldsInfoRequest, opts ...RequestOption,
+	) ([]*TestPlanFieldsInfo, *Response, error)
 }
 
 type testService struct {
@@ -933,24 +1108,11 @@ func (s *testService) GetTestCaseFieldsInfo(
 
 	fields := make([]*TestCaseFieldsInfo, 0, len(raw))
 	for _, item := range raw {
-		options := make([]TestCaseFieldsInfoOption, 0)
-		if os, ok := item.Options.(map[string]any); ok {
-			options = make([]TestCaseFieldsInfoOption, 0, len(os))
-			for key, value := range os {
-				if v, ok2 := value.(string); ok2 {
-					options = append(options, TestCaseFieldsInfoOption{
-						Key:   key,
-						Label: v,
-					})
-				}
-			}
-		}
-
 		fields = append(fields, &TestCaseFieldsInfo{
 			Name:     item.Name,
 			HTMLType: item.HTMLType,
 			Label:    item.Label,
-			Options:  options,
+			Options:  newTestCaseFieldsInfoOptions(item.Options),
 			Default:  item.Default,
 		})
 	}
@@ -1074,6 +1236,175 @@ func (s *testService) GetTestPlanResult(
 	return testCases, resp, nil
 }
 
+func (s *testService) GetTestPlanProgress(
+	ctx context.Context, request *GetTestPlanProgressRequest, opts ...RequestOption,
+) (*TestPlanProgress, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "test_plans/progress", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var progress TestPlanProgress
+	resp, err := s.client.Do(req, &progress)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &progress, resp, nil
+}
+
+func (s *testService) GetTestPlanTestCaseRelations(
+	ctx context.Context, request *GetTestPlanTestCaseRelationsRequest, opts ...RequestOption,
+) ([]*TestPlanTestCaseRelation, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "test_plans/get_test_plan_tcase", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		Relation *TestPlanTestCaseRelation `json:"TestPlanStoryTcaseRelation,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	relations := make([]*TestPlanTestCaseRelation, 0, len(items))
+	for _, item := range items {
+		relations = append(relations, item.Relation)
+	}
+
+	return relations, resp, nil
+}
+
+func (s *testService) GetTestPlans(
+	ctx context.Context, request *GetTestPlansRequest, opts ...RequestOption,
+) ([]*TestPlan, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "test_plans", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		TestPlan *TestPlan `json:"TestPlan,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	plans := make([]*TestPlan, 0, len(items))
+	for _, item := range items {
+		plans = append(plans, item.TestPlan)
+	}
+
+	return plans, resp, nil
+}
+
+func (s *testService) GetTestPlansCount(
+	ctx context.Context, request *GetTestPlansCountRequest, opts ...RequestOption,
+) (int, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "test_plans/count", request, opts)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var count CountResponse
+	resp, err := s.client.Do(req, &count)
+	if err != nil {
+		return 0, resp, err
+	}
+
+	return count.Count, resp, nil
+}
+
+func (s *testService) RemoveTestCaseFromTestPlan(
+	ctx context.Context, request *RemoveTestCaseFromTestPlanRequest, opts ...RequestOption,
+) (bool, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "tcase_instance/remove_tcase", request, opts)
+	if err != nil {
+		return false, nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return false, resp, err
+	}
+
+	return true, resp, nil
+}
+
+func (s *testService) UpdateTestCase(
+	ctx context.Context, request *UpdateTestCaseRequest, opts ...RequestOption,
+) (*TestCase, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "tcases", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var item struct {
+		TestCase *TestCase `json:"Tcase,omitempty"`
+	}
+	resp, err := s.client.Do(req, &item)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return item.TestCase, resp, nil
+}
+
+func (s *testService) UpdateTestPlan(
+	ctx context.Context, request *UpdateTestPlanRequest, opts ...RequestOption,
+) (*TestPlan, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "test_plans", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var item struct {
+		TestPlan *TestPlan `json:"TestPlan,omitempty"`
+	}
+	resp, err := s.client.Do(req, &item)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return item.TestPlan, resp, nil
+}
+
+type rawTestPlanFieldsInfo map[string]struct {
+	HTMLType TestCaseFieldsInfoHTMLType `json:"html_type,omitempty"` // 类型
+	Label    string                     `json:"label,omitempty"`     // 中文名称
+	Options  any                        `json:"options,omitempty"`   // 候选值
+}
+
+func (s *testService) GetTestPlanFieldsInfo(
+	ctx context.Context, request *GetTestPlanFieldsInfoRequest, opts ...RequestOption,
+) ([]*TestPlanFieldsInfo, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "test_plans/get_fields_info", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var raw rawTestPlanFieldsInfo
+	resp, err := s.client.Do(req, &raw)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	fields := make([]*TestPlanFieldsInfo, 0, len(raw))
+	for name, item := range raw {
+		fields = append(fields, &TestPlanFieldsInfo{
+			Name:     name,
+			HTMLType: item.HTMLType,
+			Label:    item.Label,
+			Options:  newTestCaseFieldsInfoOptions(item.Options),
+		})
+	}
+
+	return fields, resp, nil
+}
+
 func (r *TestCaseResult) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		ID           json.RawMessage      `json:"id,omitempty"`
@@ -1111,6 +1442,36 @@ func (r *TestCaseResult) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (p *TestPlanProgress) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		StoryCount    int                                      `json:"story_count,omitempty"`
+		TestCaseCount int                                      `json:"tcase_count,omitempty"`
+		StatusCounter map[TestCaseResultStatus]json.RawMessage `json:"status_counter,omitempty"`
+		ExecutedRate  string                                   `json:"executed_rate,omitempty"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	counter := make(map[TestCaseResultStatus]int, len(raw.StatusCounter))
+	for status, value := range raw.StatusCounter {
+		count, err := parseJSONInt(value)
+		if err != nil {
+			return err
+		}
+		counter[status] = count
+	}
+
+	*p = TestPlanProgress{
+		StoryCount:    raw.StoryCount,
+		TestCaseCount: raw.TestCaseCount,
+		StatusCounter: counter,
+		ExecutedRate:  raw.ExecutedRate,
+	}
+
+	return nil
+}
+
 func (r *TestPlanRelatedBug) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		ID                        json.RawMessage            `json:"id,omitempty"`
@@ -1140,6 +1501,46 @@ func newTestCaseResultItems(results map[string]*TestCaseResult) []*TestCaseResul
 	}
 
 	return items
+}
+
+func newTestCaseFieldsInfoOptions(options any) []TestCaseFieldsInfoOption {
+	os, ok := options.(map[string]any)
+	if !ok {
+		return nil
+	}
+
+	items := make([]TestCaseFieldsInfoOption, 0, len(os))
+	for key, value := range os {
+		if v, ok2 := value.(string); ok2 {
+			items = append(items, TestCaseFieldsInfoOption{
+				Key:   key,
+				Label: v,
+			})
+		}
+	}
+
+	return items
+}
+
+func parseJSONInt(raw json.RawMessage) (int, error) {
+	if len(raw) == 0 || string(raw) == "null" {
+		return 0, nil
+	}
+	if raw[0] == '"' {
+		var value string
+		if err := json.Unmarshal(raw, &value); err != nil {
+			return 0, err
+		}
+
+		return strconv.Atoi(value)
+	}
+
+	var value int
+	if err := json.Unmarshal(raw, &value); err != nil {
+		return 0, err
+	}
+
+	return value, nil
 }
 
 func stringifyJSONRaw(raw json.RawMessage) string {
