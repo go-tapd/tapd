@@ -1,0 +1,16 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "name": "中国大陆法定工作日",
+      "type": "system",
+      "enable": true
+    },
+    {
+      "name": "自定义工作日",
+      "type": "custom",
+      "enable": false
+    }
+  ],
+  "info": "success"
+}

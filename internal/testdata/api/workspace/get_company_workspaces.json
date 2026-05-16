@@ -1,0 +1,41 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Workspace": {
+        "id": "69999237",
+        "name": "示例项目",
+        "pretty_name": "示例项目",
+        "category": "project",
+        "status": "normal",
+        "description": "示例项目描述",
+        "creator": "davidning",
+        "created": "2025-02-01 10:00:00",
+        "begin_date": "2025-02-01",
+        "end_date": "2025-05-31",
+        "secrecy": "0",
+        "external_on": "1",
+        "new_task": "1",
+        "company_id": "20003271",
+        "WorkspaceExtends": {
+          "flow_view": "scrum"
+        }
+      }
+    },
+    {
+      "Workspace": {
+        "id": "69999238",
+        "name": "示例轻项目",
+        "pretty_name": "示例轻项目",
+        "category": "mini_project",
+        "status": "normal",
+        "description": "示例轻项目描述",
+        "creator": "davidning",
+        "created": "2025-02-02 10:00:00",
+        "company_id": "20003271",
+        "WorkspaceExtends": {}
+      }
+    }
+  ],
+  "info": "success"
+}

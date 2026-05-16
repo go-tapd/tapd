@@ -1,0 +1,19 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Workspace": {
+        "id": "69999237",
+        "name": "示例项目",
+        "pretty_name": "示例项目",
+        "category": "project",
+        "status": "normal",
+        "description": "示例项目描述",
+        "creator": "davidning",
+        "created": "2025-02-01 10:00:00",
+        "company_id": "20003271"
+      }
+    }
+  ],
+  "info": "success"
+}

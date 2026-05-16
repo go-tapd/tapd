@@ -1,0 +1,34 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Document": {
+        "id": "1147043561001001330",
+        "workspace_id": "47043561",
+        "name": "熟悉思维导图",
+        "type": "mindmap",
+        "folder_id": "1147043561001000694",
+        "creator": "TAPD",
+        "modifier": "TAPD",
+        "status": null,
+        "created": "2021-09-09 16:08:52",
+        "modified": "2021-09-09 16:08:52"
+      }
+    },
+    {
+      "Document": {
+        "id": "1147043561001001329",
+        "workspace_id": "47043561",
+        "name": "文档功能使用秘籍",
+        "type": "word",
+        "folder_id": "1147043561001000694",
+        "creator": "TAPD",
+        "modifier": "TAPD",
+        "status": null,
+        "created": "2021-09-09 16:08:51",
+        "modified": "2021-09-09 16:08:51"
+      }
+    }
+  ],
+  "info": "success"
+}
