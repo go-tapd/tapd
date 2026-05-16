@@ -336,15 +336,6 @@ type (
 		Deleted       string `json:"deleted,omitempty"`        // 删除时间
 	}
 
-	GetTasksByViewConfIDRequest struct {
-		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
-		ViewConfID  *int64         `url:"view_conf_id,omitempty"` // [必须]视图ID
-		CurrentUser *string        `url:"current_user,omitempty"` // 当前登录用户视图
-		Limit       *int           `url:"limit,omitempty"`        // 设置返回数量限制，默认为30，最大取200
-		Page        *int           `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1（第一页）
-		Fields      *Multi[string] `url:"fields,omitempty"`       // 设置获取的字段，多个字段间以','逗号隔开
-	}
-
 	TaskChange struct {
 		ID             string                  `json:"id,omitempty"`
 		WorkspaceID    string                  `json:"workspace_id,omitempty"`
@@ -638,11 +629,6 @@ type TaskService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_removed_tasks.html
 	GetRemovedTasks(ctx context.Context, request *GetRemovedTasksRequest, opts ...RequestOption) ([]*RemovedTask, *Response, error)
 
-	// GetTasksByViewConfID 获取视图对应的任务列表
-	//
-	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_tasks_by_view_conf_id.html
-	GetTasksByViewConfID(ctx context.Context, request *GetTasksByViewConfIDRequest, opts ...RequestOption) ([]*Task, *Response, error)
-
 	// GetTaskFieldsInfo 获取任务字段信息
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_task_fields_info.html
@@ -897,30 +883,6 @@ func (s *taskService) GetRemovedTasks(
 	tasks := make([]*RemovedTask, 0, len(items))
 	for _, item := range items {
 		tasks = append(tasks, item.RemovedTask)
-	}
-
-	return tasks, resp, nil
-}
-
-func (s *taskService) GetTasksByViewConfID(
-	ctx context.Context, request *GetTasksByViewConfIDRequest, opts ...RequestOption,
-) ([]*Task, *Response, error) {
-	req, err := s.client.NewRequest(ctx, http.MethodGet, "tasks/get_tasks_by_view_conf_id", request, opts)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var items []struct {
-		Task *Task `json:"Task"`
-	}
-	resp, err := s.client.Do(req, &items)
-	if err != nil {
-		return nil, resp, err
-	}
-
-	tasks := make([]*Task, 0, len(items))
-	for _, item := range items {
-		tasks = append(tasks, item.Task)
 	}
 
 	return tasks, resp, nil

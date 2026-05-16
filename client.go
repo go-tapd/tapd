@@ -244,7 +244,7 @@ func (c *Client) Do(req *http.Request, v any) (*Response, error) {
 		return nil, &ErrorResponse{
 			response: resp,
 			rawBody:  &rawBody,
-			err:      errors.New(rawBody.InfoString()),
+			err:      errors.New(rawBody.Info),
 		}
 	}
 

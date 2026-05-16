@@ -319,37 +319,6 @@ func TestTaskService_GetRemovedTasks(t *testing.T) {
 	assert.Equal(t, "0", tasks[0].IsArchived)
 }
 
-func TestTaskService_GetTasksByViewConfID(t *testing.T) {
-	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, http.MethodGet, r.Method)
-		assert.Equal(t, "/tasks/get_tasks_by_view_conf_id", r.URL.Path)
-		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
-		assert.Equal(t, "1111112222001000001", r.URL.Query().Get("view_conf_id"))
-		assert.Equal(t, "testuser", r.URL.Query().Get("current_user"))
-		assert.Equal(t, "20", r.URL.Query().Get("limit"))
-		assert.Equal(t, "1", r.URL.Query().Get("page"))
-		assert.Equal(t, "id,name,workspace_id", r.URL.Query().Get("fields"))
-
-		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_tasks_by_view_conf_id.json"))
-	}))
-
-	tasks, _, err := client.TaskService.GetTasksByViewConfID(ctx, &GetTasksByViewConfIDRequest{
-		WorkspaceID: Ptr(11112222),
-		ViewConfID:  Ptr[int64](1111112222001000001),
-		CurrentUser: Ptr("testuser"),
-		Limit:       Ptr(20),
-		Page:        Ptr(1),
-		Fields:      NewMulti("id", "name", "workspace_id"),
-	})
-	assert.NoError(t, err)
-	assert.Len(t, tasks, 1)
-	assert.Equal(t, "1111112222001138994", tasks[0].ID)
-	assert.Equal(t, "视图任务", tasks[0].Name)
-	assert.Equal(t, "11112222", tasks[0].WorkspaceID)
-	assert.Equal(t, TaskStatusOpen, tasks[0].Status)
-	assert.Equal(t, "owner", tasks[0].Owner)
-}
-
 func TestTaskService_GetTaskFieldsInfo(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
