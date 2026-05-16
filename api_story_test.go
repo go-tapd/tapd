@@ -8,6 +8,81 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestStoryService_CreateStoryCategory(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/story_categories", r.URL.Path)
+
+		var req CreateStoryCategoryRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, "产品需求", *req.Name)
+		assert.Equal(t, "产品需求描述", *req.Description)
+		assert.Equal(t, int64(0), *req.ParentID)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/create_story_category.json"))
+	}))
+
+	category, _, err := client.StoryService.CreateStoryCategory(ctx, &CreateStoryCategoryRequest{
+		WorkspaceID: Ptr(11112222),
+		Name:        Ptr("产品需求"),
+		Description: Ptr("产品需求描述"),
+		ParentID:    Ptr[int64](0),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, category)
+	assert.Equal(t, "1111112222001000056", category.ID)
+	assert.Equal(t, "11112222", category.WorkspaceID)
+	assert.Equal(t, "产品需求", category.Name)
+	assert.Equal(t, "产品需求描述", category.Description)
+	assert.Equal(t, "0", category.ParentID)
+	assert.Equal(t, "xinweihe", category.Creator)
+}
+
+func TestStoryService_CopyStory(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/copy_story", r.URL.Path)
+
+		var req struct {
+			WorkspaceID       int         `json:"workspace_id"`
+			SrcStoryID        int64       `json:"src_story_id"`
+			DstWorkspaceID    int         `json:"dst_workspace_id"`
+			SyncFields        string      `json:"sync_fields"`
+			DstWorkitemTypeID int64       `json:"dst_workitem_type_id"`
+			NewCreator        string      `json:"new_creator"`
+			NewStatus         StoryStatus `json:"new_status"`
+		}
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, int64(1111112222001000103), req.SrcStoryID)
+		assert.Equal(t, 33334444, req.DstWorkspaceID)
+		assert.Equal(t, "name,description,owner", req.SyncFields)
+		assert.Equal(t, int64(10001), req.DstWorkitemTypeID)
+		assert.Equal(t, "xinweihe", req.NewCreator)
+		assert.Equal(t, StoryStatusPlanning, req.NewStatus)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/copy_story.json"))
+	}))
+
+	story, _, err := client.StoryService.CopyStory(ctx, &CopyStoryRequest{
+		WorkspaceID:       Ptr(11112222),
+		SrcStoryID:        Ptr[int64](1111112222001000103),
+		DstWorkspaceID:    Ptr(33334444),
+		SyncFields:        NewMulti("name", "description", "owner"),
+		DstWorkitemTypeID: Ptr[int64](10001),
+		NewCreator:        Ptr("xinweihe"),
+		NewStatus:         Ptr(StoryStatusPlanning),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, story)
+	assert.Equal(t, "333344440010000001", story.ID)
+	assert.Equal(t, "复制的需求", story.Name)
+	assert.Equal(t, "33334444", story.WorkspaceID)
+	assert.Equal(t, StoryStatusPlanning, story.Status)
+	assert.Equal(t, "xinweihe", story.Creator)
+}
+
 func TestStoryService_GetStoryCategories(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

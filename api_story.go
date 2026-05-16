@@ -594,6 +594,16 @@ type (
 		Label           *string        `json:"label,omitempty"`            // 标签，标签不存在时将自动创建，多个以英文坚线分格
 	}
 
+	CopyStoryRequest struct {
+		WorkspaceID       *int           `json:"workspace_id,omitempty"`         // [必须]源项目ID
+		SrcStoryID        *int64         `json:"src_story_id,omitempty"`         // [必须]源需求ID
+		DstWorkspaceID    *int           `json:"dst_workspace_id,omitempty"`     // [必须]目标项目ID
+		SyncFields        *Multi[string] `json:"sync_fields,omitempty"`          // 需要同步的字段，多个字段以逗号分隔
+		DstWorkitemTypeID *int64         `json:"dst_workitem_type_id,omitempty"` // 目标需求类别ID
+		NewCreator        *string        `json:"new_creator,omitempty"`          // 新需求创建人
+		NewStatus         *StoryStatus   `json:"new_status,omitempty"`           // 新需求状态
+	}
+
 	GetStoriesCountRequest struct {
 		ID                *Multi[int64]  `url:"id,omitempty"`               // ID	支持多ID查询,多个ID用逗号分隔
 		Name              *string        `url:"name,omitempty"`             // 标题	支持模糊匹配
@@ -856,6 +866,13 @@ type (
 		Page        *int           `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1（第一页）
 		Order       *Order         `url:"order,omitempty"`        //nolint:lll // 排序规则，规则：字段名 ASC或者DESC，然后 urlencode	如按创建时间逆序：order=created%20desc
 		Fields      *Multi[string] `url:"fields,omitempty"`       // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	CreateStoryCategoryRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		Name        *string `json:"name,omitempty"`         // [必须]需求分类名称
+		Description *string `json:"description,omitempty"`  // 需求分类描述
+		ParentID    *int64  `json:"parent_id,omitempty"`    // 父分类ID
 	}
 
 	StoryCategory struct {
@@ -1497,8 +1514,16 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/add_story.html
 	CreateStory(ctx context.Context, request *CreateStoryRequest, opts ...RequestOption) (*Story, *Response, error)
 
-	// 创建需求分类
-	// 复制需求
+	// CreateStoryCategory 创建需求分类
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/add_story_category.html
+	CreateStoryCategory(ctx context.Context, request *CreateStoryCategoryRequest, opts ...RequestOption) (*StoryCategory, *Response, error)
+
+	// CopyStory 复制需求
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/copy_story.html
+	CopyStory(ctx context.Context, request *CopyStoryRequest, opts ...RequestOption) (*Story, *Response, error)
+
 	// 获取需求与其它需求的所有关联关系
 
 	// GetStories 获取需求
@@ -1668,6 +1693,44 @@ func (s *storyService) CreateStory(
 
 	var response struct {
 		Story *Story `json:"story"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Story, resp, nil
+}
+
+func (s *storyService) CreateStoryCategory(
+	ctx context.Context, request *CreateStoryCategoryRequest, opts ...RequestOption,
+) (*StoryCategory, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "story_categories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Category *StoryCategory `json:"Category"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Category, resp, nil
+}
+
+func (s *storyService) CopyStory(
+	ctx context.Context, request *CopyStoryRequest, opts ...RequestOption,
+) (*Story, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/copy_story", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Story *Story `json:"Story"`
 	}
 	resp, err := s.client.Do(req, &response)
 	if err != nil {

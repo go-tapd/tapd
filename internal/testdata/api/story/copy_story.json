@@ -1,0 +1,19 @@
+{
+  "status": 1,
+  "data": {
+    "Story": {
+      "id": "333344440010000001",
+      "workspace_id": "33334444",
+      "name": "复制的需求",
+      "description": "复制需求描述",
+      "creator": "xinweihe",
+      "created": "2025-07-08 15:22:49",
+      "modified": "2025-07-08 15:22:49",
+      "status": "planning",
+      "owner": "xinweihe",
+      "category_id": "0",
+      "workitem_type_id": "10001"
+    }
+  },
+  "info": "success"
+}
