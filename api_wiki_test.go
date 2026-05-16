@@ -172,3 +172,209 @@ func TestWikiService_UpdateWiki(t *testing.T) {
 	assert.Equal(t, "2020-08-26 10:30:11", wiki.Modified)
 	assert.Equal(t, "dev", wiki.Modifier)
 }
+
+func TestWikiService_GetWikiDrawioData(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tapd_wikis_drawios", r.URL.Path)
+		assert.Equal(t, "1100000000000001102", r.URL.Query().Get("id"))
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "token", r.URL.Query().Get("token"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/wiki/get_wiki_drawio_data.json"))
+	}))
+
+	data, _, err := client.WikiService.GetWikiDrawioData(ctx, &GetWikiDrawioDataRequest{
+		ID:          Ptr[int64](1100000000000001102),
+		WorkspaceID: Ptr(10104801),
+		Token:       Ptr("token"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "1100000000000001102", data.ID)
+	assert.Contains(t, data.Values, "<mxGraphModel")
+}
+
+func TestWikiService_GetWikiFollowers(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tapd_wikis_followers", r.URL.Path)
+		assert.Equal(t, "1210104801000000001", r.URL.Query().Get("id"))
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "2021-01-07", r.URL.Query().Get("created"))
+		assert.Equal(t, "1220358527000044697", r.URL.Query().Get("wiki_id"))
+		assert.Equal(t, "huanjinxie", r.URL.Query().Get("user"))
+		assert.Equal(t, "10", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "created desc", r.URL.Query().Get("order"))
+		assert.Equal(t, "id,wiki_id,user", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/wiki/get_wiki_followers.json"))
+	}))
+
+	followers, _, err := client.WikiService.GetWikiFollowers(ctx, &GetWikiFollowersRequest{
+		ID:          Ptr[int64](1210104801000000001),
+		WorkspaceID: Ptr(10104801),
+		Created:     Ptr("2021-01-07"),
+		WikiID:      Ptr[int64](1220358527000044697),
+		User:        Ptr("huanjinxie"),
+		Limit:       Ptr(10),
+		Page:        Ptr(1),
+		Order:       NewOrder("created", OrderByDesc),
+		Fields:      NewMulti("id", "wiki_id", "user"),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, followers, 2)
+	assert.Equal(t, "1210104801000000001", followers[0].ID)
+	assert.Equal(t, "10104801", followers[0].WorkspaceID)
+	assert.Equal(t, "1220358527000044697", followers[0].WikiID)
+	assert.Equal(t, "huanjinxie", followers[0].User)
+	assert.Equal(t, "2021-01-07 20:40:05", followers[0].Created)
+}
+
+func TestWikiService_GetWikiFollowersCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tapd_wikis_followers/count", r.URL.Path)
+		assert.Equal(t, "1210104801000000001", r.URL.Query().Get("id"))
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "2021-01-07", r.URL.Query().Get("created"))
+		assert.Equal(t, "1220358527000044697", r.URL.Query().Get("wiki_id"))
+		assert.Equal(t, "huanjinxie", r.URL.Query().Get("user"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/wiki/get_wiki_followers_count.json"))
+	}))
+
+	count, _, err := client.WikiService.GetWikiFollowersCount(ctx, &GetWikiFollowersCountRequest{
+		ID:          Ptr[int64](1210104801000000001),
+		WorkspaceID: Ptr(10104801),
+		Created:     Ptr("2021-01-07"),
+		WikiID:      Ptr[int64](1220358527000044697),
+		User:        Ptr("huanjinxie"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 23, count)
+}
+
+func TestWikiService_GetWikiEntityPermissions(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tapd_wikis_entity_permissions", r.URL.Path)
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1210104801001897607", r.URL.Query().Get("wiki_id"))
+		assert.Equal(t, "nick", r.URL.Query().Get("target_type"))
+		assert.Equal(t, "jmyan", r.URL.Query().Get("target_id"))
+		assert.Equal(t, "10", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "id asc", r.URL.Query().Get("order"))
+		assert.Equal(t, "id,wiki_id,target_id", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/wiki/get_wiki_entity_permissions.json"))
+	}))
+
+	permissions, _, err := client.WikiService.GetWikiEntityPermissions(ctx, &GetWikiEntityPermissionsRequest{
+		WorkspaceID: Ptr(10104801),
+		WikiID:      Ptr[int64](1210104801001897607),
+		TargetType:  Ptr("nick"),
+		TargetID:    Ptr("jmyan"),
+		Limit:       Ptr(10),
+		Page:        Ptr(1),
+		Order:       NewOrder("id", OrderByAsc),
+		Fields:      NewMulti("id", "wiki_id", "target_id"),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, permissions, 2)
+	assert.Equal(t, "1210158241000001519", permissions[0].ID)
+	assert.Equal(t, "10158241", permissions[0].WorkspaceID)
+	assert.Equal(t, "wiki", permissions[0].EntryType)
+	assert.Equal(t, "role_id", permissions[0].TargetType)
+	assert.Equal(t, "1000000000000000002", permissions[0].TargetID)
+	assert.Equal(t, "1210158241000048769", permissions[0].WikiID)
+}
+
+func TestWikiService_GetWikiTags(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tapd_wikis_tags", r.URL.Path)
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1220358527000044697", r.URL.Query().Get("wiki_id"))
+		assert.Equal(t, "home", r.URL.Query().Get("tag"))
+		assert.Equal(t, "huanjinxie", r.URL.Query().Get("creator"))
+		assert.Equal(t, "2021-01-07", r.URL.Query().Get("created"))
+		assert.Equal(t, "10", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "created desc", r.URL.Query().Get("order"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/wiki/get_wiki_tags.json"))
+	}))
+
+	tags, _, err := client.WikiService.GetWikiTags(ctx, &GetWikiTagsRequest{
+		WorkspaceID: Ptr(10104801),
+		WikiID:      Ptr[int64](1220358527000044697),
+		Tag:         Ptr("home"),
+		Creator:     Ptr("huanjinxie"),
+		Created:     Ptr("2021-01-07"),
+		Limit:       Ptr(10),
+		Page:        Ptr(1),
+		Order:       NewOrder("created", OrderByDesc),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, tags, 2)
+	assert.Equal(t, "huanjinxie", tags[0].Creator)
+	assert.Equal(t, "2021-01-07 20:40:05", tags[0].Created)
+	assert.Equal(t, "1220358527000044697", tags[0].WikiID)
+	assert.Equal(t, "home", tags[0].Tag)
+}
+
+func TestWikiService_GetWikiTagsCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tapd_wikis_tags/count", r.URL.Path)
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1220358527000044697", r.URL.Query().Get("wiki_id"))
+		assert.Equal(t, "home", r.URL.Query().Get("tag"))
+		assert.Equal(t, "huanjinxie", r.URL.Query().Get("creator"))
+		assert.Equal(t, "2021-01-07", r.URL.Query().Get("created"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/wiki/get_wiki_tags_count.json"))
+	}))
+
+	count, _, err := client.WikiService.GetWikiTagsCount(ctx, &GetWikiTagsCountRequest{
+		WorkspaceID: Ptr(10104801),
+		WikiID:      Ptr[int64](1220358527000044697),
+		Tag:         Ptr("home"),
+		Creator:     Ptr("huanjinxie"),
+		Created:     Ptr("2021-01-07"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 2, count)
+}
+
+func TestWikiService_GetWikiAttachmentsCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tapd_wikis_attachments/count", r.URL.Path)
+		assert.Equal(t, "1210104801000028203", r.URL.Query().Get("id"))
+		assert.Equal(t, "README.md", r.URL.Query().Get("filename"))
+		assert.Equal(t, "1024", r.URL.Query().Get("size"))
+		assert.Equal(t, "anyechen", r.URL.Query().Get("owner"))
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "2021-04-08", r.URL.Query().Get("created"))
+		assert.Equal(t, "2021-04-09", r.URL.Query().Get("modified"))
+		assert.Equal(t, "1210104801000017645", r.URL.Query().Get("wiki_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/wiki/get_wiki_attachments_count.json"))
+	}))
+
+	count, _, err := client.WikiService.GetWikiAttachmentsCount(ctx, &GetWikiAttachmentsCountRequest{
+		ID:          Ptr[int64](1210104801000028203),
+		Filename:    Ptr("README.md"),
+		Size:        Ptr(1024),
+		Owner:       Ptr("anyechen"),
+		WorkspaceID: Ptr(10104801),
+		Created:     Ptr("2021-04-08"),
+		Modified:    Ptr("2021-04-09"),
+		WikiID:      Ptr[int64](1210104801000017645),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 23, count)
+}

@@ -1,0 +1,24 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "WikiFollower": {
+        "id": "1210104801000000001",
+        "workspace_id": "10104801",
+        "created": "2021-01-07 20:40:05",
+        "wiki_id": "1220358527000044697",
+        "user": "huanjinxie"
+      }
+    },
+    {
+      "WikiFollow": {
+        "id": "1210104801000000002",
+        "workspace_id": "10104801",
+        "created": "2021-01-08 20:40:05",
+        "wiki_id": "1220358527000044697",
+        "user": "dev"
+      }
+    }
+  ],
+  "info": "success"
+}

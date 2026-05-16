@@ -180,13 +180,13 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
 - [x] 获取 wiki —— AI 实现，未人工验证
 - [x] 获取 Wiki 数量 —— AI 实现，未人工验证
 - [x] 更新 wiki —— AI 实现，未人工验证
-- [ ] 获取wiki drawio数据
-- [ ] 获取wiki关注人数据
-- [ ] 获取wiki关注人数量
-- [ ] 获取wiki可访问范围人员及用户组
-- [ ] 获取wiki标签信息
-- [ ] 获取wiki标签信息数量
-- [ ] 获取wiki附件数量
+- [x] 获取wiki drawio数据 —— AI 实现，未人工验证
+- [x] 获取wiki关注人数据 —— AI 实现，未人工验证
+- [x] 获取wiki关注人数量 —— AI 实现，未人工验证
+- [x] 获取wiki可访问范围人员及用户组 —— AI 实现，未人工验证
+- [x] 获取wiki标签信息 —— AI 实现，未人工验证
+- [x] 获取wiki标签信息数量 —— AI 实现，未人工验证
+- [x] 获取wiki附件数量 —— AI 实现，未人工验证
 
 ### 看板
 
