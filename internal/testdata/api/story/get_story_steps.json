@@ -1,0 +1,44 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "WorkitemStepInfo": {
+        "id": "1210104801000007813",
+        "workspace_id": "11112222",
+        "entity_type": "story",
+        "workitem_id": "1111112222001000103",
+        "step": "step_1",
+        "status": "0",
+        "owner": "",
+        "begin": null,
+        "due": null,
+        "effort": "3",
+        "iteration_id": "0",
+        "begin_time": "2026-01-04 09:37:57",
+        "complete_time": "2026-01-04 09:38:23",
+        "time_cost": "26",
+        "completer": "ocenhu"
+      }
+    },
+    {
+      "WorkitemStepInfo": {
+        "id": "1210104801000007814",
+        "workspace_id": "11112222",
+        "entity_type": "story",
+        "workitem_id": "1111112222001000103",
+        "step": "step_2",
+        "status": "1",
+        "owner": "xinweihe",
+        "begin": "2026-01-05",
+        "due": "2026-01-06",
+        "effort": "5",
+        "iteration_id": "1210104801000001001",
+        "begin_time": "",
+        "complete_time": "",
+        "time_cost": "",
+        "completer": ""
+      }
+    }
+  ],
+  "info": "success"
+}

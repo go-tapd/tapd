@@ -870,6 +870,26 @@ type (
 		Modifier    string `json:"modifier,omitempty"`     // 最后修改人
 	}
 
+	UpdateStoryCategoryRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		ID          *int64  `json:"id,omitempty"`           // [必须]需求分类ID
+		Name        *string `json:"name,omitempty"`         // 分类名称
+		Description *string `json:"description,omitempty"`  // 分类描述
+		ParentID    *int64  `json:"parent_id,omitempty"`    // 父分类ID
+	}
+
+	UpdatedStoryCategory struct {
+		ID          string  `json:"id,omitempty"`           // ID
+		WorkspaceID string  `json:"workspace_id,omitempty"` // 项目ID
+		Name        string  `json:"name,omitempty"`         // 需求分类名称
+		Description *string `json:"description,omitempty"`  // 需求分类描述
+		ParentID    string  `json:"parent_id,omitempty"`    // 父分类ID
+		Created     string  `json:"created,omitempty"`      // 创建时间
+		Modified    string  `json:"modified,omitempty"`     // 最后修改时间
+		Creator     string  `json:"creator,omitempty"`      // 创建人
+		Modifier    string  `json:"modifier,omitempty"`     // 最后修改人
+	}
+
 	GetStoryCategoriesCountRequest struct {
 		WorkspaceID *int          `url:"workspace_id,omitempty"` // [必须]项目ID
 		ID          *Multi[int64] `url:"id,omitempty"`           // ID 支持多ID查询，多个ID用逗号分隔
@@ -1373,6 +1393,29 @@ type (
 		WorkspaceID    *int   `json:"workspace_id,omitempty"`     // [必须]项目ID
 	}
 
+	GetStoryStepsRequest struct {
+		StoryID     *int64 `url:"story_id,omitempty"`     // [必须]需求ID
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	StoryStepInfo struct {
+		ID           string  `json:"id,omitempty"`            // 节点记录ID
+		WorkspaceID  string  `json:"workspace_id,omitempty"`  // 项目ID
+		EntityType   string  `json:"entity_type,omitempty"`   // 对象类型
+		WorkitemID   string  `json:"workitem_id,omitempty"`   // 需求ID
+		Step         string  `json:"step,omitempty"`          // 节点原名
+		Status       string  `json:"status,omitempty"`        // 节点状态
+		Owner        string  `json:"owner,omitempty"`         // 节点负责人
+		Begin        *string `json:"begin,omitempty"`         // 节点预计开始
+		Due          *string `json:"due,omitempty"`           // 节点预计结束时间
+		Effort       string  `json:"effort,omitempty"`        // 节点预估工时
+		IterationID  string  `json:"iteration_id,omitempty"`  // 节点迭代
+		BeginTime    string  `json:"begin_time,omitempty"`    // 实际开始时间
+		CompleteTime string  `json:"complete_time,omitempty"` // 实际完成时间
+		TimeCost     string  `json:"time_cost,omitempty"`     // 节点停留时长
+		Completer    string  `json:"completer,omitempty"`     // 操作完成人
+	}
+
 	GetStoryTemplatesRequest struct {
 		WorkspaceID    *int `url:"workspace_id,omitempty"`     // [必须]项目ID
 		WorkitemTypeID *int `url:"workitem_type_id,omitempty"` // 需求类别ID
@@ -1553,7 +1596,10 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/change_workitem_type.html
 	UpdateStoryWorkitemType(ctx context.Context, request *UpdateStoryWorkitemTypeRequest, opts ...RequestOption) (*Story, *Response, error)
 
-	// 获取需求所有字段及候选值
+	// GetStorySteps 使用并行工作流的需求，获取其节点信息
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_steps.html
+	GetStorySteps(ctx context.Context, request *GetStoryStepsRequest, opts ...RequestOption) ([]*StoryStepInfo, *Response, error)
 
 	// GetStoryFieldsLabel 获取需求所有字段的中英文
 	//
@@ -1570,7 +1616,10 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_default_story_template.html
 	GetStoryTemplateFields(ctx context.Context, request *GetStoryTemplateFieldsRequest, opts ...RequestOption) ([]*StoryTemplateField, *Response, error)
 
-	// 更新需求分类
+	// UpdateStoryCategory 更新需求分类
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/update_story_category.html
+	UpdateStoryCategory(ctx context.Context, request *UpdateStoryCategoryRequest, opts ...RequestOption) (*UpdatedStoryCategory, *Response, error)
 
 	// GetRemovedStories 获取回收站中的需求
 	//
@@ -1994,6 +2043,30 @@ func (s *storyService) UpdateStoryWorkitemType(
 	return &story, resp, nil
 }
 
+func (s *storyService) GetStorySteps(
+	ctx context.Context, request *GetStoryStepsRequest, opts ...RequestOption,
+) ([]*StoryStepInfo, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_story_step_list", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		WorkitemStepInfo *StoryStepInfo `json:"WorkitemStepInfo"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	steps := make([]*StoryStepInfo, 0, len(items))
+	for _, item := range items {
+		steps = append(steps, item.WorkitemStepInfo)
+	}
+
+	return steps, resp, nil
+}
+
 func (s *storyService) GetStoryFieldsLabel(
 	ctx context.Context, request *GetStoryFieldsLabelRequest, opts ...RequestOption,
 ) ([]*StoryFieldLabel, *Response, error) {
@@ -2065,6 +2138,25 @@ func (s *storyService) GetStoryTemplateFields(
 	}
 
 	return templates, resp, nil
+}
+
+func (s *storyService) UpdateStoryCategory(
+	ctx context.Context, request *UpdateStoryCategoryRequest, opts ...RequestOption,
+) (*UpdatedStoryCategory, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "story_categories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Category *UpdatedStoryCategory `json:"Category"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Category, resp, nil
 }
 
 func (s *storyService) GetRemovedStories(
