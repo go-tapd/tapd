@@ -1,0 +1,21 @@
+{
+  "status": 1,
+  "data": {
+    "Bug": {
+      "id": "1111122233301037078",
+      "title": "API 创建缺陷",
+      "description": "缺陷详细描述",
+      "priority": "",
+      "priority_label": "high",
+      "severity": "fatal",
+      "module": "",
+      "status": "new",
+      "reporter": "api_doc_oauth",
+      "current_owner": "张三",
+      "created": "2025-07-08 15:22:49",
+      "modified": "2025-07-08 15:22:49",
+      "workspace_id": "11112222"
+    }
+  },
+  "info": "success"
+}

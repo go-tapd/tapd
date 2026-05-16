@@ -282,6 +282,35 @@ type (
 		CN string `json:"cn,omitempty"` // 字段中文标签
 	}
 
+	CreateBugRequest struct {
+		WorkspaceID   *int           `json:"workspace_id,omitempty"`   // [必须]项目ID
+		Title         *string        `json:"title,omitempty"`          // [必须]缺陷标题
+		Description   *string        `json:"description,omitempty"`    // 详细描述
+		Priority      *string        `json:"priority,omitempty"`       // 优先级。为了兼容自定义优先级，请使用 priority_label 字段
+		PriorityLabel *PriorityLabel `json:"priority_label,omitempty"` // 优先级。推荐使用这个字段
+		Severity      *BugSeverity   `json:"severity,omitempty"`       // 严重程度
+		Module        *string        `json:"module,omitempty"`         // 模块
+		CurrentOwner  *string        `json:"current_owner,omitempty"`  // 处理人
+		CC            *string        `json:"cc,omitempty"`             // 抄送人
+		Reporter      *string        `json:"reporter,omitempty"`       // 创建人
+		TE            *string        `json:"te,omitempty"`             // 测试人员
+		DE            *string        `json:"de,omitempty"`             // 开发人员
+		VersionReport *string        `json:"version_report,omitempty"` // 发现版本
+		IterationID   *int64         `json:"iteration_id,omitempty"`   // 迭代ID
+		ReleaseID     *int64         `json:"release_id,omitempty"`     // 发布计划
+		Source        *string        `json:"source,omitempty"`         // 缺陷根源
+		BugType       *string        `json:"bugtype,omitempty"`        // 缺陷类型
+		Label         *string        `json:"label,omitempty"`          // 标签，多个以英文竖线分隔
+		Deadline      *string        `json:"deadline,omitempty"`       // 解决期限
+	}
+
+	CopyBugRequest struct {
+		WorkspaceID    *int           `json:"workspace_id,omitempty"`     // [必须]源项目ID
+		SourceBugID    *int64         `json:"src_bug_id,omitempty"`       // [必须]源缺陷ID
+		DstWorkspaceID *int           `json:"dst_workspace_id,omitempty"` // [必须]目标项目ID
+		SyncFields     *Multi[string] `json:"sync_fields,omitempty"`      // 需要同步的字段，多个字段以逗号分隔
+	}
+
 	GetBugsRequest struct {
 		ID                *Multi[int64]      `url:"id,omitempty"`               // ID 支持多ID查询
 		Title             *string            `url:"title,omitempty"`            // 标题 支持模糊匹配
@@ -946,8 +975,16 @@ type (
 )
 
 type BugService interface {
-	// 创建缺陷
-	// 复制缺陷
+	// CreateBug 创建缺陷
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/add_bug.html
+	CreateBug(ctx context.Context, request *CreateBugRequest, opts ...RequestOption) (*Bug, *Response, error)
+
+	// CopyBug 复制缺陷
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/copy_bug.html
+	CopyBug(ctx context.Context, request *CopyBugRequest, opts ...RequestOption) (*Bug, *Response, error)
+
 	// 获取缺陷变更历史
 	// 获取缺陷变更次数
 	// 获取缺陷自定义字段配置
@@ -993,6 +1030,44 @@ func NewBugService(client *Client) BugService {
 	return &bugService{
 		client: client,
 	}
+}
+
+func (s *bugService) CreateBug(
+	ctx context.Context, request *CreateBugRequest, opts ...RequestOption,
+) (*Bug, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "bugs", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var item struct {
+		Bug *Bug `json:"Bug"`
+	}
+	resp, err := s.client.Do(req, &item)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return item.Bug, resp, nil
+}
+
+func (s *bugService) CopyBug(
+	ctx context.Context, request *CopyBugRequest, opts ...RequestOption,
+) (*Bug, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "bugs/copy_bug", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var item struct {
+		Bug *Bug `json:"Bug"`
+	}
+	resp, err := s.client.Do(req, &item)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return item.Bug, resp, nil
 }
 
 func (s *bugService) GetBugs(

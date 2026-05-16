@@ -31,6 +31,73 @@ func TestBugService_BugSeverity(t *testing.T) {
 	}
 }
 
+func TestBugService_CreateBug(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/bugs", r.URL.Path)
+
+		var req CreateBugRequest
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, "API 创建缺陷", *req.Title)
+		assert.Equal(t, "缺陷详细描述", *req.Description)
+		assert.Equal(t, PriorityLabelHigh, *req.PriorityLabel)
+		assert.Equal(t, BugSeverityFatal, *req.Severity)
+		assert.Equal(t, "张三", *req.CurrentOwner)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/create_bug.json"))
+	}))
+
+	bug, _, err := client.BugService.CreateBug(ctx, &CreateBugRequest{
+		WorkspaceID:   Ptr(11112222),
+		Title:         Ptr("API 创建缺陷"),
+		Description:   Ptr("缺陷详细描述"),
+		PriorityLabel: Ptr(PriorityLabelHigh),
+		Severity:      Ptr(BugSeverityFatal),
+		CurrentOwner:  Ptr("张三"),
+	})
+	require.NoError(t, err)
+	require.NotNil(t, bug)
+	assert.Equal(t, "1111122233301037078", bug.ID)
+	assert.Equal(t, "API 创建缺陷", bug.Title)
+	assert.Equal(t, BugSeverityFatal, bug.Severity)
+	assert.Equal(t, "new", bug.Status)
+}
+
+func TestBugService_CopyBug(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/bugs/copy_bug", r.URL.Path)
+
+		var req struct {
+			WorkspaceID    int    `json:"workspace_id"`
+			SourceBugID    int64  `json:"src_bug_id"`
+			DstWorkspaceID int    `json:"dst_workspace_id"`
+			SyncFields     string `json:"sync_fields"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, int64(1111122233301037078), req.SourceBugID)
+		assert.Equal(t, 33334444, req.DstWorkspaceID)
+		assert.Equal(t, "title,description,status", req.SyncFields)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/copy_bug.json"))
+	}))
+
+	bug, _, err := client.BugService.CopyBug(ctx, &CopyBugRequest{
+		WorkspaceID:    Ptr(11112222),
+		SourceBugID:    Ptr[int64](1111122233301037078),
+		DstWorkspaceID: Ptr(33334444),
+		SyncFields:     NewMulti("title", "description", "status"),
+	})
+	require.NoError(t, err)
+	require.NotNil(t, bug)
+	assert.Equal(t, "333344440010000001", bug.ID)
+	assert.Equal(t, "API 创建缺陷", bug.Title)
+	assert.Equal(t, "33334444", bug.WorkspaceID)
+	assert.Equal(t, "new", bug.Status)
+}
+
 func TestBugService_GetBugs(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
