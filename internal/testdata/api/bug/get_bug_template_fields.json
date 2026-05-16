@@ -1,0 +1,30 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "WorkitemTemplateField": {
+        "id": "1111222233300778831",
+        "workspace_id": "11112222",
+        "type": "bug",
+        "template_id": "1111222233300068639",
+        "field": "title",
+        "value": "",
+        "required": "1",
+        "sort": "0"
+      }
+    },
+    {
+      "WorkitemTemplateField": {
+        "id": "1111222233300778833",
+        "workspace_id": "11112222",
+        "type": "bug",
+        "template_id": "1111222233300068639",
+        "field": "description",
+        "value": "",
+        "required": "1",
+        "sort": "0"
+      }
+    }
+  ],
+  "info": "success"
+}

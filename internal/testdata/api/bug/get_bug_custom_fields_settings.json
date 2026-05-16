@@ -1,0 +1,19 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "CustomFieldConfig": {
+        "id": "11111222333077902981",
+        "workspace_id": "11112222",
+        "entry_type": "bug",
+        "custom_field": "custom_field_one",
+        "type": "radio",
+        "name": "安全漏洞类型",
+        "options": "XSS注入|SQL注入|越权",
+        "enabled": "1",
+        "sort": "1"
+      }
+    }
+  ],
+  "info": "success"
+}

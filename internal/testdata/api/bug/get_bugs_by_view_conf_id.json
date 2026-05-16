@@ -1,0 +1,34 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Bug": {
+        "id": "11111222333084955735",
+        "title": "视图缺陷一",
+        "version_report": "",
+        "severity": "",
+        "priority": "",
+        "status": "new",
+        "current_owner": "",
+        "created": "2021-01-21 11:02:09",
+        "reporter": "v_xuanfang",
+        "resolution": ""
+      }
+    },
+    {
+      "Bug": {
+        "id": "11111222333083011055",
+        "title": "视图缺陷二",
+        "version_report": "",
+        "severity": "",
+        "priority": "",
+        "status": "new",
+        "current_owner": "",
+        "created": "2020-10-28 18:28:27",
+        "reporter": "v_xuanfang",
+        "resolution": ""
+      }
+    }
+  ],
+  "info": "success"
+}

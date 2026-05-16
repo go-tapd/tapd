@@ -1,0 +1,28 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "WorkitemTemplate": {
+        "id": "1111222233300068639",
+        "name": "创建模板",
+        "description": "AA",
+        "sort": "1",
+        "default": "0",
+        "creator": "v_xuanfang",
+        "editor_type": "1"
+      }
+    },
+    {
+      "WorkitemTemplate": {
+        "id": "1111222233300031595",
+        "name": "System default template",
+        "description": "Auto created by the system",
+        "sort": "1",
+        "default": "1",
+        "creator": "SYSTEM",
+        "editor_type": "1"
+      }
+    }
+  ],
+  "info": "success"
+}

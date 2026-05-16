@@ -1,0 +1,52 @@
+{
+  "status": 1,
+  "data": {
+    "id": {
+      "name": "id",
+      "label": "ID",
+      "options": [],
+      "pure_options": [],
+      "html_type": "input",
+      "memo": ""
+    },
+    "status": {
+      "name": "status",
+      "label": "状态",
+      "options": {
+        "new": "新",
+        "in_progress": "接受/处理",
+        "closed": "已关闭"
+      },
+      "pure_options": [
+        {
+          "parent_id": "0",
+          "workspace_id": "11112222",
+          "sort": "1",
+          "value": "new",
+          "label": "新",
+          "panel": 0
+        }
+      ],
+      "html_type": "select",
+      "memo": ""
+    },
+    "priority": {
+      "name": "priority",
+      "label": "优先级",
+      "color_options": [
+        {
+          "value": "high",
+          "label": "高",
+          "color": "#FF6770"
+        }
+      ],
+      "pure_options": [],
+      "html_type": "select",
+      "memo": "",
+      "options": {
+        "high": "高"
+      }
+    }
+  },
+  "info": "success"
+}
