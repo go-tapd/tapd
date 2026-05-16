@@ -1,0 +1,25 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "BoardCard": {
+        "id": "1020355782500624255",
+        "name": "test1",
+        "description": "看板工作项描述",
+        "created": "2019-09-17 15:58:43",
+        "modified": "2019-09-17 15:58:43",
+        "workspace_id": "20355782",
+        "owner": "tester",
+        "due": "2019-09-19",
+        "b_label": "[0]",
+        "b_sort": "3",
+        "b_board_id": "1020355782000010725",
+        "b_column_id": "1020355782000045509",
+        "status": "open",
+        "cc": "dev",
+        "begin": "2019-09-11"
+      }
+    }
+  ],
+  "info": "success"
+}
