@@ -1002,6 +1002,22 @@ type (
 		Result bool `json:"result,omitempty"` // 是否保存成功
 	}
 
+	DeleteStoryTimeRelationsRequest struct {
+		WorkspaceID *int                       `json:"workspace_id,omitempty"` // [必须]项目ID
+		Relations   []*DeleteStoryTimeRelation `json:"relations,omitempty"`    // 按起点和终点删除的关系列表
+		RelationIDs *[]int64                   `json:"relation_ids,omitempty"` // 按关系ID删除的关系列表
+		CurrentUser *string                    `json:"current_user,omitempty"` // [必须]执行此操作的用户 nick
+	}
+
+	DeleteStoryTimeRelation struct {
+		WorkitemID    *int64 `json:"workitem_id,omitempty"`     // 起点需求ID
+		DstWorkitemID *int64 `json:"dst_workitem_id,omitempty"` // 终点需求ID
+	}
+
+	DeleteStoryTimeRelationsResult struct {
+		Num int `json:"num,omitempty"` // 实际删除的条数
+	}
+
 	GetStoryFieldsLabelRequest struct {
 		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目ID
 	}
@@ -1419,7 +1435,11 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/save_time_relations.html
 	SaveStoryTimeRelations(ctx context.Context, request *SaveStoryTimeRelationsRequest, opts ...RequestOption) (*SaveStoryTimeRelationsResult, *Response, error)
 
-	// 批量删除需求前后置关系
+	// DeleteStoryTimeRelations 批量删除需求前后置关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/delete_time_relations.html
+	DeleteStoryTimeRelations(ctx context.Context, request *DeleteStoryTimeRelationsRequest, opts ...RequestOption) (*DeleteStoryTimeRelationsResult, *Response, error)
+
 	// 获取需求保密信息
 	// 批量修改保密信息
 	// 获取需求类别
@@ -1736,6 +1756,23 @@ func (s *storyService) SaveStoryTimeRelations(
 	}
 
 	var result SaveStoryTimeRelationsResult
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &result, resp, nil
+}
+
+func (s *storyService) DeleteStoryTimeRelations(
+	ctx context.Context, request *DeleteStoryTimeRelationsRequest, opts ...RequestOption,
+) (*DeleteStoryTimeRelationsResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/delete_time_relations", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var result DeleteStoryTimeRelationsResult
 	resp, err := s.client.Do(req, &result)
 	if err != nil {
 		return nil, resp, err

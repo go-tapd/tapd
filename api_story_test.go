@@ -290,6 +290,39 @@ func TestStoryService_SaveStoryTimeRelations(t *testing.T) {
 	assert.True(t, result.Result)
 }
 
+func TestStoryService_DeleteStoryTimeRelations(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/delete_time_relations", r.URL.Path)
+
+		var req DeleteStoryTimeRelationsRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, "testuser", *req.CurrentUser)
+		assert.Len(t, req.Relations, 1)
+		assert.Equal(t, int64(1111112222001000102), *req.Relations[0].WorkitemID)
+		assert.Equal(t, int64(1111112222001000103), *req.Relations[0].DstWorkitemID)
+		assert.Equal(t, []int64{1210104801000007813}, *req.RelationIDs)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/delete_story_time_relations.json"))
+	}))
+
+	result, _, err := client.StoryService.DeleteStoryTimeRelations(ctx, &DeleteStoryTimeRelationsRequest{
+		WorkspaceID: Ptr(11112222),
+		CurrentUser: Ptr("testuser"),
+		Relations: []*DeleteStoryTimeRelation{
+			{
+				WorkitemID:    Ptr[int64](1111112222001000102),
+				DstWorkitemID: Ptr[int64](1111112222001000103),
+			},
+		},
+		RelationIDs: Ptr([]int64{1210104801000007813}),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, 1, result.Num)
+}
+
 func TestStoryService_GetStoryFieldsLabel(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
