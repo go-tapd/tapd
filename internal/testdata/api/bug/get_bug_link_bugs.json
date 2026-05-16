@@ -1,0 +1,22 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "type": "repeat",
+      "id": "1111122233301037079",
+      "workspace_id": "11112222",
+      "actas": "target",
+      "linked_workspace_id": 11112222,
+      "link_id": "1162187798001000534"
+    },
+    {
+      "type": "copy",
+      "id": "333344440010000001",
+      "workspace_id": "11112222",
+      "actas": "source",
+      "linked_workspace_id": 33334444,
+      "link_id": "1162187798001000535"
+    }
+  ],
+  "info": "success"
+}

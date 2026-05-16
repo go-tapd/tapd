@@ -1,0 +1,32 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "BugChange": {
+        "id": "1111122233300015913",
+        "bug_id": "1111122233301037078",
+        "author": "anyechen",
+        "field": "severity",
+        "old_value": "normal",
+        "new_value": "fatal",
+        "memo": null,
+        "created": "2025-07-08 15:22:49",
+        "workspace_id": "11112222"
+      }
+    },
+    {
+      "BugChange": {
+        "id": "1111122233300015914",
+        "bug_id": "1111122233301037079",
+        "author": "anyechen",
+        "field": "severity",
+        "old_value": "serious",
+        "new_value": "prompt",
+        "memo": null,
+        "created": "2025-07-08 15:22:50",
+        "workspace_id": "11112222"
+      }
+    }
+  ],
+  "info": "success"
+}

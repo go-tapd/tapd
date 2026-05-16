@@ -311,6 +311,61 @@ type (
 		SyncFields     *Multi[string] `json:"sync_fields,omitempty"`      // 需要同步的字段，多个字段以逗号分隔
 	}
 
+	GetBugChangesRequest struct {
+		ID            *Multi[int64]  `url:"id,omitempty"`              // 变更记录ID，支持多ID查询
+		BugID         *Multi[int64]  `url:"bug_id,omitempty"`          // 缺陷ID，支持多ID查询
+		WorkspaceID   *int           `url:"workspace_id,omitempty"`    // [必须]项目ID
+		Author        *string        `url:"author,omitempty"`          // 变更人
+		Field         *string        `url:"field,omitempty"`           // 变更字段
+		OldValue      *string        `url:"old_value,omitempty"`       // 变更前
+		NewValue      *string        `url:"new_value,omitempty"`       // 变更后
+		Memo          *string        `url:"memo,omitempty"`            // 备注
+		Created       *string        `url:"created,omitempty"`         // 创建时间，支持时间查询
+		IncludeAddBug *int           `url:"include_add_bug,omitempty"` // 是否返回创建缺陷的记录，值传1
+		Limit         *int           `url:"limit,omitempty"`           // 设置返回数量限制，默认为30，最大取200
+		Page          *int           `url:"page,omitempty"`            // 返回当前数量限制下第N页的数据，默认为1（第一页）
+		Order         *Order         `url:"order,omitempty"`           // 排序规则，规则：字段名 ASC或者DESC
+		Fields        *Multi[string] `url:"fields,omitempty"`          // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	GetBugChangesCountRequest struct {
+		ID          *Multi[int64] `url:"id,omitempty"`           // 变更记录ID，支持多ID查询
+		BugID       *Multi[int64] `url:"bug_id,omitempty"`       // 缺陷ID，支持多ID查询
+		WorkspaceID *int          `url:"workspace_id,omitempty"` // [必须]项目ID
+		Author      *string       `url:"author,omitempty"`       // 变更人
+		Field       *string       `url:"field,omitempty"`        // 变更字段
+		OldValue    *string       `url:"old_value,omitempty"`    // 变更前
+		NewValue    *string       `url:"new_value,omitempty"`    // 变更后
+		Memo        *string       `url:"memo,omitempty"`         // 备注
+		Created     *string       `url:"created,omitempty"`      // 创建时间，支持时间查询
+	}
+
+	BugChange struct {
+		ID          string  `json:"id,omitempty"`           // 变更记录ID
+		BugID       string  `json:"bug_id,omitempty"`       // 缺陷ID
+		Author      string  `json:"author,omitempty"`       // 变更人
+		Field       string  `json:"field,omitempty"`        // 变更字段
+		OldValue    string  `json:"old_value,omitempty"`    // 变更前
+		NewValue    string  `json:"new_value,omitempty"`    // 变更后
+		Memo        *string `json:"memo,omitempty"`         // 备注
+		Created     string  `json:"created,omitempty"`      // 创建时间
+		WorkspaceID string  `json:"workspace_id,omitempty"` // 项目ID
+	}
+
+	GetBugLinkBugsRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		BugID       *int64 `url:"bug_id,omitempty"`       // [必须]缺陷ID
+	}
+
+	BugLinkRelation struct {
+		Type              string `json:"type,omitempty"`                // 关系类型
+		ID                string `json:"id,omitempty"`                  // 关联的缺陷ID
+		WorkspaceID       string `json:"workspace_id,omitempty"`        // 项目ID
+		ActAs             string `json:"actas,omitempty"`               // 角色
+		LinkedWorkspaceID int    `json:"linked_workspace_id,omitempty"` // 关联项目ID
+		LinkID            string `json:"link_id,omitempty"`             // 缺陷之间关联关系link的ID
+	}
+
 	GetBugsRequest struct {
 		ID                *Multi[int64]      `url:"id,omitempty"`               // ID 支持多ID查询
 		Title             *string            `url:"title,omitempty"`            // 标题 支持模糊匹配
@@ -985,8 +1040,16 @@ type BugService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/copy_bug.html
 	CopyBug(ctx context.Context, request *CopyBugRequest, opts ...RequestOption) (*Bug, *Response, error)
 
-	// 获取缺陷变更历史
-	// 获取缺陷变更次数
+	// GetBugChanges 获取缺陷变更历史
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bug_changes.html
+	GetBugChanges(ctx context.Context, request *GetBugChangesRequest, opts ...RequestOption) ([]*BugChange, *Response, error)
+
+	// GetBugChangesCount 获取缺陷变更次数
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bug_changes_count.html
+	GetBugChangesCount(ctx context.Context, request *GetBugChangesCountRequest, opts ...RequestOption) (int, *Response, error)
+
 	// 获取缺陷自定义字段配置
 
 	// GetBugs 获取缺陷
@@ -998,7 +1061,12 @@ type BugService interface {
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bugs_count.html
 	GetBugsCount(ctx context.Context, request *GetBugsCountRequest, opts ...RequestOption) (int, *Response, error)
-	// 获取缺陷与其它缺陷的所有关联关系
+
+	// GetBugLinkBugs 获取缺陷与其它缺陷的所有关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_link_bugs.html
+	GetBugLinkBugs(ctx context.Context, request *GetBugLinkBugsRequest, opts ...RequestOption) ([]*BugLinkRelation, *Response, error)
+
 	// 获取缺陷模板列表
 	// 获取缺陷模板字段
 	// 获取视图对应的缺陷列表
@@ -1070,6 +1138,47 @@ func (s *bugService) CopyBug(
 	return item.Bug, resp, nil
 }
 
+func (s *bugService) GetBugChanges(
+	ctx context.Context, request *GetBugChangesRequest, opts ...RequestOption,
+) ([]*BugChange, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bug_changes", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		BugChange *BugChange `json:"BugChange"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	changes := make([]*BugChange, 0, len(items))
+	for _, item := range items {
+		changes = append(changes, item.BugChange)
+	}
+
+	return changes, resp, nil
+}
+
+func (s *bugService) GetBugChangesCount(
+	ctx context.Context, request *GetBugChangesCountRequest, opts ...RequestOption,
+) (int, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bug_changes/count", request, opts)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var response CountResponse
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return 0, resp, err
+	}
+
+	return response.Count, resp, nil
+}
+
 func (s *bugService) GetBugs(
 	ctx context.Context, request *GetBugsRequest, opts ...RequestOption,
 ) ([]*Bug, *Response, error) {
@@ -1111,6 +1220,23 @@ func (s *bugService) GetBugsCount(
 	}
 
 	return response.Count, resp, nil
+}
+
+func (s *bugService) GetBugLinkBugs(
+	ctx context.Context, request *GetBugLinkBugsRequest, opts ...RequestOption,
+) ([]*BugLinkRelation, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs/get_link_bugs", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var relations []*BugLinkRelation
+	resp, err := s.client.Do(req, &relations)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return relations, resp, nil
 }
 
 func (s *bugService) GetBugFieldsLabel(

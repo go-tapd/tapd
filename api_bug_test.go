@@ -98,6 +98,88 @@ func TestBugService_CopyBug(t *testing.T) {
 	assert.Equal(t, "new", bug.Status)
 }
 
+func TestBugService_GetBugChanges(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bug_changes", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111122233301037078,1111122233301037079", r.URL.Query().Get("bug_id"))
+		assert.Equal(t, "severity", r.URL.Query().Get("field"))
+		assert.Equal(t, "1", r.URL.Query().Get("include_add_bug"))
+		assert.Equal(t, "20", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "created desc", r.URL.Query().Get("order"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bug_changes.json"))
+	}))
+
+	changes, _, err := client.BugService.GetBugChanges(ctx, &GetBugChangesRequest{
+		WorkspaceID:   Ptr(11112222),
+		BugID:         NewMulti[int64](1111122233301037078, 1111122233301037079),
+		Field:         Ptr("severity"),
+		IncludeAddBug: Ptr(1),
+		Limit:         Ptr(20),
+		Page:          Ptr(1),
+		Order:         NewOrder("created", OrderByDesc),
+	})
+	require.NoError(t, err)
+	require.Len(t, changes, 2)
+	assert.Equal(t, "1111122233300015913", changes[0].ID)
+	assert.Equal(t, "1111122233301037078", changes[0].BugID)
+	assert.Equal(t, "severity", changes[0].Field)
+	assert.Equal(t, "normal", changes[0].OldValue)
+	assert.Equal(t, "fatal", changes[0].NewValue)
+	assert.Nil(t, changes[0].Memo)
+	assert.Equal(t, "11112222", changes[0].WorkspaceID)
+}
+
+func TestBugService_GetBugChangesCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bug_changes/count", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111122233301037078", r.URL.Query().Get("bug_id"))
+		assert.Equal(t, "severity", r.URL.Query().Get("field"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bug_changes_count.json"))
+	}))
+
+	count, _, err := client.BugService.GetBugChangesCount(ctx, &GetBugChangesCountRequest{
+		WorkspaceID: Ptr(11112222),
+		BugID:       NewMulti[int64](1111122233301037078),
+		Field:       Ptr("severity"),
+	})
+	require.NoError(t, err)
+	assert.Equal(t, 2, count)
+}
+
+func TestBugService_GetBugLinkBugs(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bugs/get_link_bugs", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111122233301037078", r.URL.Query().Get("bug_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bug_link_bugs.json"))
+	}))
+
+	relations, _, err := client.BugService.GetBugLinkBugs(ctx, &GetBugLinkBugsRequest{
+		WorkspaceID: Ptr(11112222),
+		BugID:       Ptr[int64](1111122233301037078),
+	})
+	require.NoError(t, err)
+	require.Len(t, relations, 2)
+	assert.Equal(t, "repeat", relations[0].Type)
+	assert.Equal(t, "1111122233301037079", relations[0].ID)
+	assert.Equal(t, "11112222", relations[0].WorkspaceID)
+	assert.Equal(t, "target", relations[0].ActAs)
+	assert.Equal(t, 11112222, relations[0].LinkedWorkspaceID)
+	assert.Equal(t, "1162187798001000534", relations[0].LinkID)
+}
+
 func TestBugService_GetBugs(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
