@@ -1,0 +1,31 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "id": 1020357849077231363,
+      "name": "用例1",
+      "tcase_result_relate_bugs": {
+        "1020357849000703483": {
+          "id": "1020357849000703483",
+          "executed_at": "2020-03-04 17:29:29",
+          "executor": "jeffjffang",
+          "result_status": "pass",
+          "result_remark": null,
+          "bug_id": [
+            "1020357849500655643"
+          ],
+          "Bug": [
+            {
+              "id": "1020357849500655643",
+              "title": "1231",
+              "severity": "",
+              "priority": "",
+              "status": "新"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "info": "success"
+}

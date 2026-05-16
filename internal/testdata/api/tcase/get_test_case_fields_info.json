@@ -1,0 +1,32 @@
+{
+  "status": 1,
+  "data": {
+    "id": {
+      "html_type": "input",
+      "label": "ID",
+      "options": [],
+      "name": "id"
+    },
+    "category_id": {
+      "html_type": "dialog",
+      "label": "用例目录",
+      "options": {
+        "1010104801075931887": "bbbbb",
+        "-1": "未规划目录"
+      },
+      "name": "category_id"
+    },
+    "status": {
+      "html_type": "select",
+      "label": "用例状态",
+      "options": {
+        "normal": "正常",
+        "updating": "待更新",
+        "abandon": "已废弃"
+      },
+      "name": "status",
+      "default": "normal"
+    }
+  },
+  "info": "success"
+}

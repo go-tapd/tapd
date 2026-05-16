@@ -1,0 +1,20 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "CustomFieldConfig": {
+        "id": "1000000755214854654",
+        "workspace_id": "755",
+        "entry_type": "tcase",
+        "custom_field": "custom_field_30",
+        "type": "select",
+        "name": "AT已实现？",
+        "options": "{\"1\":\"已实现\",\"2\":\"未实现\"}",
+        "enabled": "1",
+        "sort": null,
+        "memo": null
+      }
+    }
+  ],
+  "info": "success"
+}

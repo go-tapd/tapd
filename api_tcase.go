@@ -2,6 +2,7 @@ package tapd
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -22,92 +23,108 @@ func (s TestCaseStatus) String() string {
 type TestCaseResultStatus string
 
 const (
-	TestCaseResultStatusPass   TestCaseResultStatus = "pass"    // 通过
-	TestCaseResultStatusNoPass TestCaseResultStatus = "no_pass" // 不通过
-	TestCaseResultStatusBlock  TestCaseResultStatus = "block"   // 阻塞
+	TestCaseResultStatusPass       TestCaseResultStatus = "pass"       // 通过
+	TestCaseResultStatusNoPass     TestCaseResultStatus = "no_pass"    // 不通过
+	TestCaseResultStatusBlock      TestCaseResultStatus = "block"      // 阻塞
+	TestCaseResultStatusUnexecuted TestCaseResultStatus = "unexecuted" // 未执行
 )
 
 func (s TestCaseResultStatus) String() string {
 	return string(s)
 }
 
+// TestCaseFieldsInfoHTMLType 测试用例字段控件类型。
+type TestCaseFieldsInfoHTMLType string
+
+const (
+	TestCaseFieldsInfoHTMLTypeInput       TestCaseFieldsInfoHTMLType = "input"
+	TestCaseFieldsInfoHTMLTypeSelect      TestCaseFieldsInfoHTMLType = "select"
+	TestCaseFieldsInfoHTMLTypeQMEditor    TestCaseFieldsInfoHTMLType = "qmeditor"
+	TestCaseFieldsInfoHTMLTypeDialog      TestCaseFieldsInfoHTMLType = "dialog"
+	TestCaseFieldsInfoHTMLTypeUserChooser TestCaseFieldsInfoHTMLType = "user_chooser"
+	TestCaseFieldsInfoHTMLTypeDateInput   TestCaseFieldsInfoHTMLType = "dateinput"
+	TestCaseFieldsInfoHTMLTypeMultiSelect TestCaseFieldsInfoHTMLType = "multi_select"
+	TestCaseFieldsInfoHTMLTypeText        TestCaseFieldsInfoHTMLType = "text"
+)
+
 type (
 	// TestCase 测试用例
 	TestCase struct {
-		ID                 string         `json:"id,omitempty"`                  // 测试用例ID
-		MID                string         `json:"mid,omitempty"`                 // 测试用例MID
-		Steps              *string        `json:"steps,omitempty"`               // 用例步骤
-		WorkspaceID        string         `json:"workspace_id,omitempty"`        // 项目ID
-		CategoryID         string         `json:"category_id,omitempty"`         // 用例目录
-		Version            string         `json:"version,omitempty"`             // 版本
-		Created            string         `json:"created,omitempty"`             // 创建时间
-		Modifier           string         `json:"modifier,omitempty"`            // 最后修改人
-		Modified           string         `json:"modified,omitempty"`            // 最后修改时间
-		Creator            string         `json:"creator,omitempty"`             // 创建人
-		Status             TestCaseStatus `json:"status,omitempty"`              // 用例状态
-		Name               string         `json:"name,omitempty"`                // 用例名称
-		Precondition       *string        `json:"precondition,omitempty"`        // 前置条件
-		Expectation        *string        `json:"expectation,omitempty"`         // 预期结果
-		Sort               string         `json:"sort,omitempty"`                // 排序
-		IndexCode          string         `json:"indexcode,omitempty"`           // 编号
-		Type               string         `json:"type,omitempty"`                // 用例类型
-		Priority           string         `json:"priority,omitempty"`            // 用例等级
-		IsAutomated        string         `json:"is_automated,omitempty"`        // 是否自动化
-		AutomationType     string         `json:"automation_type,omitempty"`     // 自动化类型
-		AutomationPlatform string         `json:"automation_platform,omitempty"` // 自动化平台
-		IsServing          string         `json:"is_serving,omitempty"`          // 是否服务中
-		TemplateID         string         `json:"template_id,omitempty"`         // 模板ID
-		CreatedFrom        string         `json:"created_from,omitempty"`        // 创建来源
-		CustomField1       *string        `json:"custom_field_1,omitempty"`      // 自定义字段
-		CustomField2       *string        `json:"custom_field_2,omitempty"`
-		CustomField3       *string        `json:"custom_field_3,omitempty"`
-		CustomField4       *string        `json:"custom_field_4,omitempty"`
-		CustomField5       *string        `json:"custom_field_5,omitempty"`
-		CustomField6       *string        `json:"custom_field_6,omitempty"`
-		CustomField7       *string        `json:"custom_field_7,omitempty"`
-		CustomField8       *string        `json:"custom_field_8,omitempty"`
-		CustomField9       *string        `json:"custom_field_9,omitempty"`
-		CustomField10      *string        `json:"custom_field_10,omitempty"`
-		CustomField11      *string        `json:"custom_field_11,omitempty"`
-		CustomField12      *string        `json:"custom_field_12,omitempty"`
-		CustomField13      *string        `json:"custom_field_13,omitempty"`
-		CustomField14      *string        `json:"custom_field_14,omitempty"`
-		CustomField15      *string        `json:"custom_field_15,omitempty"`
-		CustomField16      *string        `json:"custom_field_16,omitempty"`
-		CustomField17      *string        `json:"custom_field_17,omitempty"`
-		CustomField18      *string        `json:"custom_field_18,omitempty"`
-		CustomField19      *string        `json:"custom_field_19,omitempty"`
-		CustomField20      *string        `json:"custom_field_20,omitempty"`
-		CustomField21      *string        `json:"custom_field_21,omitempty"`
-		CustomField22      *string        `json:"custom_field_22,omitempty"`
-		CustomField23      *string        `json:"custom_field_23,omitempty"`
-		CustomField24      *string        `json:"custom_field_24,omitempty"`
-		CustomField25      *string        `json:"custom_field_25,omitempty"`
-		CustomField26      *string        `json:"custom_field_26,omitempty"`
-		CustomField27      *string        `json:"custom_field_27,omitempty"`
-		CustomField28      *string        `json:"custom_field_28,omitempty"`
-		CustomField29      *string        `json:"custom_field_29,omitempty"`
-		CustomField30      *string        `json:"custom_field_30,omitempty"`
-		CustomField31      *string        `json:"custom_field_31,omitempty"`
-		CustomField32      *string        `json:"custom_field_32,omitempty"`
-		CustomField33      *string        `json:"custom_field_33,omitempty"`
-		CustomField34      *string        `json:"custom_field_34,omitempty"`
-		CustomField35      *string        `json:"custom_field_35,omitempty"`
-		CustomField36      *string        `json:"custom_field_36,omitempty"`
-		CustomField37      *string        `json:"custom_field_37,omitempty"`
-		CustomField38      *string        `json:"custom_field_38,omitempty"`
-		CustomField39      *string        `json:"custom_field_39,omitempty"`
-		CustomField40      *string        `json:"custom_field_40,omitempty"`
-		CustomField41      *string        `json:"custom_field_41,omitempty"`
-		CustomField42      *string        `json:"custom_field_42,omitempty"`
-		CustomField43      *string        `json:"custom_field_43,omitempty"`
-		CustomField44      *string        `json:"custom_field_44,omitempty"`
-		CustomField45      *string        `json:"custom_field_45,omitempty"`
-		CustomField46      *string        `json:"custom_field_46,omitempty"`
-		CustomField47      *string        `json:"custom_field_47,omitempty"`
-		CustomField48      *string        `json:"custom_field_48,omitempty"`
-		CustomField49      *string        `json:"custom_field_49,omitempty"`
-		CustomField50      *string        `json:"custom_field_50,omitempty"`
+		ID                 string          `json:"id,omitempty"`                  // 测试用例ID
+		MID                string          `json:"mid,omitempty"`                 // 测试用例MID
+		Steps              *string         `json:"steps,omitempty"`               // 用例步骤
+		WorkspaceID        string          `json:"workspace_id,omitempty"`        // 项目ID
+		CategoryID         string          `json:"category_id,omitempty"`         // 用例目录
+		Version            string          `json:"version,omitempty"`             // 版本
+		Created            string          `json:"created,omitempty"`             // 创建时间
+		Modifier           string          `json:"modifier,omitempty"`            // 最后修改人
+		Modified           string          `json:"modified,omitempty"`            // 最后修改时间
+		Creator            string          `json:"creator,omitempty"`             // 创建人
+		Status             TestCaseStatus  `json:"status,omitempty"`              // 用例状态
+		Name               string          `json:"name,omitempty"`                // 用例名称
+		Precondition       *string         `json:"precondition,omitempty"`        // 前置条件
+		Expectation        *string         `json:"expectation,omitempty"`         // 预期结果
+		Sort               string          `json:"sort,omitempty"`                // 排序
+		IndexCode          string          `json:"indexcode,omitempty"`           // 编号
+		Type               string          `json:"type,omitempty"`                // 用例类型
+		Priority           string          `json:"priority,omitempty"`            // 用例等级
+		IsAutomated        string          `json:"is_automated,omitempty"`        // 是否自动化
+		AutomationType     string          `json:"automation_type,omitempty"`     // 自动化类型
+		AutomationPlatform string          `json:"automation_platform,omitempty"` // 自动化平台
+		IsServing          string          `json:"is_serving,omitempty"`          // 是否服务中
+		TemplateID         string          `json:"template_id,omitempty"`         // 模板ID
+		CreatedFrom        string          `json:"created_from,omitempty"`        // 创建来源
+		Result             *TestCaseResult `json:"TcaseResult,omitempty"`         // 测试结果
+		CustomField1       *string         `json:"custom_field_1,omitempty"`      // 自定义字段
+		CustomField2       *string         `json:"custom_field_2,omitempty"`
+		CustomField3       *string         `json:"custom_field_3,omitempty"`
+		CustomField4       *string         `json:"custom_field_4,omitempty"`
+		CustomField5       *string         `json:"custom_field_5,omitempty"`
+		CustomField6       *string         `json:"custom_field_6,omitempty"`
+		CustomField7       *string         `json:"custom_field_7,omitempty"`
+		CustomField8       *string         `json:"custom_field_8,omitempty"`
+		CustomField9       *string         `json:"custom_field_9,omitempty"`
+		CustomField10      *string         `json:"custom_field_10,omitempty"`
+		CustomField11      *string         `json:"custom_field_11,omitempty"`
+		CustomField12      *string         `json:"custom_field_12,omitempty"`
+		CustomField13      *string         `json:"custom_field_13,omitempty"`
+		CustomField14      *string         `json:"custom_field_14,omitempty"`
+		CustomField15      *string         `json:"custom_field_15,omitempty"`
+		CustomField16      *string         `json:"custom_field_16,omitempty"`
+		CustomField17      *string         `json:"custom_field_17,omitempty"`
+		CustomField18      *string         `json:"custom_field_18,omitempty"`
+		CustomField19      *string         `json:"custom_field_19,omitempty"`
+		CustomField20      *string         `json:"custom_field_20,omitempty"`
+		CustomField21      *string         `json:"custom_field_21,omitempty"`
+		CustomField22      *string         `json:"custom_field_22,omitempty"`
+		CustomField23      *string         `json:"custom_field_23,omitempty"`
+		CustomField24      *string         `json:"custom_field_24,omitempty"`
+		CustomField25      *string         `json:"custom_field_25,omitempty"`
+		CustomField26      *string         `json:"custom_field_26,omitempty"`
+		CustomField27      *string         `json:"custom_field_27,omitempty"`
+		CustomField28      *string         `json:"custom_field_28,omitempty"`
+		CustomField29      *string         `json:"custom_field_29,omitempty"`
+		CustomField30      *string         `json:"custom_field_30,omitempty"`
+		CustomField31      *string         `json:"custom_field_31,omitempty"`
+		CustomField32      *string         `json:"custom_field_32,omitempty"`
+		CustomField33      *string         `json:"custom_field_33,omitempty"`
+		CustomField34      *string         `json:"custom_field_34,omitempty"`
+		CustomField35      *string         `json:"custom_field_35,omitempty"`
+		CustomField36      *string         `json:"custom_field_36,omitempty"`
+		CustomField37      *string         `json:"custom_field_37,omitempty"`
+		CustomField38      *string         `json:"custom_field_38,omitempty"`
+		CustomField39      *string         `json:"custom_field_39,omitempty"`
+		CustomField40      *string         `json:"custom_field_40,omitempty"`
+		CustomField41      *string         `json:"custom_field_41,omitempty"`
+		CustomField42      *string         `json:"custom_field_42,omitempty"`
+		CustomField43      *string         `json:"custom_field_43,omitempty"`
+		CustomField44      *string         `json:"custom_field_44,omitempty"`
+		CustomField45      *string         `json:"custom_field_45,omitempty"`
+		CustomField46      *string         `json:"custom_field_46,omitempty"`
+		CustomField47      *string         `json:"custom_field_47,omitempty"`
+		CustomField48      *string         `json:"custom_field_48,omitempty"`
+		CustomField49      *string         `json:"custom_field_49,omitempty"`
+		CustomField50      *string         `json:"custom_field_50,omitempty"`
 	}
 
 	CreateTestCaseRequest struct {
@@ -328,6 +345,156 @@ type (
 		Modifier    *string       `url:"modifier,omitempty"`     // 目录最后修改人
 		Sorting     *int          `url:"sorting,omitempty"`      // 目录排序序号
 	}
+
+	GetTestCaseCustomFieldsSettingsRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	TestCaseCustomFieldsSetting struct {
+		ID              string  `json:"id,omitempty"`           // 自定义字段配置的ID
+		WorkspaceID     string  `json:"workspace_id,omitempty"` // 所属项目ID
+		AppID           string  `json:"app_id,omitempty"`       // 应用ID
+		EntryType       string  `json:"entry_type,omitempty"`   // 所属实体对象
+		CustomField     string  `json:"custom_field,omitempty"` // 自定义字段标识
+		Type            string  `json:"type,omitempty"`         // 输入类型
+		Name            string  `json:"name,omitempty"`         // 自定义字段显示名称
+		Options         *string `json:"options,omitempty"`      // 自定义字段可选值
+		ExtraConfig     *string `json:"extra_config,omitempty"` // 额外配置
+		Enabled         string  `json:"enabled,omitempty"`      // 是否启用
+		Freeze          string  `json:"freeze,omitempty"`       // 是否冻结
+		Sort            *string `json:"sort,omitempty"`         // 显示时排序系数
+		Memo            *string `json:"memo,omitempty"`         // 备注
+		OpenExtensionID string  `json:"open_extension_id,omitempty"`
+		IsOut           int     `json:"is_out,omitempty"`
+		IsUninstall     int     `json:"is_uninstall,omitempty"`
+		AppName         string  `json:"app_name,omitempty"`
+	}
+
+	GetTestCaseFieldsInfoRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	TestCaseFieldsInfoOption struct {
+		Key   string `json:"key,omitempty"`   // 英文Key
+		Label string `json:"label,omitempty"` // 中文名称
+	}
+
+	TestCaseFieldsInfo struct {
+		Name     string                     `json:"name,omitempty"`      // 字段名
+		HTMLType TestCaseFieldsInfoHTMLType `json:"html_type,omitempty"` // 类型
+		Label    string                     `json:"label,omitempty"`     // 中文名称
+		Options  []TestCaseFieldsInfoOption `json:"options,omitempty"`   // 候选值
+		Default  string                     `json:"default,omitempty"`   // 默认值
+	}
+
+	GetTestCaseResultsRequest struct {
+		TestPlanID  *int64 `url:"test_plan_id,omitempty"` // [必须]测试计划ID
+		TestCaseID  *int64 `url:"tcase_id,omitempty"`     // [必须]测试用例ID
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	TestCaseResult struct {
+		ID           string               `json:"id,omitempty"`            // 测试结果ID
+		TestCaseID   string               `json:"tcase_id,omitempty"`      // 测试用例ID
+		Created      string               `json:"created,omitempty"`       // 创建时间
+		TestPlanID   string               `json:"test_plan_id,omitempty"`  // 测试计划ID
+		ResultStatus TestCaseResultStatus `json:"result_status,omitempty"` // 结果状态
+		ResultRemark *string              `json:"result_remark,omitempty"` // 结果备注
+		WorkspaceID  string               `json:"workspace_id,omitempty"`  // 项目ID
+		Status       string               `json:"status,omitempty"`        // 状态
+		Executor     string               `json:"executor,omitempty"`      // 执行人
+		ExecutedAt   string               `json:"executed_at,omitempty"`   // 执行时间
+		BugID        []string             `json:"bug_id,omitempty"`        // 关联缺陷ID
+		Bugs         []*Bug               `json:"Bug,omitempty"`           // 关联缺陷详情
+	}
+
+	TestCaseResultItem struct {
+		ID     string          `json:"id,omitempty"`     // 测试结果ID
+		Result *TestCaseResult `json:"result,omitempty"` // 测试结果
+	}
+
+	GetTestCasesRequest struct {
+		ID                 *Multi[int64]         `url:"id,omitempty"`                  // 用例ID，支持多ID查询
+		Steps              *string               `url:"steps,omitempty"`               // 用例步骤
+		WorkspaceID        *int                  `url:"workspace_id,omitempty"`        // [必须]项目ID
+		CategoryID         *int64                `url:"category_id,omitempty"`         // 用例目录
+		Created            *string               `url:"created,omitempty"`             // 创建时间，支持时间查询
+		Modifier           *string               `url:"modifier,omitempty"`            // 最后修改人
+		Modified           *string               `url:"modified,omitempty"`            // 最后修改时间，支持时间查询
+		Creator            *string               `url:"creator,omitempty"`             // 创建人
+		Status             *Enum[TestCaseStatus] `url:"status,omitempty"`              // 用例状态
+		Name               *string               `url:"name,omitempty"`                // 用例名称，支持模糊匹配
+		Precondition       *string               `url:"precondition,omitempty"`        // 前置条件
+		Expectation        *string               `url:"expectation,omitempty"`         // 预期结果
+		Type               *string               `url:"type,omitempty"`                // 用例类型
+		Priority           *string               `url:"priority,omitempty"`            // 用例等级
+		IsAutomated        *string               `url:"is_automated,omitempty"`        // 是否实现自动化
+		AutomationType     *string               `url:"automation_type,omitempty"`     // 自动化测试类型
+		AutomationPlatform *string               `url:"automation_platform,omitempty"` // 自动化测试平台
+		IsServing          *string               `url:"is_serving,omitempty"`          // 是否上架
+		Limit              *int                  `url:"limit,omitempty"`               // 设置返回数量限制，默认为30，最大取200
+		Page               *int                  `url:"page,omitempty"`                // 返回当前数量限制下第N页的数据，默认为1
+		Order              *Order                `url:"order,omitempty"`               // 排序规则
+		Fields             *Multi[string]        `url:"fields,omitempty"`              // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	GetTestCasesCountRequest struct {
+		ID                 *Multi[int64]         `url:"id,omitempty"`                  // 用例ID，支持多ID查询
+		Steps              *string               `url:"steps,omitempty"`               // 用例步骤
+		WorkspaceID        *int                  `url:"workspace_id,omitempty"`        // [必须]项目ID
+		CategoryID         *int64                `url:"category_id,omitempty"`         // 用例目录
+		Created            *string               `url:"created,omitempty"`             // 创建时间，支持时间查询
+		Modifier           *string               `url:"modifier,omitempty"`            // 最后修改人
+		Modified           *string               `url:"modified,omitempty"`            // 最后修改时间，支持时间查询
+		Creator            *string               `url:"creator,omitempty"`             // 创建人
+		Status             *Enum[TestCaseStatus] `url:"status,omitempty"`              // 用例状态
+		Name               *string               `url:"name,omitempty"`                // 用例名称，支持模糊匹配
+		Precondition       *string               `url:"precondition,omitempty"`        // 前置条件
+		Expectation        *string               `url:"expectation,omitempty"`         // 预期结果
+		Type               *string               `url:"type,omitempty"`                // 用例类型
+		Priority           *string               `url:"priority,omitempty"`            // 用例等级
+		IsAutomated        *string               `url:"is_automated,omitempty"`        // 是否实现自动化
+		AutomationType     *string               `url:"automation_type,omitempty"`     // 自动化测试类型
+		AutomationPlatform *string               `url:"automation_platform,omitempty"` // 自动化测试平台
+		IsServing          *string               `url:"is_serving,omitempty"`          // 是否上架
+		TestPlanID         *int64                `url:"test_plan_id,omitempty"`        // 测试计划ID
+	}
+
+	GetTestPlanRelatedBugsRequest struct {
+		ID          *int64         `url:"id,omitempty"`           // [必须]测试计划ID
+		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
+		Limit       *int           `url:"limit,omitempty"`        // 设置返回数量限制，默认为30
+		Page        *int           `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1
+		Order       *Order         `url:"order,omitempty"`        // 排序规则
+		Fields      *Multi[string] `url:"fields,omitempty"`       // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	TestPlanRelatedBug struct {
+		ID                        string                `json:"id,omitempty"`                       // 测试用例ID
+		Name                      string                `json:"name,omitempty"`                     // 测试用例名称
+		TestCaseResultRelatedBugs []*TestCaseResultItem `json:"tcase_result_relate_bugs,omitempty"` // 测试结果关联缺陷
+	}
+
+	GetIterationTestPlansRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		IterationID *int64 `url:"iteration_id,omitempty"` // [必须]迭代ID
+		Limit       *int   `url:"limit,omitempty"`        // 设置返回数量限制，默认为30
+		Page        *int   `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1
+		Order       *Order `url:"order,omitempty"`        // 排序规则
+	}
+
+	IterationTestPlan struct {
+		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
+		IterationID string `json:"iteration_id,omitempty"` // 迭代ID
+		TestPlanID  string `json:"test_plan_id,omitempty"` // 测试计划ID
+	}
+
+	GetTestPlanResultRequest struct {
+		WorkspaceID   *int    `url:"workspace_id,omitempty"`   // [必须]项目ID
+		ID            *int64  `url:"id,omitempty"`             // [必须]测试计划ID
+		LastExecutor  *string `url:"last_executor,omitempty"`  // 最后执行人
+		IncludeRepeat *int    `url:"include_repeat,omitempty"` // 传1可以获取所有数据
+	}
 )
 
 // TestService 测试
@@ -416,6 +583,58 @@ type TestService interface {
 	GetTestCaseCategoriesCount(
 		ctx context.Context, request *GetTestCaseCategoriesCountRequest, opts ...RequestOption,
 	) (int, *Response, error)
+
+	// GetTestCaseCustomFieldsSettings 获取测试用例自定义字段配置
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_custom_fields_settings.html
+	GetTestCaseCustomFieldsSettings(
+		ctx context.Context, request *GetTestCaseCustomFieldsSettingsRequest, opts ...RequestOption,
+	) ([]*TestCaseCustomFieldsSetting, *Response, error)
+
+	// GetTestCaseFieldsInfo 获取测试用例字段所有字段及候选值
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_fields_info.html
+	GetTestCaseFieldsInfo(
+		ctx context.Context, request *GetTestCaseFieldsInfoRequest, opts ...RequestOption,
+	) ([]*TestCaseFieldsInfo, *Response, error)
+
+	// GetTestCaseResults 获取测试用例执行结果
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_result.html
+	GetTestCaseResults(
+		ctx context.Context, request *GetTestCaseResultsRequest, opts ...RequestOption,
+	) ([]*TestCaseResultItem, *Response, error)
+
+	// GetTestCases 获取测试用例
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcases.html
+	GetTestCases(ctx context.Context, request *GetTestCasesRequest, opts ...RequestOption) ([]*TestCase, *Response, error)
+
+	// GetTestCasesCount 获取测试用例数量
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcases_count.html
+	GetTestCasesCount(ctx context.Context, request *GetTestCasesCountRequest, opts ...RequestOption) (int, *Response, error)
+
+	// GetTestPlanRelatedBugs 获取测试计划关联bug
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plan_bugs.html
+	GetTestPlanRelatedBugs(
+		ctx context.Context, request *GetTestPlanRelatedBugsRequest, opts ...RequestOption,
+	) ([]*TestPlanRelatedBug, *Response, error)
+
+	// GetIterationTestPlans 获取迭代下测试计划
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_by_iteration_id.html
+	GetIterationTestPlans(
+		ctx context.Context, request *GetIterationTestPlansRequest, opts ...RequestOption,
+	) ([]*IterationTestPlan, *Response, error)
+
+	// GetTestPlanResult 获取测试计划测试结果
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plan_details.html
+	GetTestPlanResult(
+		ctx context.Context, request *GetTestPlanResultRequest, opts ...RequestOption,
+	) ([]*TestCase, *Response, error)
 }
 
 type testService struct {
@@ -664,4 +883,274 @@ func (s *testService) GetTestCaseCategoriesCount(
 	}
 
 	return count.Count, resp, nil
+}
+
+func (s *testService) GetTestCaseCustomFieldsSettings(
+	ctx context.Context, request *GetTestCaseCustomFieldsSettingsRequest, opts ...RequestOption,
+) ([]*TestCaseCustomFieldsSetting, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tcases/custom_fields_settings", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		CustomFieldConfig *TestCaseCustomFieldsSetting `json:"CustomFieldConfig,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	settings := make([]*TestCaseCustomFieldsSetting, 0, len(items))
+	for _, item := range items {
+		settings = append(settings, item.CustomFieldConfig)
+	}
+
+	return settings, resp, nil
+}
+
+type rawTestCaseFieldsInfo map[string]struct {
+	Name     string                     `json:"name,omitempty"`      // 字段名
+	HTMLType TestCaseFieldsInfoHTMLType `json:"html_type,omitempty"` // 类型
+	Label    string                     `json:"label,omitempty"`     // 中文名称
+	Options  any                        `json:"options,omitempty"`   // 候选值
+	Default  string                     `json:"default,omitempty"`   // 默认值
+}
+
+func (s *testService) GetTestCaseFieldsInfo(
+	ctx context.Context, request *GetTestCaseFieldsInfoRequest, opts ...RequestOption,
+) ([]*TestCaseFieldsInfo, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tcases/get_fields_info", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var raw rawTestCaseFieldsInfo
+	resp, err := s.client.Do(req, &raw)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	fields := make([]*TestCaseFieldsInfo, 0, len(raw))
+	for _, item := range raw {
+		options := make([]TestCaseFieldsInfoOption, 0)
+		if os, ok := item.Options.(map[string]any); ok {
+			options = make([]TestCaseFieldsInfoOption, 0, len(os))
+			for key, value := range os {
+				if v, ok2 := value.(string); ok2 {
+					options = append(options, TestCaseFieldsInfoOption{
+						Key:   key,
+						Label: v,
+					})
+				}
+			}
+		}
+
+		fields = append(fields, &TestCaseFieldsInfo{
+			Name:     item.Name,
+			HTMLType: item.HTMLType,
+			Label:    item.Label,
+			Options:  options,
+			Default:  item.Default,
+		})
+	}
+
+	return fields, resp, nil
+}
+
+func (s *testService) GetTestCaseResults(
+	ctx context.Context, request *GetTestCaseResultsRequest, opts ...RequestOption,
+) ([]*TestCaseResultItem, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tcase_instance/result", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var resultMap map[string]*TestCaseResult
+	resp, err := s.client.Do(req, &resultMap)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return newTestCaseResultItems(resultMap), resp, nil
+}
+
+func (s *testService) GetTestCases(
+	ctx context.Context, request *GetTestCasesRequest, opts ...RequestOption,
+) ([]*TestCase, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tcases", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		TestCase *TestCase `json:"Tcase,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	testCases := make([]*TestCase, 0, len(items))
+	for _, item := range items {
+		testCases = append(testCases, item.TestCase)
+	}
+
+	return testCases, resp, nil
+}
+
+func (s *testService) GetTestCasesCount(
+	ctx context.Context, request *GetTestCasesCountRequest, opts ...RequestOption,
+) (int, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tcases/count", request, opts)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var count CountResponse
+	resp, err := s.client.Do(req, &count)
+	if err != nil {
+		return 0, resp, err
+	}
+
+	return count.Count, resp, nil
+}
+
+func (s *testService) GetTestPlanRelatedBugs(
+	ctx context.Context, request *GetTestPlanRelatedBugsRequest, opts ...RequestOption,
+) ([]*TestPlanRelatedBug, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "test_plans/result_relation_bugs", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var relations []*TestPlanRelatedBug
+	resp, err := s.client.Do(req, &relations)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return relations, resp, nil
+}
+
+func (s *testService) GetIterationTestPlans(
+	ctx context.Context, request *GetIterationTestPlansRequest, opts ...RequestOption,
+) ([]*IterationTestPlan, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "test_plans/get_by_iteration_id", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var plans []*IterationTestPlan
+	resp, err := s.client.Do(req, &plans)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return plans, resp, nil
+}
+
+func (s *testService) GetTestPlanResult(
+	ctx context.Context, request *GetTestPlanResultRequest, opts ...RequestOption,
+) ([]*TestCase, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "test_plans/details", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		TestCase *TestCase `json:"Tcase,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	testCases := make([]*TestCase, 0, len(items))
+	for _, item := range items {
+		testCases = append(testCases, item.TestCase)
+	}
+
+	return testCases, resp, nil
+}
+
+func (r *TestCaseResult) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		ID           json.RawMessage      `json:"id,omitempty"`
+		TestCaseID   json.RawMessage      `json:"tcase_id,omitempty"`
+		Created      string               `json:"created,omitempty"`
+		TestPlanID   json.RawMessage      `json:"test_plan_id,omitempty"`
+		ResultStatus TestCaseResultStatus `json:"result_status,omitempty"`
+		ResultRemark *string              `json:"result_remark,omitempty"`
+		WorkspaceID  json.RawMessage      `json:"workspace_id,omitempty"`
+		Status       string               `json:"status,omitempty"`
+		Executor     string               `json:"executor,omitempty"`
+		ExecutedAt   string               `json:"executed_at,omitempty"`
+		BugID        []string             `json:"bug_id,omitempty"`
+		Bugs         []*Bug               `json:"Bug,omitempty"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	*r = TestCaseResult{
+		ID:           stringifyJSONRaw(raw.ID),
+		TestCaseID:   stringifyJSONRaw(raw.TestCaseID),
+		Created:      raw.Created,
+		TestPlanID:   stringifyJSONRaw(raw.TestPlanID),
+		ResultStatus: raw.ResultStatus,
+		ResultRemark: raw.ResultRemark,
+		WorkspaceID:  stringifyJSONRaw(raw.WorkspaceID),
+		Status:       raw.Status,
+		Executor:     raw.Executor,
+		ExecutedAt:   raw.ExecutedAt,
+		BugID:        raw.BugID,
+		Bugs:         raw.Bugs,
+	}
+
+	return nil
+}
+
+func (r *TestPlanRelatedBug) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		ID                        json.RawMessage            `json:"id,omitempty"`
+		Name                      string                     `json:"name,omitempty"`
+		TestCaseResultRelatedBugs map[string]*TestCaseResult `json:"tcase_result_relate_bugs,omitempty"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	*r = TestPlanRelatedBug{
+		ID:                        stringifyJSONRaw(raw.ID),
+		Name:                      raw.Name,
+		TestCaseResultRelatedBugs: newTestCaseResultItems(raw.TestCaseResultRelatedBugs),
+	}
+
+	return nil
+}
+
+func newTestCaseResultItems(results map[string]*TestCaseResult) []*TestCaseResultItem {
+	items := make([]*TestCaseResultItem, 0, len(results))
+	for id, result := range results {
+		items = append(items, &TestCaseResultItem{
+			ID:     id,
+			Result: result,
+		})
+	}
+
+	return items
+}
+
+func stringifyJSONRaw(raw json.RawMessage) string {
+	if len(raw) == 0 || string(raw) == "null" {
+		return ""
+	}
+	if raw[0] != '"' {
+		return string(raw)
+	}
+
+	var value string
+	_ = json.Unmarshal(raw, &value)
+	return value
 }

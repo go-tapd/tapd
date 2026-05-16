@@ -1,0 +1,78 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Tcase": {
+        "id": "1010158231075919347",
+        "mid": "1010158231075919347",
+        "steps": null,
+        "workspace_id": "10158231",
+        "category_id": "-1",
+        "version": "0",
+        "created": "2017-06-20 16:49:29",
+        "modifier": "anyechen",
+        "modified": "2017-06-20 16:49:29",
+        "creator": "anyechen",
+        "status": "normal",
+        "name": "Firefox浏览器兼容性测试",
+        "precondition": null,
+        "expectation": null,
+        "sort": "0",
+        "indexcode": "",
+        "type": "",
+        "priority": "",
+        "template_id": "0",
+        "created_from": "",
+        "TcaseResult": {
+          "id": 0,
+          "tcase_id": 1010158231075919347,
+          "created": "",
+          "test_plan_id": 0,
+          "result_status": "unexecuted",
+          "result_remark": "",
+          "workspace_id": 10158231,
+          "status": "",
+          "executor": "",
+          "executed_at": ""
+        }
+      }
+    },
+    {
+      "Tcase": {
+        "id": "1010158231075919345",
+        "mid": "1010158231075919345",
+        "steps": null,
+        "workspace_id": "10158231",
+        "category_id": "-1",
+        "version": "0",
+        "created": "2017-06-20 16:49:28",
+        "modifier": "anyechen",
+        "modified": "2017-06-20 16:49:29",
+        "creator": "anyechen",
+        "status": "normal",
+        "name": "Chrome浏览器兼容性测试",
+        "precondition": null,
+        "expectation": null,
+        "sort": "0",
+        "indexcode": "",
+        "type": "",
+        "priority": "",
+        "template_id": "0",
+        "created_from": "",
+        "TcaseResult": {
+          "id": "1010158231000703323",
+          "tcase_id": "1010158231077230667",
+          "created": "2020-02-12 23:42:56",
+          "test_plan_id": "1010158231000005241",
+          "result_status": "block",
+          "result_remark": "xxx",
+          "workspace_id": "10158231",
+          "status": "normal",
+          "executor": "anyechen",
+          "executed_at": "2020-02-12 23:42:56"
+        }
+      }
+    }
+  ],
+  "info": "success"
+}

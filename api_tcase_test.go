@@ -441,3 +441,229 @@ func TestTestService_GetTestCaseCategoriesCount(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 4, count)
 }
+
+func TestTestService_GetTestCaseCustomFieldsSettings(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tcases/custom_fields_settings", r.URL.Path)
+		assert.Equal(t, "755", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_case_custom_fields_settings.json"))
+	}))
+
+	settings, _, err := client.TestService.GetTestCaseCustomFieldsSettings(
+		ctx,
+		&GetTestCaseCustomFieldsSettingsRequest{
+			WorkspaceID: Ptr(755),
+		},
+	)
+	assert.NoError(t, err)
+	require.Len(t, settings, 1)
+	assert.Equal(t, "1000000755214854654", settings[0].ID)
+	assert.Equal(t, "755", settings[0].WorkspaceID)
+	assert.Equal(t, "tcase", settings[0].EntryType)
+	assert.Equal(t, "custom_field_30", settings[0].CustomField)
+	assert.Equal(t, "AT已实现？", settings[0].Name)
+	require.NotNil(t, settings[0].Options)
+	assert.Equal(t, `{"1":"已实现","2":"未实现"}`, *settings[0].Options)
+}
+
+func TestTestService_GetTestCaseFieldsInfo(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tcases/get_fields_info", r.URL.Path)
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_case_fields_info.json"))
+	}))
+
+	fields, _, err := client.TestService.GetTestCaseFieldsInfo(ctx, &GetTestCaseFieldsInfoRequest{
+		WorkspaceID: Ptr(10104801),
+	})
+	assert.NoError(t, err)
+	require.Len(t, fields, 3)
+
+	var statusField *TestCaseFieldsInfo
+	for _, field := range fields {
+		if field.Name == "status" {
+			statusField = field
+			break
+		}
+	}
+	require.NotNil(t, statusField)
+	assert.Equal(t, TestCaseFieldsInfoHTMLTypeSelect, statusField.HTMLType)
+	assert.Equal(t, "用例状态", statusField.Label)
+	assert.Equal(t, "normal", statusField.Default)
+	assert.Contains(t, statusField.Options, TestCaseFieldsInfoOption{
+		Key:   "normal",
+		Label: "正常",
+	})
+}
+
+func TestTestService_GetTestCaseResults(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tcase_instance/result", r.URL.Path)
+		assert.Equal(t, "1010158231077224799", r.URL.Query().Get("test_plan_id"))
+		assert.Equal(t, "1020357849077231381", r.URL.Query().Get("tcase_id"))
+		assert.Equal(t, "10158231", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_case_results.json"))
+	}))
+
+	results, _, err := client.TestService.GetTestCaseResults(ctx, &GetTestCaseResultsRequest{
+		TestPlanID:  Ptr[int64](1010158231077224799),
+		TestCaseID:  Ptr[int64](1020357849077231381),
+		WorkspaceID: Ptr(10158231),
+	})
+	assert.NoError(t, err)
+	require.Len(t, results, 2)
+	passed := findTestCaseResultItem(results, "1020357849000703565")
+	require.NotNil(t, passed)
+	require.NotNil(t, passed.Result)
+	assert.Equal(t, TestCaseResultStatusPass, passed.Result.ResultStatus)
+	assert.Equal(t, "jeffjffang", passed.Result.Executor)
+	failed := findTestCaseResultItem(results, "1020357849000703483")
+	require.NotNil(t, failed)
+	require.NotNil(t, failed.Result)
+	assert.Equal(t, []string{"1020357849500655643"}, failed.Result.BugID)
+	require.Len(t, failed.Result.Bugs, 1)
+	assert.Equal(t, "用例失败bug关联", failed.Result.Bugs[0].Title)
+}
+
+func TestTestService_GetTestCases(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tcases", r.URL.Path)
+		assert.Equal(t, "10158231", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "测试浏览器", r.URL.Query().Get("name"))
+		assert.Equal(t, "normal", r.URL.Query().Get("status"))
+		assert.Equal(t, "20", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "id,name,status", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_cases.json"))
+	}))
+
+	testCases, _, err := client.TestService.GetTestCases(ctx, &GetTestCasesRequest{
+		WorkspaceID: Ptr(10158231),
+		Name:        Ptr("测试浏览器"),
+		Status:      NewEnum(TestCaseStatusNormal),
+		Limit:       Ptr(20),
+		Page:        Ptr(1),
+		Fields:      NewMulti("id", "name", "status"),
+	})
+	assert.NoError(t, err)
+	require.Len(t, testCases, 2)
+	assert.Equal(t, "1120003271001000049", testCases[0].ID)
+	assert.Equal(t, TestCaseStatusAbandon, testCases[0].Status)
+	assert.Equal(t, "1010158231077224799", testCases[1].ID)
+	assert.Equal(t, "测试浏览器兼容性", testCases[1].Name)
+}
+
+func TestTestService_GetTestCasesCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tcases/count", r.URL.Path)
+		assert.Equal(t, "10158231", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1020357849000015397", r.URL.Query().Get("test_plan_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_cases_count.json"))
+	}))
+
+	count, _, err := client.TestService.GetTestCasesCount(ctx, &GetTestCasesCountRequest{
+		WorkspaceID: Ptr(10158231),
+		TestPlanID:  Ptr[int64](1020357849000015397),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 10, count)
+}
+
+func TestTestService_GetTestPlanRelatedBugs(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/test_plans/result_relation_bugs", r.URL.Path)
+		assert.Equal(t, "1010158231077224799", r.URL.Query().Get("id"))
+		assert.Equal(t, "10158231", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_plan_related_bugs.json"))
+	}))
+
+	relations, _, err := client.TestService.GetTestPlanRelatedBugs(ctx, &GetTestPlanRelatedBugsRequest{
+		ID:          Ptr[int64](1010158231077224799),
+		WorkspaceID: Ptr(10158231),
+	})
+	assert.NoError(t, err)
+	require.Len(t, relations, 1)
+	assert.Equal(t, "1020357849077231363", relations[0].ID)
+	assert.Equal(t, "用例1", relations[0].Name)
+	result := findTestCaseResultItem(relations[0].TestCaseResultRelatedBugs, "1020357849000703483")
+	require.NotNil(t, result)
+	require.NotNil(t, result.Result)
+	assert.Equal(t, TestCaseResultStatusPass, result.Result.ResultStatus)
+	require.Len(t, result.Result.Bugs, 1)
+	assert.Equal(t, "1231", result.Result.Bugs[0].Title)
+}
+
+func findTestCaseResultItem(items []*TestCaseResultItem, id string) *TestCaseResultItem {
+	for _, item := range items {
+		if item.ID == id {
+			return item
+		}
+	}
+
+	return nil
+}
+
+func TestTestService_GetIterationTestPlans(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/test_plans/get_by_iteration_id", r.URL.Path)
+		assert.Equal(t, "51650666", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1151650666001000111", r.URL.Query().Get("iteration_id"))
+		assert.Equal(t, "30", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_iteration_test_plans.json"))
+	}))
+
+	plans, _, err := client.TestService.GetIterationTestPlans(ctx, &GetIterationTestPlansRequest{
+		WorkspaceID: Ptr(51650666),
+		IterationID: Ptr[int64](1151650666001000111),
+		Limit:       Ptr(30),
+		Page:        Ptr(1),
+	})
+	assert.NoError(t, err)
+	require.Len(t, plans, 2)
+	assert.Equal(t, "51650666", plans[0].WorkspaceID)
+	assert.Equal(t, "1151650666001000111", plans[0].IterationID)
+	assert.Equal(t, "1151650666001000019", plans[0].TestPlanID)
+}
+
+func TestTestService_GetTestPlanResult(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/test_plans/details", r.URL.Path)
+		assert.Equal(t, "10158231", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1010158231000005241", r.URL.Query().Get("id"))
+		assert.Equal(t, "1", r.URL.Query().Get("include_repeat"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_plan_result.json"))
+	}))
+
+	testCases, _, err := client.TestService.GetTestPlanResult(ctx, &GetTestPlanResultRequest{
+		WorkspaceID:   Ptr(10158231),
+		ID:            Ptr[int64](1010158231000005241),
+		IncludeRepeat: Ptr(1),
+	})
+	assert.NoError(t, err)
+	require.Len(t, testCases, 2)
+	assert.Equal(t, "1010158231075919347", testCases[0].ID)
+	require.NotNil(t, testCases[0].Result)
+	assert.Equal(t, "0", testCases[0].Result.ID)
+	assert.Equal(t, TestCaseResultStatusUnexecuted, testCases[0].Result.ResultStatus)
+	assert.Equal(t, "1010158231075919345", testCases[1].ID)
+	require.NotNil(t, testCases[1].Result)
+	assert.Equal(t, "1010158231000703323", testCases[1].Result.ID)
+	assert.Equal(t, TestCaseResultStatusBlock, testCases[1].Result.ResultStatus)
+}
