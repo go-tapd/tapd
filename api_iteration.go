@@ -472,6 +472,27 @@ type (
 		Created     string `json:"created"`
 		Modified    string `json:"modified"`
 	}
+
+	GetIterationTemplateFieldsRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		TemplateID  *int64 `url:"template_id,omitempty"`  // [必须]迭代模板ID
+	}
+
+	GetIterationDefaultTemplateFieldsRequest struct {
+		WorkspaceID    *int   `url:"workspace_id,omitempty"`     // [必须]项目ID
+		WorkitemTypeID *int64 `url:"workitem_type_id,omitempty"` // [必须]迭代类别ID
+	}
+
+	IterationTemplateField struct {
+		ID          string `json:"id,omitempty"`           // 模板字段ID
+		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
+		Type        string `json:"type,omitempty"`         // 类型
+		TemplateID  string `json:"template_id,omitempty"`  // 模板ID
+		Field       string `json:"field,omitempty"`        // 字段名称
+		Value       string `json:"value,omitempty"`        // 默认值
+		Required    string `json:"required,omitempty"`     // 是否必填
+		Sort        string `json:"sort,omitempty"`         // 排序
+	}
 )
 
 // IterationService 迭代
@@ -544,8 +565,20 @@ type IterationService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/template_list.html
 	GetTemplateList(ctx context.Context, request *GetTemplateListRequest, opts ...RequestOption) ([]*WorkitemTemplate, *Response, error)
 
-	// 获取迭代模板字段配置
-	// 获取迭代类别默认模板字段配置
+	// GetIterationTemplateFields 获取迭代模板字段配置
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/template_fields.html
+	GetIterationTemplateFields(
+		ctx context.Context, request *GetIterationTemplateFieldsRequest, opts ...RequestOption,
+	) ([]*IterationTemplateField, *Response, error)
+
+	// GetIterationDefaultTemplateFields 获取迭代类别默认模板字段配置
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/default_template_fields_by_workitem_type_id.html
+	GetIterationDefaultTemplateFields(
+		ctx context.Context, request *GetIterationDefaultTemplateFieldsRequest, opts ...RequestOption,
+	) ([]*IterationTemplateField, *Response, error)
+
 	// 获取计划应用
 	// 获取计划应用数量
 }
@@ -805,4 +838,52 @@ func (s *iterationService) GetTemplateList(
 	}
 
 	return templates, resp, nil
+}
+
+func (s *iterationService) GetIterationTemplateFields(
+	ctx context.Context, request *GetIterationTemplateFieldsRequest, opts ...RequestOption,
+) ([]*IterationTemplateField, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "iterations/template_fields", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		WorkitemTemplateField *IterationTemplateField `json:"WorkitemTemplateField,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	fields := make([]*IterationTemplateField, 0, len(items))
+	for _, item := range items {
+		fields = append(fields, item.WorkitemTemplateField)
+	}
+
+	return fields, resp, nil
+}
+
+func (s *iterationService) GetIterationDefaultTemplateFields(
+	ctx context.Context, request *GetIterationDefaultTemplateFieldsRequest, opts ...RequestOption,
+) ([]*IterationTemplateField, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "iterations/default_template_fields_by_workitem_type_id", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		WorkitemTemplateField *IterationTemplateField `json:"WorkitemTemplateField,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	fields := make([]*IterationTemplateField, 0, len(items))
+	for _, item := range items {
+		fields = append(fields, item.WorkitemTemplateField)
+	}
+
+	return fields, resp, nil
 }

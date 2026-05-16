@@ -401,3 +401,62 @@ func TestIterationService_GetTemplateList(t *testing.T) {
 		},
 	}, templates)
 }
+
+func TestIterationService_GetIterationTemplateFields(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iterations/template_fields", r.URL.Path)
+		assert.Equal(t, "20375553", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1020375553000077579", r.URL.Query().Get("template_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iteration_template_fields.json"))
+	}))
+
+	fields, _, err := client.IterationService.GetIterationTemplateFields(ctx, &GetIterationTemplateFieldsRequest{
+		WorkspaceID: Ptr(20375553),
+		TemplateID:  Ptr[int64](1020375553000077579),
+	})
+	assert.NoError(t, err)
+	require.Len(t, fields, 2)
+	assert.Equal(t, "1020375553001067379", fields[0].ID)
+	assert.Equal(t, "20375553", fields[0].WorkspaceID)
+	assert.Equal(t, "iteration", fields[0].Type)
+	assert.Equal(t, "1020375553000077579", fields[0].TemplateID)
+	assert.Equal(t, "description", fields[0].Field)
+	assert.Equal(t, "", fields[0].Value)
+	assert.Equal(t, "1", fields[0].Required)
+	assert.Equal(t, "0", fields[0].Sort)
+	assert.Equal(t, "crucial_moment", fields[1].Field)
+	assert.Contains(t, fields[1].Value, "CustomMoment1")
+}
+
+func TestIterationService_GetIterationDefaultTemplateFields(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iterations/default_template_fields_by_workitem_type_id", r.URL.Path)
+		assert.Equal(t, "20375553", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1020375553000070695", r.URL.Query().Get("workitem_type_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iteration_default_template_fields.json"))
+	}))
+
+	fields, _, err := client.IterationService.GetIterationDefaultTemplateFields(
+		ctx,
+		&GetIterationDefaultTemplateFieldsRequest{
+			WorkspaceID:    Ptr(20375553),
+			WorkitemTypeID: Ptr[int64](1020375553000070695),
+		},
+	)
+	assert.NoError(t, err)
+	require.Len(t, fields, 2)
+	assert.Equal(t, "1020375553001067381", fields[0].ID)
+	assert.Equal(t, "20375553", fields[0].WorkspaceID)
+	assert.Equal(t, "iteration", fields[0].Type)
+	assert.Equal(t, "1020375553000077579", fields[0].TemplateID)
+	assert.Equal(t, "name", fields[0].Field)
+	assert.Equal(t, "", fields[0].Value)
+	assert.Equal(t, "1", fields[0].Required)
+	assert.Equal(t, "0", fields[0].Sort)
+	assert.Equal(t, "jump_holiday", fields[1].Field)
+	assert.Equal(t, "1", fields[1].Value)
+}

@@ -1,0 +1,30 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "WorkitemTemplateField": {
+        "id": "1020375553001067379",
+        "workspace_id": "20375553",
+        "type": "iteration",
+        "template_id": "1020375553000077579",
+        "field": "description",
+        "value": "",
+        "required": "1",
+        "sort": "0"
+      }
+    },
+    {
+      "WorkitemTemplateField": {
+        "id": "1020375553001067397",
+        "workspace_id": "20375553",
+        "type": "iteration",
+        "template_id": "1020375553000077579",
+        "field": "crucial_moment",
+        "value": "[{\"key\":\"StartDate\",\"name\":\"Start Date\",\"period\":\"\"},{\"key\":\"CustomMoment1\",\"name\":\"发布评审\",\"period\":\"2\"},{\"key\":\"EndDate\",\"name\":\"End Date\",\"period\":\"6\"}]",
+        "required": "0",
+        "sort": "0"
+      }
+    }
+  ],
+  "info": "success"
+}
