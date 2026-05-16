@@ -162,6 +162,80 @@ type (
 	}
 
 	BatchCreateTestCasesRequest []*CreateTestCaseRequest
+
+	CreateTestCaseCategoryRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		Name        *string `json:"name,omitempty"`         // [必须]目录名称
+		Description *string `json:"description,omitempty"`  // 目录描述
+		ParentID    *int64  `json:"parent_id,omitempty"`    // 父目录ID
+		Creator     *string `json:"creator,omitempty"`      // 目录创建人
+	}
+
+	TestCaseCategory struct {
+		ID          string  `json:"id,omitempty"`           // 目录ID
+		WorkspaceID string  `json:"workspace_id,omitempty"` // 项目ID
+		Name        string  `json:"name,omitempty"`         // 目录名称
+		Description *string `json:"description,omitempty"`  // 目录描述
+		ParentID    string  `json:"parent_id,omitempty"`    // 父目录ID
+		Modified    string  `json:"modified,omitempty"`     // 最后修改时间
+		Created     string  `json:"created,omitempty"`      // 创建时间
+		Creator     *string `json:"creator,omitempty"`      // 目录创建人
+		Modifier    *string `json:"modifier,omitempty"`     // 目录最后修改人
+		Sorting     *string `json:"sorting,omitempty"`      // 目录排序序号
+	}
+
+	// TestPlan 测试计划
+	TestPlan struct {
+		ID          string  `json:"id,omitempty"`           // 测试计划ID
+		WorkspaceID string  `json:"workspace_id,omitempty"` // 项目ID
+		Name        string  `json:"name,omitempty"`         // 测试计划标题
+		Description string  `json:"description,omitempty"`  // 测试计划详细描述
+		Version     string  `json:"version,omitempty"`      // 版本号
+		Owner       string  `json:"owner,omitempty"`        // 测试计划负责人
+		Status      string  `json:"status,omitempty"`       // 状态
+		Type        string  `json:"type,omitempty"`         // 测试类型
+		StartDate   *string `json:"start_date,omitempty"`   // 预计开始
+		EndDate     *string `json:"end_date,omitempty"`     // 预计结束
+		Creator     string  `json:"creator,omitempty"`      // 创建人
+		Created     string  `json:"created,omitempty"`      // 创建时间
+		Modified    string  `json:"modified,omitempty"`     // 最后修改时间
+		Modifier    string  `json:"modifier,omitempty"`     // 修改人
+		CreatedFrom string  `json:"created_from,omitempty"` // 创建来源
+	}
+
+	CreateTestPlanRequest struct {
+		Name          *string `json:"name,omitempty"`           // [必须]测试计划标题
+		Description   *string `json:"description,omitempty"`    // 测试计划详细描述
+		WorkspaceID   *int    `json:"workspace_id,omitempty"`   // [必须]项目ID
+		Creator       *string `json:"creator,omitempty"`        // 创建人
+		Modifier      *string `json:"modifier,omitempty"`       // 修改人
+		Owner         *string `json:"owner,omitempty"`          // 测试计划负责人
+		StartDate     *string `json:"start_date,omitempty"`     // 预计开始
+		EndDate       *string `json:"end_date,omitempty"`       // 预计结束
+		IterationID   *int64  `json:"iteration_id,omitempty"`   // 关联迭代ID
+		Version       *string `json:"version,omitempty"`        // 版本号
+		Type          *string `json:"type,omitempty"`           // 测试类型
+		Status        *string `json:"status,omitempty"`         // 状态，默认open
+		CustomField1  *string `json:"custom_field_1,omitempty"` // 自定义字段
+		CustomField2  *string `json:"custom_field_2,omitempty"`
+		CustomField3  *string `json:"custom_field_3,omitempty"`
+		CustomField4  *string `json:"custom_field_4,omitempty"`
+		CustomField5  *string `json:"custom_field_5,omitempty"`
+		CustomField6  *string `json:"custom_field_6,omitempty"`
+		CustomField7  *string `json:"custom_field_7,omitempty"`
+		CustomField8  *string `json:"custom_field_8,omitempty"`
+		CustomField9  *string `json:"custom_field_9,omitempty"`
+		CustomField10 *string `json:"custom_field_10,omitempty"`
+	}
+
+	AssignTestCaseRequest struct {
+		TestPlanID  *int64        `json:"test_plan_id,omitempty"` // [必须]测试计划ID
+		TestCaseID  *Multi[int64] `json:"tcase_id,omitempty"`     // 用例ID，多个使用英文逗号分隔
+		CategoryID  *int64        `json:"category_id,omitempty"`  // 用例目录ID
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		Executor    *string       `json:"executor,omitempty"`     // 执行人
+		Assignee    *string       `json:"assignee,omitempty"`     // 负责人
+	}
 )
 
 // TestService 测试
@@ -179,6 +253,23 @@ type TestService interface {
 	BatchCreateTestCases(
 		ctx context.Context, request *BatchCreateTestCasesRequest, opts ...RequestOption,
 	) ([]*TestCase, *Response, error)
+
+	// CreateTestCaseCategory 创建测试用例目录
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/add_tcase_category.html
+	CreateTestCaseCategory(
+		ctx context.Context, request *CreateTestCaseCategoryRequest, opts ...RequestOption,
+	) (*TestCaseCategory, *Response, error)
+
+	// CreateTestPlan 创建测试计划
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/add_test_plan.html
+	CreateTestPlan(ctx context.Context, request *CreateTestPlanRequest, opts ...RequestOption) (*TestPlan, *Response, error)
+
+	// AssignTestCase 分配测试用例
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/assign_tcase_instance.html
+	AssignTestCase(ctx context.Context, request *AssignTestCaseRequest, opts ...RequestOption) (bool, *Response, error)
 }
 
 type testService struct {
@@ -234,4 +325,58 @@ func (s *testService) BatchCreateTestCases(
 	}
 
 	return testCases, resp, nil
+}
+
+func (s *testService) CreateTestCaseCategory(
+	ctx context.Context, request *CreateTestCaseCategoryRequest, opts ...RequestOption,
+) (*TestCaseCategory, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "tcase_categories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var item struct {
+		TestCaseCategory *TestCaseCategory `json:"TcaseCategory,omitempty"`
+	}
+	resp, err := s.client.Do(req, &item)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return item.TestCaseCategory, resp, nil
+}
+
+func (s *testService) CreateTestPlan(
+	ctx context.Context, request *CreateTestPlanRequest, opts ...RequestOption,
+) (*TestPlan, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "test_plans", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var item struct {
+		TestPlan *TestPlan `json:"TestPlan,omitempty"`
+	}
+	resp, err := s.client.Do(req, &item)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return item.TestPlan, resp, nil
+}
+
+func (s *testService) AssignTestCase(
+	ctx context.Context, request *AssignTestCaseRequest, opts ...RequestOption,
+) (bool, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "tcase_instance/assign", request, opts)
+	if err != nil {
+		return false, nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return false, resp, err
+	}
+
+	return true, resp, nil
 }

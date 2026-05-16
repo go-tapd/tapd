@@ -101,3 +101,116 @@ func TestTestService_BatchCreateTestCases(t *testing.T) {
 	assert.Equal(t, "简单用例2", testCases[1].Name)
 	assert.Equal(t, "XX2", testCases[1].Creator)
 }
+
+func TestTestService_CreateTestCaseCategory(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/tcase_categories", r.URL.Path)
+
+		var req CreateTestCaseCategoryRequest
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 10158231, *req.WorkspaceID)
+		assert.Equal(t, "用例目录4", *req.Name)
+		assert.Equal(t, "回归测试目录", *req.Description)
+		assert.Equal(t, int64(0), *req.ParentID)
+		assert.Equal(t, "tester", *req.Creator)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/create_test_case_category.json"))
+	}))
+
+	category, _, err := client.TestService.CreateTestCaseCategory(ctx, &CreateTestCaseCategoryRequest{
+		WorkspaceID: Ptr(10158231),
+		Name:        Ptr("用例目录4"),
+		Description: Ptr("回归测试目录"),
+		ParentID:    Ptr[int64](0),
+		Creator:     Ptr("tester"),
+	})
+	assert.NoError(t, err)
+	require.NotNil(t, category)
+	assert.Equal(t, "1010158231000082523", category.ID)
+	assert.Equal(t, "10158231", category.WorkspaceID)
+	assert.Equal(t, "用例目录4", category.Name)
+	require.NotNil(t, category.Description)
+	assert.Equal(t, "回归测试目录", *category.Description)
+	assert.Equal(t, "0", category.ParentID)
+	require.NotNil(t, category.Creator)
+	assert.Equal(t, "tester", *category.Creator)
+}
+
+func TestTestService_CreateTestPlan(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/test_plans", r.URL.Path)
+
+		var req CreateTestPlanRequest
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 10158231, *req.WorkspaceID)
+		assert.Equal(t, "test_plan_12", *req.Name)
+		assert.Equal(t, "这不是一个测试", *req.Description)
+		assert.Equal(t, "dev", *req.Creator)
+		assert.Equal(t, "owner", *req.Owner)
+		assert.Equal(t, "2026-05-01", *req.StartDate)
+		assert.Equal(t, "2026-05-31", *req.EndDate)
+		assert.Equal(t, int64(1010158231000012345), *req.IterationID)
+		assert.Equal(t, "123456", *req.Version)
+		assert.Equal(t, "open", *req.Status)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/create_test_plan.json"))
+	}))
+
+	plan, _, err := client.TestService.CreateTestPlan(ctx, &CreateTestPlanRequest{
+		WorkspaceID: Ptr(10158231),
+		Name:        Ptr("test_plan_12"),
+		Description: Ptr("这不是一个测试"),
+		Creator:     Ptr("dev"),
+		Owner:       Ptr("owner"),
+		StartDate:   Ptr("2026-05-01"),
+		EndDate:     Ptr("2026-05-31"),
+		IterationID: Ptr[int64](1010158231000012345),
+		Version:     Ptr("123456"),
+		Status:      Ptr("open"),
+	})
+	assert.NoError(t, err)
+	require.NotNil(t, plan)
+	assert.Equal(t, "1000000755000016443", plan.ID)
+	assert.Equal(t, "755", plan.WorkspaceID)
+	assert.Equal(t, "test_plan_12", plan.Name)
+	assert.Equal(t, "这不是一个测试", plan.Description)
+	assert.Equal(t, "123456", plan.Version)
+	assert.Equal(t, "open", plan.Status)
+	assert.Equal(t, "dev", plan.Creator)
+	assert.Equal(t, "api", plan.CreatedFrom)
+}
+
+func TestTestService_AssignTestCase(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/tcase_instance/assign", r.URL.Path)
+
+		var req struct {
+			TestPlanID  int64  `json:"test_plan_id"`
+			TestCaseID  string `json:"tcase_id"`
+			WorkspaceID int    `json:"workspace_id"`
+			Executor    string `json:"executor"`
+			Assignee    string `json:"assignee"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, int64(1010158231077224799), req.TestPlanID)
+		assert.Equal(t, "1020357849077231381,1020357849077231382", req.TestCaseID)
+		assert.Equal(t, 10158231, req.WorkspaceID)
+		assert.Equal(t, "peter", req.Executor)
+		assert.Equal(t, "tester", req.Assignee)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/assign_test_case.json"))
+	}))
+
+	ok, _, err := client.TestService.AssignTestCase(ctx, &AssignTestCaseRequest{
+		TestPlanID:  Ptr[int64](1010158231077224799),
+		TestCaseID:  NewMulti[int64](1020357849077231381, 1020357849077231382),
+		WorkspaceID: Ptr(10158231),
+		Executor:    Ptr("peter"),
+		Assignee:    Ptr("tester"),
+	})
+	assert.NoError(t, err)
+	assert.True(t, ok)
+}
