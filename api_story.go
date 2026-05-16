@@ -985,6 +985,23 @@ type (
 		RelationType    string `json:"relation_type,omitempty"`     // 依赖类型。before 为前置依赖，after 为后置依赖
 	}
 
+	SaveStoryTimeRelationsRequest struct {
+		WorkspaceID *int                     `json:"workspace_id,omitempty"` // [必须]项目ID
+		Relations   []*SaveStoryTimeRelation `json:"relations,omitempty"`    // [必须]需要新增或修改的关系列表
+		CurrentUser *string                  `json:"current_user,omitempty"` // [必须]执行此操作的用户 nick
+	}
+
+	SaveStoryTimeRelation struct {
+		WorkitemID    *int64  `json:"workitem_id,omitempty"`     // [必须]起点需求ID
+		DstWorkitemID *int64  `json:"dst_workitem_id,omitempty"` // [必须]终点需求ID
+		SrcField      *string `json:"src_field,omitempty"`       // [必须]起点字段，只能是 begin 或 due
+		DstField      *string `json:"dst_field,omitempty"`       // [必须]终点字段，只能是 begin 或 due
+	}
+
+	SaveStoryTimeRelationsResult struct {
+		Result bool `json:"result,omitempty"` // 是否保存成功
+	}
+
 	GetStoryFieldsLabelRequest struct {
 		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目ID
 	}
@@ -1397,7 +1414,11 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_time_relative_stories.html
 	GetStoryTimeRelations(ctx context.Context, request *GetStoryTimeRelationsRequest, opts ...RequestOption) ([]*StoryTimeRelation, *Response, error)
 
-	// 批量新增或修改需求前后置关系
+	// SaveStoryTimeRelations 批量新增或修改需求前后置关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/save_time_relations.html
+	SaveStoryTimeRelations(ctx context.Context, request *SaveStoryTimeRelationsRequest, opts ...RequestOption) (*SaveStoryTimeRelationsResult, *Response, error)
+
 	// 批量删除需求前后置关系
 	// 获取需求保密信息
 	// 批量修改保密信息
@@ -1704,6 +1725,23 @@ func (s *storyService) GetStoryTimeRelations(
 	}
 
 	return relations, resp, nil
+}
+
+func (s *storyService) SaveStoryTimeRelations(
+	ctx context.Context, request *SaveStoryTimeRelationsRequest, opts ...RequestOption,
+) (*SaveStoryTimeRelationsResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/save_time_relations", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var result SaveStoryTimeRelationsResult
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &result, resp, nil
 }
 
 func (s *storyService) UpdateStory(

@@ -255,6 +255,41 @@ func TestStoryService_GetStoryTimeRelations(t *testing.T) {
 	assert.Equal(t, "1210104801000007815", relations[1].ID)
 }
 
+func TestStoryService_SaveStoryTimeRelations(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/save_time_relations", r.URL.Path)
+
+		var req SaveStoryTimeRelationsRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, "testuser", *req.CurrentUser)
+		assert.Len(t, req.Relations, 1)
+		assert.Equal(t, int64(1111112222001000102), *req.Relations[0].WorkitemID)
+		assert.Equal(t, int64(1111112222001000103), *req.Relations[0].DstWorkitemID)
+		assert.Equal(t, "begin", *req.Relations[0].SrcField)
+		assert.Equal(t, "due", *req.Relations[0].DstField)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/save_story_time_relations.json"))
+	}))
+
+	result, _, err := client.StoryService.SaveStoryTimeRelations(ctx, &SaveStoryTimeRelationsRequest{
+		WorkspaceID: Ptr(11112222),
+		CurrentUser: Ptr("testuser"),
+		Relations: []*SaveStoryTimeRelation{
+			{
+				WorkitemID:    Ptr[int64](1111112222001000102),
+				DstWorkitemID: Ptr[int64](1111112222001000103),
+				SrcField:      Ptr("begin"),
+				DstField:      Ptr("due"),
+			},
+		},
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.True(t, result.Result)
+}
+
 func TestStoryService_GetStoryFieldsLabel(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
