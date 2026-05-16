@@ -85,6 +85,30 @@ type (
 		OriginName     string `json:"origin_name,omitempty"`
 	}
 
+	GetIterationCustomFieldsSettingsRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	IterationCustomFieldsSetting struct {
+		ID              string  `json:"id,omitempty"`           // 自定义字段配置的ID
+		WorkspaceID     string  `json:"workspace_id,omitempty"` // 所属项目ID
+		AppID           string  `json:"app_id,omitempty"`       // 应用ID
+		EntryType       string  `json:"entry_type,omitempty"`   // 所属实体对象
+		CustomField     string  `json:"custom_field,omitempty"` // 自定义字段标识
+		Type            string  `json:"type,omitempty"`         // 输入类型
+		Name            string  `json:"name,omitempty"`         // 自定义字段显示名称
+		Options         *string `json:"options,omitempty"`      // 自定义字段可选值
+		ExtraConfig     *string `json:"extra_config,omitempty"` // 额外配置
+		Enabled         string  `json:"enabled,omitempty"`      // 是否启用
+		Freeze          string  `json:"freeze,omitempty"`       // 是否冻结
+		Sort            *string `json:"sort,omitempty"`         // 显示时排序系数
+		Memo            *string `json:"memo,omitempty"`         // 备注
+		OpenExtensionID string  `json:"open_extension_id,omitempty"`
+		IsOut           int     `json:"is_out,omitempty"`
+		IsUninstall     int     `json:"is_uninstall,omitempty"`
+		AppName         string  `json:"app_name,omitempty"`
+	}
+
 	CreateIterationRequest struct {
 		Name           *string       `json:"name,omitempty"`             // [必须] 标题 支持模糊匹配
 		WorkspaceID    *int          `json:"workspace_id,omitempty"`     // [必须] 项目 ID
@@ -284,6 +308,80 @@ type (
 		CustomField50  *string       `url:"custom_field_50,omitempty"`  // 自定义字段参数
 	}
 
+	GetIterationChangesRequest struct {
+		ID          *Multi[int64]  `url:"id,omitempty"`           // 变更记录ID，支持多ID查询
+		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
+		IterationID *int64         `url:"iteration_id,omitempty"` // [必须]迭代ID
+		Author      *string        `url:"author,omitempty"`       // 变更人
+		Field       *string        `url:"field,omitempty"`        // 字段名称
+		OldValue    *string        `url:"old_value,omitempty"`    // 变更前
+		NewValue    *string        `url:"new_value,omitempty"`    // 变更后
+		Created     *string        `url:"created,omitempty"`      // 创建时间，支持时间查询
+		Limit       *int           `url:"limit,omitempty"`        // 设置返回数量限制，默认为30，最大取200
+		Page        *int           `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1（第一页）
+		Fields      *Multi[string] `url:"fields,omitempty"`       // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	IterationChange struct {
+		ID            string  `json:"id,omitempty"`            // 变更记录ID
+		IterationID   string  `json:"iteration_id,omitempty"`  // 迭代ID
+		Author        string  `json:"author,omitempty"`        // 变更人
+		Field         string  `json:"field,omitempty"`         // 字段名称
+		OldValue      *string `json:"old_value,omitempty"`     // 变更前
+		NewValue      *string `json:"new_value,omitempty"`     // 变更后
+		Memo          *string `json:"memo,omitempty"`          // 备注
+		Created       string  `json:"created,omitempty"`       // 创建时间
+		ModifyVersion string  `json:"modifyversion,omitempty"` // 变更版本
+		OperaterType  string  `json:"operater_type,omitempty"` // 变更类型
+		WorkspaceID   string  `json:"workspace_id,omitempty"`  // 项目ID
+	}
+
+	GetIterationCustomDashBoardContentRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		IterationID *int64 `url:"iteration_id,omitempty"` // [必须]迭代ID
+	}
+
+	IterationCustomDashBoardCard struct {
+		ID            string                               `json:"id,omitempty"`             // 卡片ID
+		Template      string                               `json:"template,omitempty"`       // 卡片类型
+		Title         string                               `json:"title,omitempty"`          // 卡片标题
+		ComponentData string                               `json:"component_data,omitempty"` // 组件数据
+		Width         string                               `json:"width,omitempty"`          // 宽度
+		Height        string                               `json:"height,omitempty"`         // 高度
+		CardType      string                               `json:"card_type,omitempty"`      // 卡片内容类型
+		Data          *IterationCustomDashBoardCardContent `json:"data,omitempty"`           // 卡片内容
+	}
+
+	IterationCustomDashBoardCardContent struct {
+		Content         string `json:"content,omitempty"`          // 卡片HTML内容
+		DescriptionType string `json:"description_type,omitempty"` // 描述类型
+		Value           string `json:"value,omitempty"`            // 卡片内容值
+	}
+
+	UpdateIterationCustomDashBoardContentRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]源项目ID
+		IterationID *int64  `json:"iteration_id,omitempty"` // [必须]迭代ID
+		CardID      *int64  `json:"card_id,omitempty"`      // [必须]卡片ID
+		Content     *string `json:"content,omitempty"`      // [必须]卡片内容，支持富文本
+		PlanAppID   *int64  `json:"plan_app_id,omitempty"`  // 计划应用ID，默认为0代表迭代应用
+	}
+
+	UpdateIterationCustomDashBoardContentResult struct {
+		ID string `json:"id,omitempty"` // 卡片ID
+	}
+
+	LockIterationRequest struct {
+		WorkspaceID *int           `json:"workspace_id,omitempty"` // [必须]项目ID
+		IterationID *int64         `json:"iteration_id,omitempty"` // [必须]迭代ID
+		LockTypes   *Multi[string] `json:"lock_types,omitempty"`   // 锁定对象，多个使用英文逗号分隔
+	}
+
+	UnlockIterationRequest struct {
+		WorkspaceID *int           `json:"workspace_id,omitempty"` // [必须]项目ID
+		IterationID *int64         `json:"iteration_id,omitempty"` // [必须]迭代ID
+		LockTypes   *Multi[string] `json:"lock_types,omitempty"`   // 解锁对象，多个使用英文逗号分隔
+	}
+
 	UpdateIterationRequest struct {
 		ID            *int64        `json:"id,omitempty"`              // [必须] ID
 		WorkspaceID   *int          `json:"workspace_id,omitempty"`    // [必须] 项目 ID
@@ -374,6 +472,27 @@ type (
 		Created     string `json:"created"`
 		Modified    string `json:"modified"`
 	}
+
+	GetIterationTemplateFieldsRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		TemplateID  *int64 `url:"template_id,omitempty"`  // [必须]迭代模板ID
+	}
+
+	GetIterationDefaultTemplateFieldsRequest struct {
+		WorkspaceID    *int   `url:"workspace_id,omitempty"`     // [必须]项目ID
+		WorkitemTypeID *int64 `url:"workitem_type_id,omitempty"` // [必须]迭代类别ID
+	}
+
+	IterationTemplateField struct {
+		ID          string `json:"id,omitempty"`           // 模板字段ID
+		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
+		Type        string `json:"type,omitempty"`         // 类型
+		TemplateID  string `json:"template_id,omitempty"`  // 模板ID
+		Field       string `json:"field,omitempty"`        // 字段名称
+		Value       string `json:"value,omitempty"`        // 默认值
+		Required    string `json:"required,omitempty"`     // 是否必填
+		Sort        string `json:"sort,omitempty"`         // 排序
+	}
 )
 
 // IterationService 迭代
@@ -385,7 +504,12 @@ type IterationService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/add_iteration.html
 	CreateIteration(ctx context.Context, request *CreateIterationRequest, opts ...RequestOption) (*Iteration, *Response, error)
 
-	// 获取迭代自定义字段配置
+	// GetIterationCustomFieldsSettings 获取迭代自定义字段配置
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/get_iteration_custom_fields_settings.html
+	GetIterationCustomFieldsSettings(
+		ctx context.Context, request *GetIterationCustomFieldsSettingsRequest, opts ...RequestOption,
+	) ([]*IterationCustomFieldsSetting, *Response, error)
 
 	// GetIterations 获取迭代
 	//
@@ -402,11 +526,34 @@ type IterationService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/update_iteration.html
 	UpdateIteration(ctx context.Context, request *UpdateIterationRequest, opts ...RequestOption) (*Iteration, *Response, error)
 
-	// 获取迭代变更历史
-	// 获取迭代仪表盘自定义卡片内容
-	// 修改迭代仪表盘自定义卡片内容
-	// 锁定迭代
-	// 解锁迭代
+	// GetIterationChanges 获取迭代变更历史
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/get_iteration_changes.html
+	GetIterationChanges(ctx context.Context, request *GetIterationChangesRequest, opts ...RequestOption) ([]*IterationChange, *Response, error)
+
+	// GetIterationCustomDashBoardContent 获取迭代仪表盘自定义卡片内容
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/get_custom_dash_board_content.html
+	GetIterationCustomDashBoardContent(
+		ctx context.Context, request *GetIterationCustomDashBoardContentRequest, opts ...RequestOption,
+	) ([]*IterationCustomDashBoardCard, *Response, error)
+
+	// UpdateIterationCustomDashBoardContent 修改迭代仪表盘自定义卡片内容
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/update_custom_dash_board_content.html
+	UpdateIterationCustomDashBoardContent(
+		ctx context.Context, request *UpdateIterationCustomDashBoardContentRequest, opts ...RequestOption,
+	) (*UpdateIterationCustomDashBoardContentResult, *Response, error)
+
+	// LockIteration 锁定迭代
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/lock_iteration.html
+	LockIteration(ctx context.Context, request *LockIterationRequest, opts ...RequestOption) (string, *Response, error)
+
+	// UnlockIteration 解锁迭代
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/unlock_iteration.html
+	UnlockIteration(ctx context.Context, request *UnlockIterationRequest, opts ...RequestOption) (string, *Response, error)
 
 	// GetWorkitemTypes 获取迭代类别列表
 	//
@@ -418,8 +565,20 @@ type IterationService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/template_list.html
 	GetTemplateList(ctx context.Context, request *GetTemplateListRequest, opts ...RequestOption) ([]*WorkitemTemplate, *Response, error)
 
-	// 获取迭代模板字段配置
-	// 获取迭代类别默认模板字段配置
+	// GetIterationTemplateFields 获取迭代模板字段配置
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/template_fields.html
+	GetIterationTemplateFields(
+		ctx context.Context, request *GetIterationTemplateFieldsRequest, opts ...RequestOption,
+	) ([]*IterationTemplateField, *Response, error)
+
+	// GetIterationDefaultTemplateFields 获取迭代类别默认模板字段配置
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/default_template_fields_by_workitem_type_id.html
+	GetIterationDefaultTemplateFields(
+		ctx context.Context, request *GetIterationDefaultTemplateFieldsRequest, opts ...RequestOption,
+	) ([]*IterationTemplateField, *Response, error)
+
 	// 获取计划应用
 	// 获取计划应用数量
 }
@@ -453,6 +612,30 @@ func (s *iterationService) CreateIteration(
 	}
 
 	return item.Iteration, resp, nil
+}
+
+func (s *iterationService) GetIterationCustomFieldsSettings(
+	ctx context.Context, request *GetIterationCustomFieldsSettingsRequest, opts ...RequestOption,
+) ([]*IterationCustomFieldsSetting, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "iterations/custom_fields_settings", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		CustomFieldConfig *IterationCustomFieldsSetting `json:"CustomFieldConfig,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	settings := make([]*IterationCustomFieldsSetting, 0, len(items))
+	for _, item := range items {
+		settings = append(settings, item.CustomFieldConfig)
+	}
+
+	return settings, resp, nil
 }
 
 func (s *iterationService) GetIterations(
@@ -517,6 +700,98 @@ func (s *iterationService) UpdateIteration(
 	return item.Iteration, resp, nil
 }
 
+func (s *iterationService) GetIterationChanges(
+	ctx context.Context, request *GetIterationChangesRequest, opts ...RequestOption,
+) ([]*IterationChange, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "iteration_changes", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		IterationChange *IterationChange `json:"IterationChange"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	changes := make([]*IterationChange, 0, len(items))
+	for _, item := range items {
+		changes = append(changes, item.IterationChange)
+	}
+
+	return changes, resp, nil
+}
+
+func (s *iterationService) GetIterationCustomDashBoardContent(
+	ctx context.Context, request *GetIterationCustomDashBoardContentRequest, opts ...RequestOption,
+) ([]*IterationCustomDashBoardCard, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "iterations/get_custom_dash_board_content", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var cards []*IterationCustomDashBoardCard
+	resp, err := s.client.Do(req, &cards)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return cards, resp, nil
+}
+
+func (s *iterationService) UpdateIterationCustomDashBoardContent(
+	ctx context.Context, request *UpdateIterationCustomDashBoardContentRequest, opts ...RequestOption,
+) (*UpdateIterationCustomDashBoardContentResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "iterations/update_custom_dash_board_content", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(UpdateIterationCustomDashBoardContentResult)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return result, resp, nil
+}
+
+func (s *iterationService) LockIteration(
+	ctx context.Context, request *LockIterationRequest, opts ...RequestOption,
+) (string, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "iterations/lock_iteration", request, opts)
+	if err != nil {
+		return "", nil, err
+	}
+
+	var result string
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return "", resp, err
+	}
+
+	return result, resp, nil
+}
+
+func (s *iterationService) UnlockIteration(
+	ctx context.Context, request *UnlockIterationRequest, opts ...RequestOption,
+) (string, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "iterations/unlock_iteration", request, opts)
+	if err != nil {
+		return "", nil, err
+	}
+
+	var result string
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return "", resp, err
+	}
+
+	return result, resp, nil
+}
+
 func (s *iterationService) GetWorkitemTypes(
 	ctx context.Context, request *GetWorkitemTypesRequest, opts ...RequestOption,
 ) ([]*WorkitemType, *Response, error) {
@@ -563,4 +838,52 @@ func (s *iterationService) GetTemplateList(
 	}
 
 	return templates, resp, nil
+}
+
+func (s *iterationService) GetIterationTemplateFields(
+	ctx context.Context, request *GetIterationTemplateFieldsRequest, opts ...RequestOption,
+) ([]*IterationTemplateField, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "iterations/template_fields", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		WorkitemTemplateField *IterationTemplateField `json:"WorkitemTemplateField,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	fields := make([]*IterationTemplateField, 0, len(items))
+	for _, item := range items {
+		fields = append(fields, item.WorkitemTemplateField)
+	}
+
+	return fields, resp, nil
+}
+
+func (s *iterationService) GetIterationDefaultTemplateFields(
+	ctx context.Context, request *GetIterationDefaultTemplateFieldsRequest, opts ...RequestOption,
+) ([]*IterationTemplateField, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "iterations/default_template_fields_by_workitem_type_id", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		WorkitemTemplateField *IterationTemplateField `json:"WorkitemTemplateField,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	fields := make([]*IterationTemplateField, 0, len(items))
+	for _, item := range items {
+		fields = append(fields, item.WorkitemTemplateField)
+	}
+
+	return fields, resp, nil
 }

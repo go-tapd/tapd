@@ -62,6 +62,35 @@ func TestIterationService_CreateIteration(t *testing.T) {
 	assert.Equal(t, "11111222001000218", iteration.TemplatedID)
 }
 
+func TestIterationService_GetIterationCustomFieldsSettings(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iterations/custom_fields_settings", r.URL.Path)
+		assert.Equal(t, "111", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iteration_custom_fields_settings.json"))
+	}))
+
+	settings, _, err := client.IterationService.GetIterationCustomFieldsSettings(
+		ctx,
+		&GetIterationCustomFieldsSettingsRequest{
+			WorkspaceID: Ptr(111),
+		},
+	)
+	assert.NoError(t, err)
+	require.Len(t, settings, 1)
+	assert.Equal(t, "1010158231214902319", settings[0].ID)
+	assert.Equal(t, "10158231", settings[0].WorkspaceID)
+	assert.Equal(t, "iteration", settings[0].EntryType)
+	assert.Equal(t, "custom_field_50", settings[0].CustomField)
+	assert.Equal(t, "text", settings[0].Type)
+	assert.Equal(t, "倒计时", settings[0].Name)
+	assert.Nil(t, settings[0].Options)
+	assert.Equal(t, "1", settings[0].Enabled)
+	assert.Nil(t, settings[0].Sort)
+	assert.Nil(t, settings[0].Memo)
+}
+
 func TestIterationService_GetIterations(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -94,6 +123,158 @@ func TestIterationService_GetIterations(t *testing.T) {
 	assert.Equal(t, "11111222001002235:", iteration.Path)
 	assert.Equal(t, "11111222001000098", iteration.WorkitemTypeID)
 	assert.Equal(t, "11111222001000218", iteration.TemplatedID)
+}
+
+func TestIterationService_GetIterationChanges(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iteration_changes", r.URL.Path)
+		assert.Equal(t, "111", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "11111222001002235", r.URL.Query().Get("iteration_id"))
+		assert.Equal(t, "name", r.URL.Query().Get("field"))
+		assert.Equal(t, "v_xinyucao", r.URL.Query().Get("author"))
+		assert.Equal(t, "20", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "id,iteration_id,field", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iteration_changes.json"))
+	}))
+
+	changes, _, err := client.IterationService.GetIterationChanges(ctx, &GetIterationChangesRequest{
+		WorkspaceID: Ptr(111),
+		IterationID: Ptr[int64](11111222001002235),
+		Field:       Ptr("name"),
+		Author:      Ptr("v_xinyucao"),
+		Limit:       Ptr(20),
+		Page:        Ptr(1),
+		Fields:      NewMulti("id", "iteration_id", "field"),
+	})
+	assert.NoError(t, err)
+	require.Len(t, changes, 1)
+	assert.Equal(t, "1020355782015033213", changes[0].ID)
+	assert.Equal(t, "1020355782000700291", changes[0].IterationID)
+	assert.Equal(t, "v_xinyucao", changes[0].Author)
+	assert.Equal(t, "name", changes[0].Field)
+	assert.Nil(t, changes[0].OldValue)
+	require.NotNil(t, changes[0].NewValue)
+	assert.Equal(t, "对方的身份", *changes[0].NewValue)
+	assert.Equal(t, "1588128122", changes[0].ModifyVersion)
+	assert.Equal(t, "add", changes[0].OperaterType)
+	assert.Equal(t, "20355782", changes[0].WorkspaceID)
+}
+
+func TestIterationService_GetIterationCustomDashBoardContent(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iterations/get_custom_dash_board_content", r.URL.Path)
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1010104801000723579", r.URL.Query().Get("iteration_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iteration_custom_dash_board_content.json"))
+	}))
+
+	cards, _, err := client.IterationService.GetIterationCustomDashBoardContent(
+		ctx,
+		&GetIterationCustomDashBoardContentRequest{
+			WorkspaceID: Ptr(10104801),
+			IterationID: Ptr[int64](1010104801000723579),
+		},
+	)
+	assert.NoError(t, err)
+	require.Len(t, cards, 1)
+	assert.Equal(t, "1010104801000003949", cards[0].ID)
+	assert.Equal(t, "Custom", cards[0].Template)
+	assert.Equal(t, "自定义aaa", cards[0].Title)
+	assert.Equal(t, "RichContent", cards[0].CardType)
+	require.NotNil(t, cards[0].Data)
+	assert.Equal(t, "<p>自定义卡片内容。支持 <strong>HTML</strong>。</p>", cards[0].Data.Content)
+	assert.Equal(t, "1", cards[0].Data.DescriptionType)
+	assert.Equal(t, "<p>自定义卡片内容。支持 <strong>HTML</strong>。</p>", cards[0].Data.Value)
+}
+
+func TestIterationService_UpdateIterationCustomDashBoardContent(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/iterations/update_custom_dash_board_content", r.URL.Path)
+
+		var req UpdateIterationCustomDashBoardContentRequest
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 10104801, *req.WorkspaceID)
+		assert.Equal(t, int64(1010104801000723579), *req.IterationID)
+		assert.Equal(t, int64(1010104801000003949), *req.CardID)
+		assert.Equal(t, "<p>updated</p>", *req.Content)
+		assert.Equal(t, int64(0), *req.PlanAppID)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/update_iteration_custom_dash_board_content.json"))
+	}))
+
+	result, _, err := client.IterationService.UpdateIterationCustomDashBoardContent(
+		ctx,
+		&UpdateIterationCustomDashBoardContentRequest{
+			WorkspaceID: Ptr(10104801),
+			IterationID: Ptr[int64](1010104801000723579),
+			CardID:      Ptr[int64](1010104801000003949),
+			Content:     Ptr("<p>updated</p>"),
+			PlanAppID:   Ptr[int64](0),
+		},
+	)
+	assert.NoError(t, err)
+	require.NotNil(t, result)
+	assert.Equal(t, "1010104801000003949", result.ID)
+}
+
+func TestIterationService_LockIteration(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/iterations/lock_iteration", r.URL.Path)
+
+		var req struct {
+			WorkspaceID int    `json:"workspace_id"`
+			IterationID int64  `json:"iteration_id"`
+			LockTypes   string `json:"lock_types"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 10104801, req.WorkspaceID)
+		assert.Equal(t, int64(1010104801000723579), req.IterationID)
+		assert.Equal(t, "__ALL_STORY__,__ALL_BUG__", req.LockTypes)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/lock_iteration.json"))
+	}))
+
+	result, _, err := client.IterationService.LockIteration(ctx, &LockIterationRequest{
+		WorkspaceID: Ptr(10104801),
+		IterationID: Ptr[int64](1010104801000723579),
+		LockTypes:   NewMulti("__ALL_STORY__", "__ALL_BUG__"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "lock 1010104801000723579 successfully", result)
+}
+
+func TestIterationService_UnlockIteration(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/iterations/unlock_iteration", r.URL.Path)
+
+		var req struct {
+			WorkspaceID int    `json:"workspace_id"`
+			IterationID int64  `json:"iteration_id"`
+			LockTypes   string `json:"lock_types"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 10104801, req.WorkspaceID)
+		assert.Equal(t, int64(1010104801000723579), req.IterationID)
+		assert.Equal(t, "__ALL_STORY__,__ALL_BUG__", req.LockTypes)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/unlock_iteration.json"))
+	}))
+
+	result, _, err := client.IterationService.UnlockIteration(ctx, &UnlockIterationRequest{
+		WorkspaceID: Ptr(10104801),
+		IterationID: Ptr[int64](1010104801000723579),
+		LockTypes:   NewMulti("__ALL_STORY__", "__ALL_BUG__"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "unlock 1010104801000723579 successfully", result)
 }
 
 func TestIterationService_GetIterationsCount(t *testing.T) {
@@ -219,4 +400,63 @@ func TestIterationService_GetTemplateList(t *testing.T) {
 			Modified:    "2022-06-10 10:04:08",
 		},
 	}, templates)
+}
+
+func TestIterationService_GetIterationTemplateFields(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iterations/template_fields", r.URL.Path)
+		assert.Equal(t, "20375553", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1020375553000077579", r.URL.Query().Get("template_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iteration_template_fields.json"))
+	}))
+
+	fields, _, err := client.IterationService.GetIterationTemplateFields(ctx, &GetIterationTemplateFieldsRequest{
+		WorkspaceID: Ptr(20375553),
+		TemplateID:  Ptr[int64](1020375553000077579),
+	})
+	assert.NoError(t, err)
+	require.Len(t, fields, 2)
+	assert.Equal(t, "1020375553001067379", fields[0].ID)
+	assert.Equal(t, "20375553", fields[0].WorkspaceID)
+	assert.Equal(t, "iteration", fields[0].Type)
+	assert.Equal(t, "1020375553000077579", fields[0].TemplateID)
+	assert.Equal(t, "description", fields[0].Field)
+	assert.Equal(t, "", fields[0].Value)
+	assert.Equal(t, "1", fields[0].Required)
+	assert.Equal(t, "0", fields[0].Sort)
+	assert.Equal(t, "crucial_moment", fields[1].Field)
+	assert.Contains(t, fields[1].Value, "CustomMoment1")
+}
+
+func TestIterationService_GetIterationDefaultTemplateFields(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iterations/default_template_fields_by_workitem_type_id", r.URL.Path)
+		assert.Equal(t, "20375553", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1020375553000070695", r.URL.Query().Get("workitem_type_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iteration_default_template_fields.json"))
+	}))
+
+	fields, _, err := client.IterationService.GetIterationDefaultTemplateFields(
+		ctx,
+		&GetIterationDefaultTemplateFieldsRequest{
+			WorkspaceID:    Ptr(20375553),
+			WorkitemTypeID: Ptr[int64](1020375553000070695),
+		},
+	)
+	assert.NoError(t, err)
+	require.Len(t, fields, 2)
+	assert.Equal(t, "1020375553001067381", fields[0].ID)
+	assert.Equal(t, "20375553", fields[0].WorkspaceID)
+	assert.Equal(t, "iteration", fields[0].Type)
+	assert.Equal(t, "1020375553000077579", fields[0].TemplateID)
+	assert.Equal(t, "name", fields[0].Field)
+	assert.Equal(t, "", fields[0].Value)
+	assert.Equal(t, "1", fields[0].Required)
+	assert.Equal(t, "0", fields[0].Sort)
+	assert.Equal(t, "jump_holiday", fields[1].Field)
+	assert.Equal(t, "1", fields[1].Value)
 }
