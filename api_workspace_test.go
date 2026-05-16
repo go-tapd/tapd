@@ -244,6 +244,146 @@ func TestWorkspaceService_UpdateWorkspaceInfo(t *testing.T) {
 	assert.Equal(t, "update workspace success", result)
 }
 
+func TestWorkspaceService_GetWorkspaceDocuments(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/documents/get_workspace_documents", r.URL.Path)
+		assert.Equal(t, "20003271", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "20", r.URL.Query().Get("limit"))
+		assert.Equal(t, "2", r.URL.Query().Get("page"))
+		assert.Equal(t, "id,name,type", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/get_workspace_documents.json"))
+	}))
+
+	documents, _, err := client.WorkspaceService.GetWorkspaceDocuments(ctx, &GetWorkspaceDocumentsRequest{
+		WorkspaceID: Ptr(20003271),
+		Limit:       Ptr(20),
+		Page:        Ptr(2),
+		Fields:      NewMulti("id", "name", "type"),
+	})
+	require.NoError(t, err)
+	require.Len(t, documents, 2)
+	assert.Equal(t, "1147043561001001330", documents[0].ID)
+	assert.Equal(t, "熟悉思维导图", documents[0].Name)
+	assert.Equal(t, "mindmap", documents[0].Type)
+	assert.Nil(t, documents[0].Status)
+}
+
+func TestWorkspaceService_SetCustomWorkCalendar(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/workspaces/set_custom_work_calendar", r.URL.Path)
+
+		var req SetCustomWorkCalendarRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 48464494, *req.WorkspaceID)
+		assert.Equal(t, "2025", *req.Year)
+		assert.Equal(t, []int{1, 2, 3, 4, 5}, *req.Weekdays)
+		assert.Equal(t, []string{"2025-01-01"}, *req.Holidays)
+		assert.Equal(t, []string{"2025-01-04"}, *req.Workdays)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/set_custom_work_calendar.json"))
+	}))
+
+	result, _, err := client.WorkspaceService.SetCustomWorkCalendar(ctx, &SetCustomWorkCalendarRequest{
+		WorkspaceID: Ptr(48464494),
+		Year:        Ptr("2025"),
+		Weekdays:    &[]int{1, 2, 3, 4, 5},
+		Holidays:    &[]string{"2025-01-01"},
+		Workdays:    &[]string{"2025-01-04"},
+	})
+	require.NoError(t, err)
+	assert.True(t, result.Success)
+}
+
+func TestWorkspaceService_EnableWorkCalendar(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/workspaces/enable_work_calendar", r.URL.Path)
+
+		var req EnableWorkCalendarRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 48464494, *req.WorkspaceID)
+		assert.Equal(t, WorkCalendarTypeSystem, *req.Type)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/enable_work_calendar.json"))
+	}))
+
+	result, _, err := client.WorkspaceService.EnableWorkCalendar(ctx, &EnableWorkCalendarRequest{
+		WorkspaceID: Ptr(48464494),
+		Type:        Ptr(WorkCalendarTypeSystem),
+	})
+	require.NoError(t, err)
+	assert.True(t, result.Success)
+}
+
+func TestWorkspaceService_GetCustomWorkCalendar(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/workspaces/get_custom_work_calendar", r.URL.Path)
+		assert.Equal(t, "48464494", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "2025", r.URL.Query().Get("year"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/get_custom_work_calendar.json"))
+	}))
+
+	calendar, _, err := client.WorkspaceService.GetCustomWorkCalendar(ctx, &GetCustomWorkCalendarRequest{
+		WorkspaceID: Ptr(48464494),
+		Year:        Ptr("2025"),
+	})
+	require.NoError(t, err)
+	assert.Equal(t, []string{"1", "2", "3", "4", "5", "6", "7"}, calendar.Weekdays)
+	assert.Equal(t, []string{"2025-01-01"}, calendar.Holidays)
+	assert.Equal(t, []string{"2025-01-02", "2025-01-03", "2025-01-04"}, calendar.Workdays)
+}
+
+func TestWorkspaceService_GetWorkCalendarSettings(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/workspaces/get_work_calendar_settings", r.URL.Path)
+		assert.Equal(t, "48464494", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/get_work_calendar_settings.json"))
+	}))
+
+	settings, _, err := client.WorkspaceService.GetWorkCalendarSettings(ctx, &GetWorkCalendarSettingsRequest{
+		WorkspaceID: Ptr(48464494),
+	})
+	require.NoError(t, err)
+	require.Len(t, settings, 2)
+	assert.Equal(t, "中国大陆法定工作日", settings[0].Name)
+	assert.Equal(t, WorkCalendarTypeSystem, settings[0].Type)
+	assert.True(t, settings[0].Enable)
+	assert.Equal(t, WorkCalendarTypeCustom, settings[1].Type)
+	assert.False(t, settings[1].Enable)
+}
+
+func TestWorkspaceService_GetWorkItemsLongIDByShortIDs(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/workspaces/get_workitems_long_id_by_short_ids", r.URL.Path)
+		assert.Equal(t, "1000276;1000277;1000104", r.URL.Query().Get("short_ids"))
+		assert.Equal(t, "48464494", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "story", r.URL.Query().Get("entity_type"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/get_workitems_long_id_by_short_ids.json"))
+	}))
+
+	result, _, err := client.WorkspaceService.GetWorkItemsLongIDByShortIDs(ctx, &GetWorkItemsLongIDByShortIDsRequest{
+		ShortIDs:    Ptr("1000276;1000277;1000104"),
+		WorkspaceID: Ptr(48464494),
+		EntityType:  Ptr(EntityTypeStory),
+	})
+	require.NoError(t, err)
+	require.Len(t, result.ValidIDMap, 2)
+	assert.Equal(t, "1000276", result.ValidIDMap[0].ShortID)
+	assert.Equal(t, "1148464494001000276", result.ValidIDMap[0].LongID)
+	assert.Equal(t, EntityTypeStory, result.ValidIDMap[0].EntityType)
+	assert.Equal(t, []string{"123213223121000276"}, result.InvalidLongIDs)
+	assert.Equal(t, []string{"1000104"}, result.InvalidShortIDs)
+}
+
 func TestWorkspaceService_GetWorkspaceInfo(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

@@ -1,0 +1,28 @@
+{
+  "status": 1,
+  "data": {
+    "valid_id_map": [
+      {
+        "short_id": "1000276",
+        "long_id": "1148464494001000276",
+        "entity_type": "story",
+        "workspace_id": "48464494",
+        "company_id": "39418254"
+      },
+      {
+        "short_id": "1000277",
+        "long_id": "1148464494001000277",
+        "entity_type": "story",
+        "workspace_id": "48464494",
+        "company_id": "39418254"
+      }
+    ],
+    "invalid_long_ids": [
+      "123213223121000276"
+    ],
+    "invalid_short_ids": [
+      "1000104"
+    ]
+  },
+  "info": "success"
+}

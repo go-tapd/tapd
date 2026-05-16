@@ -6,6 +6,14 @@ import (
 	"net/http"
 )
 
+// WorkCalendarType 工作日历类型。
+type WorkCalendarType string
+
+const (
+	WorkCalendarTypeSystem WorkCalendarType = "system"
+	WorkCalendarTypeCustom WorkCalendarType = "custom"
+)
+
 type (
 	GetWorkspaceInfoRequest struct {
 		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
@@ -29,6 +37,42 @@ type (
 
 	GetWorkspaceCustomFieldsSettingsRequest struct {
 		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	GetWorkspaceDocumentsRequest struct {
+		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
+		Limit       *int           `url:"limit,omitempty"`        // 返回数量限制，默认为30，最大取200
+		Page        *int           `url:"page,omitempty"`         // 当前页，默认为1
+		Fields      *Multi[string] `url:"fields,omitempty"`       // 返回字段，多个以逗号分隔
+	}
+
+	SetCustomWorkCalendarRequest struct {
+		WorkspaceID *int      `json:"workspace_id,omitempty"` // [必须]项目ID
+		Year        *string   `json:"year,omitempty"`         // [必须]年份
+		Weekdays    *[]int    `json:"weekdays,omitempty"`     // 周内工作日，1-7；不传默认周一到周五
+		Holidays    *[]string `json:"holidays,omitempty"`     // 额外假日
+		Workdays    *[]string `json:"workdays,omitempty"`     // 额外工作日
+	}
+
+	EnableWorkCalendarRequest struct {
+		WorkspaceID *int              `json:"workspace_id,omitempty"` // [必须]项目ID
+		Type        *WorkCalendarType `json:"type,omitempty"`         // [必须]启用类型，system 或 custom
+	}
+
+	GetCustomWorkCalendarRequest struct {
+		WorkspaceID *int    `url:"workspace_id,omitempty"` // [必须]项目ID
+		Year        *string `url:"year,omitempty"`         // [必须]年份
+	}
+
+	GetWorkCalendarSettingsRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	GetWorkItemsLongIDByShortIDsRequest struct {
+		ShortIDs    *string     `url:"short_ids,omitempty"`    // 短ID，多个以分号分隔；short_ids 和 long_ids 不允许都不传
+		LongIDs     *string     `url:"long_ids,omitempty"`     // 长ID，多个以分号分隔
+		WorkspaceID *int        `url:"workspace_id,omitempty"` // [必须]项目ID
+		EntityType  *EntityType `url:"entity_type,omitempty"`  // [必须]业务对象类型，story、task、bug
 	}
 
 	Workspace struct {
@@ -79,6 +123,53 @@ type (
 		IsOut           int     `json:"is_out,omitempty"`
 		IsUninstall     int     `json:"is_uninstall,omitempty"`
 		AppName         string  `json:"app_name,omitempty"`
+	}
+
+	WorkspaceDocument struct {
+		ID          string  `json:"id,omitempty"`           // ID
+		WorkspaceID string  `json:"workspace_id,omitempty"` // 项目ID
+		Name        string  `json:"name,omitempty"`         // 标题
+		Type        string  `json:"type,omitempty"`         // 文档类型
+		FolderID    string  `json:"folder_id,omitempty"`    // 文件夹ID
+		Creator     string  `json:"creator,omitempty"`      // 创建人
+		Modifier    string  `json:"modifier,omitempty"`     // 最后修改人
+		Status      *string `json:"status,omitempty"`       // 状态
+		Created     string  `json:"created,omitempty"`      // 创建时间
+		Modified    string  `json:"modified,omitempty"`     // 最后修改时间
+	}
+
+	SetCustomWorkCalendarResponse struct {
+		Success bool `json:"success,omitempty"` // 是否设置成功
+	}
+
+	EnableWorkCalendarResponse struct {
+		Success bool `json:"success,omitempty"` // 是否启用成功
+	}
+
+	CustomWorkCalendar struct {
+		Weekdays []string `json:"weekdays,omitempty"` // 周内工作日
+		Holidays []string `json:"holidays,omitempty"` // 额外假日
+		Workdays []string `json:"workdays,omitempty"` // 额外工作日
+	}
+
+	WorkCalendarSetting struct {
+		Name   string           `json:"name,omitempty"`   // 工作日历名称
+		Type   WorkCalendarType `json:"type,omitempty"`   // 工作日历类型
+		Enable bool             `json:"enable,omitempty"` // 是否启用
+	}
+
+	GetWorkItemsLongIDByShortIDsResponse struct {
+		ValidIDMap      []*WorkItemIDMap `json:"valid_id_map,omitempty"`      // 有效ID映射
+		InvalidLongIDs  []string         `json:"invalid_long_ids,omitempty"`  // 无效长ID
+		InvalidShortIDs []string         `json:"invalid_short_ids,omitempty"` // 无效短ID
+	}
+
+	WorkItemIDMap struct {
+		ShortID     string     `json:"short_id,omitempty"`     // 短ID
+		LongID      string     `json:"long_id,omitempty"`      // 长ID
+		EntityType  EntityType `json:"entity_type,omitempty"`  // 业务对象类型
+		WorkspaceID string     `json:"workspace_id,omitempty"` // 项目ID
+		CompanyID   string     `json:"company_id,omitempty"`   // 公司ID
 	}
 
 	GetUsersRequest struct {
@@ -248,7 +339,47 @@ type WorkspaceService interface {
 		ctx context.Context, request *UpdateWorkspaceInfoRequest, opts ...RequestOption,
 	) (string, *Response, error)
 
-	// 获取项目文档
+	// GetWorkspaceDocuments 获取项目文档
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/get_workspace_documents.html
+	GetWorkspaceDocuments(
+		ctx context.Context, request *GetWorkspaceDocumentsRequest, opts ...RequestOption,
+	) ([]*WorkspaceDocument, *Response, error)
+
+	// SetCustomWorkCalendar 设置自定义工作日历
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/set_custom_work_calendar.html
+	SetCustomWorkCalendar(
+		ctx context.Context, request *SetCustomWorkCalendarRequest, opts ...RequestOption,
+	) (*SetCustomWorkCalendarResponse, *Response, error)
+
+	// EnableWorkCalendar 设置启用工作日历
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/enable_work_calendar.html
+	EnableWorkCalendar(
+		ctx context.Context, request *EnableWorkCalendarRequest, opts ...RequestOption,
+	) (*EnableWorkCalendarResponse, *Response, error)
+
+	// GetCustomWorkCalendar 获取自定义工作日历详情
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/get_custom_work_calendar.html
+	GetCustomWorkCalendar(
+		ctx context.Context, request *GetCustomWorkCalendarRequest, opts ...RequestOption,
+	) (*CustomWorkCalendar, *Response, error)
+
+	// GetWorkCalendarSettings 获取工作日历设置列表及启用选项
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/get_work_calendar_settings.html
+	GetWorkCalendarSettings(
+		ctx context.Context, request *GetWorkCalendarSettingsRequest, opts ...RequestOption,
+	) ([]*WorkCalendarSetting, *Response, error)
+
+	// GetWorkItemsLongIDByShortIDs 通过工作项短id换长id
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/get_workitems_long_id_by_short_ids.html
+	GetWorkItemsLongIDByShortIDs(
+		ctx context.Context, request *GetWorkItemsLongIDByShortIDsRequest, opts ...RequestOption,
+	) (*GetWorkItemsLongIDByShortIDsResponse, *Response, error)
 
 	// GetMemberActivityLog 获取成员活动日志
 	//
@@ -427,6 +558,115 @@ func (s *workspaceService) UpdateWorkspaceInfo(
 	}
 
 	return result, resp, nil
+}
+
+func (s *workspaceService) GetWorkspaceDocuments(
+	ctx context.Context, request *GetWorkspaceDocumentsRequest, opts ...RequestOption,
+) ([]*WorkspaceDocument, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "documents/get_workspace_documents", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		Document *WorkspaceDocument `json:"Document,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	documents := make([]*WorkspaceDocument, 0, len(items))
+	for _, item := range items {
+		documents = append(documents, item.Document)
+	}
+
+	return documents, resp, nil
+}
+
+func (s *workspaceService) SetCustomWorkCalendar(
+	ctx context.Context, request *SetCustomWorkCalendarRequest, opts ...RequestOption,
+) (*SetCustomWorkCalendarResponse, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "workspaces/set_custom_work_calendar", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	response := new(SetCustomWorkCalendarResponse)
+	resp, err := s.client.Do(req, response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
+}
+
+func (s *workspaceService) EnableWorkCalendar(
+	ctx context.Context, request *EnableWorkCalendarRequest, opts ...RequestOption,
+) (*EnableWorkCalendarResponse, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "workspaces/enable_work_calendar", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	response := new(EnableWorkCalendarResponse)
+	resp, err := s.client.Do(req, response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
+}
+
+func (s *workspaceService) GetCustomWorkCalendar(
+	ctx context.Context, request *GetCustomWorkCalendarRequest, opts ...RequestOption,
+) (*CustomWorkCalendar, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workspaces/get_custom_work_calendar", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	response := new(CustomWorkCalendar)
+	resp, err := s.client.Do(req, response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
+}
+
+func (s *workspaceService) GetWorkCalendarSettings(
+	ctx context.Context, request *GetWorkCalendarSettingsRequest, opts ...RequestOption,
+) ([]*WorkCalendarSetting, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workspaces/get_work_calendar_settings", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	settings := make([]*WorkCalendarSetting, 0)
+	resp, err := s.client.Do(req, &settings)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return settings, resp, nil
+}
+
+func (s *workspaceService) GetWorkItemsLongIDByShortIDs(
+	ctx context.Context, request *GetWorkItemsLongIDByShortIDsRequest, opts ...RequestOption,
+) (*GetWorkItemsLongIDByShortIDsResponse, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workspaces/get_workitems_long_id_by_short_ids", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	response := new(GetWorkItemsLongIDByShortIDsResponse)
+	resp, err := s.client.Do(req, response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
 }
 
 func (s *workspaceService) GetMemberActivityLog(
