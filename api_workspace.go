@@ -43,13 +43,41 @@ type (
 
 	User struct {
 		User             string   `json:"user"`
+		UserID           string   `json:"user_id,omitempty"`
 		RoleID           []string `json:"role_id"`
 		Name             string   `json:"name"`
+		Email            string   `json:"email,omitempty"`
 		JoinProjectTime  *string  `json:"join_project_time"`
 		RealJoinTime     string   `json:"real_join_time"`
 		Status           string   `json:"status"`
 		Allocation       string   `json:"allocation"`
 		LeaveProjectTime *string  `json:"leave_project_time"`
+	}
+
+	AddWorkspaceMemberRequest struct {
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		Nick        *string       `json:"nick,omitempty"`         // [必须]用户英文昵称
+		CompanyID   *int          `json:"company_id,omitempty"`   // 成员所在公司ID，云端必填
+		RoleIDs     *Multi[int64] `json:"role_ids,omitempty"`     // 角色组，多个使用逗号分隔
+	}
+
+	AddWorkspaceMemberResponse struct {
+		Success bool `json:"success,omitempty"` // 是否添加成功
+	}
+
+	GetWorkspaceRolesRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	WorkspaceRole struct {
+		ID   string `json:"id,omitempty"`   // 角色ID
+		Name string `json:"name,omitempty"` // 角色名称
+	}
+
+	UpdateWorkspaceInfoRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		Field       *string `json:"field,omitempty"`        // [必须]字段名
+		Value       *string `json:"value,omitempty"`        // [必须]字段值
 	}
 
 	GetMemberActivityLogRequest struct {
@@ -119,20 +147,39 @@ type WorkspaceService interface {
 		ctx context.Context, request *GetWorkspaceInfoRequest, opts ...RequestOption,
 	) (*Workspace, *Response, error)
 
-	// GetUsers 获取指定项目成员
+	// GetUsers 获取项目成员列表/指定项目成员
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/users.html
 	GetUsers(
 		ctx context.Context, request *GetUsersRequest, opts ...RequestOption,
 	) ([]*User, *Response, error)
 
-	// 添加项目成员
+	// AddWorkspaceMember 添加项目成员
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/add_workspace_member.html
+	AddWorkspaceMember(
+		ctx context.Context, request *AddWorkspaceMemberRequest, opts ...RequestOption,
+	) (*AddWorkspaceMemberResponse, *Response, error)
+
 	// 获取公司项目列表
-	// 获取用户组ID对照关系
+
+	// GetWorkspaceRoles 获取用户组ID对照关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/roles.html
+	GetWorkspaceRoles(
+		ctx context.Context, request *GetWorkspaceRolesRequest, opts ...RequestOption,
+	) ([]*WorkspaceRole, *Response, error)
+
 	// 获取用户参与的项目列表
-	// 获取项目成员列表
 	// 获取项目自定义字段
-	// 更新项目信息
+
+	// UpdateWorkspaceInfo 更新项目信息
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/update_workspace_info.html
+	UpdateWorkspaceInfo(
+		ctx context.Context, request *UpdateWorkspaceInfoRequest, opts ...RequestOption,
+	) (string, *Response, error)
+
 	// 获取项目文档
 
 	// GetMemberActivityLog 获取成员活动日志
@@ -196,6 +243,65 @@ func (s *workspaceService) GetUsers(
 	}
 
 	return users, resp, nil
+}
+
+func (s *workspaceService) AddWorkspaceMember(
+	ctx context.Context, request *AddWorkspaceMemberRequest, opts ...RequestOption,
+) (*AddWorkspaceMemberResponse, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "workspaces/add_workspace_member", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	response := new(AddWorkspaceMemberResponse)
+	resp, err := s.client.Do(req, response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
+}
+
+func (s *workspaceService) GetWorkspaceRoles(
+	ctx context.Context, request *GetWorkspaceRolesRequest, opts ...RequestOption,
+) ([]*WorkspaceRole, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "roles", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items map[string]string
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	roles := make([]*WorkspaceRole, 0, len(items))
+	for id, name := range items {
+		roles = append(roles, &WorkspaceRole{
+			ID:   id,
+			Name: name,
+		})
+	}
+
+	return roles, resp, nil
+}
+
+func (s *workspaceService) UpdateWorkspaceInfo(
+	ctx context.Context, request *UpdateWorkspaceInfoRequest, opts ...RequestOption,
+) (string, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "workspaces/update_workspace_info", request, opts)
+	if err != nil {
+		return "", nil, err
+	}
+
+	var result string
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return "", resp, err
+	}
+
+	return result, resp, nil
 }
 
 func (s *workspaceService) GetMemberActivityLog(

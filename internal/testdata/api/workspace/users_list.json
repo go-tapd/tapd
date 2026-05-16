@@ -1,0 +1,23 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "UserWorkspace": {
+        "user": "davidning",
+        "user_id": "123456",
+        "role_id": [
+          "1000000000000000010",
+          "1000000000000000015"
+        ],
+        "name": "David",
+        "email": "david@example.com",
+        "join_project_time": null,
+        "real_join_time": "2025-04-17",
+        "status": "1",
+        "allocation": "100",
+        "leave_project_time": null
+      }
+    }
+  ],
+  "info": "success"
+}
