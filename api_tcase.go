@@ -18,6 +18,19 @@ func (s TestCaseStatus) String() string {
 	return string(s)
 }
 
+// TestCaseResultStatus 测试用例执行结果
+type TestCaseResultStatus string
+
+const (
+	TestCaseResultStatusPass   TestCaseResultStatus = "pass"    // 通过
+	TestCaseResultStatusNoPass TestCaseResultStatus = "no_pass" // 不通过
+	TestCaseResultStatusBlock  TestCaseResultStatus = "block"   // 阻塞
+)
+
+func (s TestCaseResultStatus) String() string {
+	return string(s)
+}
+
 type (
 	// TestCase 测试用例
 	TestCase struct {
@@ -257,6 +270,64 @@ type (
 		StoryIDs    *Multi[int64] `json:"story_ids,omitempty"`    // [必须]需求ID，多个使用英文逗号分隔
 		Creator     *string       `json:"creator,omitempty"`      // [必须]操作人
 	}
+
+	DeleteTestCaseStoryRelationRequest struct {
+		WorkspaceID *int   `json:"workspace_id,omitempty"` // [必须]项目ID
+		StoryID     *int64 `json:"story_id,omitempty"`     // [必须]需求ID
+		TestCaseID  *int64 `json:"tcase_id,omitempty"`     // [必须]测试用例ID
+		TestPlanID  *int64 `json:"test_plan_id,omitempty"` // [必须]测试计划ID
+	}
+
+	ExecuteTestCaseRequest struct {
+		TestPlanID   *int64                `json:"test_plan_id,omitempty"`  // [必须]测试计划ID
+		TestCaseID   *Multi[int64]         `json:"tcase_id,omitempty"`      // [必须]测试用例ID，支持批量执行
+		WorkspaceID  *int                  `json:"workspace_id,omitempty"`  // [必须]项目ID
+		ResultStatus *TestCaseResultStatus `json:"result_status,omitempty"` // [必须]执行结果
+		LastExecutor *string               `json:"last_executor,omitempty"` // [必须]执行人
+		ResultRemark *string               `json:"result_remark,omitempty"` // 实际执行结果
+	}
+
+	GetTestCaseRelatedStoriesRequest struct {
+		WorkspaceID *int          `url:"workspace_id,omitempty"` // [必须]项目ID
+		TestCaseIDs *Multi[int64] `url:"tcase_ids,omitempty"`    // [必须]测试用例ID，多个使用英文逗号分隔
+	}
+
+	TestCaseRelatedStory struct {
+		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
+		TestCaseID  string `json:"tcase_id,omitempty"`     // 测试用例ID
+		StoryID     string `json:"story_id,omitempty"`     // 需求ID
+		TestPlanID  string `json:"test_plan_id,omitempty"` // 测试计划ID
+	}
+
+	GetTestCaseCategoriesRequest struct {
+		ID          *Multi[int64]  `url:"id,omitempty"`           // 目录ID，支持多ID查询
+		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
+		Name        *string        `url:"name,omitempty"`         // 目录名称，支持模糊匹配
+		Description *string        `url:"description,omitempty"`  // 目录描述
+		ParentID    *int64         `url:"parent_id,omitempty"`    // 父目录ID
+		Modified    *string        `url:"modified,omitempty"`     // 最后修改时间，支持时间查询
+		Created     *string        `url:"created,omitempty"`      // 创建时间，支持时间查询
+		Creator     *string        `url:"creator,omitempty"`      // 目录创建人
+		Modifier    *string        `url:"modifier,omitempty"`     // 目录最后修改人
+		Sorting     *int           `url:"sorting,omitempty"`      // 目录排序序号
+		Limit       *int           `url:"limit,omitempty"`        // 设置返回数量限制，默认为30，最大取200
+		Page        *int           `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1
+		Order       *Order         `url:"order,omitempty"`        // 排序规则
+		Fields      *Multi[string] `url:"fields,omitempty"`       // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	GetTestCaseCategoriesCountRequest struct {
+		ID          *Multi[int64] `url:"id,omitempty"`           // 目录ID，支持多ID查询
+		WorkspaceID *int          `url:"workspace_id,omitempty"` // [必须]项目ID
+		Name        *string       `url:"name,omitempty"`         // 目录名称，支持模糊匹配
+		Description *string       `url:"description,omitempty"`  // 目录描述
+		ParentID    *int64        `url:"parent_id,omitempty"`    // 父目录ID
+		Modified    *string       `url:"modified,omitempty"`     // 最后修改时间，支持时间查询
+		Created     *string       `url:"created,omitempty"`      // 创建时间，支持时间查询
+		Creator     *string       `url:"creator,omitempty"`      // 目录创建人
+		Modifier    *string       `url:"modifier,omitempty"`     // 目录最后修改人
+		Sorting     *int          `url:"sorting,omitempty"`      // 目录排序序号
+	}
 )
 
 // TestService 测试
@@ -312,6 +383,39 @@ type TestService interface {
 	DeleteTestPlanStoryRelation(
 		ctx context.Context, request *DeleteTestPlanStoryRelationRequest, opts ...RequestOption,
 	) (bool, *Response, error)
+
+	// DeleteTestCaseStoryRelation 解除测试用例关联并移出测试计划
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/delete_tcase_story_relation.html
+	DeleteTestCaseStoryRelation(
+		ctx context.Context, request *DeleteTestCaseStoryRelationRequest, opts ...RequestOption,
+	) (bool, *Response, error)
+
+	// ExecuteTestCase 执行测试用例
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/execute_tcase_instance.html
+	ExecuteTestCase(ctx context.Context, request *ExecuteTestCaseRequest, opts ...RequestOption) (bool, *Response, error)
+
+	// GetTestCaseRelatedStories 获取测试用例关联的需求
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_story_by_tcase_id.html
+	GetTestCaseRelatedStories(
+		ctx context.Context, request *GetTestCaseRelatedStoriesRequest, opts ...RequestOption,
+	) ([]*TestCaseRelatedStory, *Response, error)
+
+	// GetTestCaseCategories 获取测试用例目录
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_categories.html
+	GetTestCaseCategories(
+		ctx context.Context, request *GetTestCaseCategoriesRequest, opts ...RequestOption,
+	) ([]*TestCaseCategory, *Response, error)
+
+	// GetTestCaseCategoriesCount 获取测试用例目录数量
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_tcase_categories_count.html
+	GetTestCaseCategoriesCount(
+		ctx context.Context, request *GetTestCaseCategoriesCountRequest, opts ...RequestOption,
+	) (int, *Response, error)
 }
 
 type testService struct {
@@ -469,4 +573,95 @@ func (s *testService) DeleteTestPlanStoryRelation(
 	}
 
 	return true, resp, nil
+}
+
+func (s *testService) DeleteTestCaseStoryRelation(
+	ctx context.Context, request *DeleteTestCaseStoryRelationRequest, opts ...RequestOption,
+) (bool, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "tcase_instance/delete_tcase_story_relation", request, opts)
+	if err != nil {
+		return false, nil, err
+	}
+
+	var result bool
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return false, resp, err
+	}
+
+	return result, resp, nil
+}
+
+func (s *testService) ExecuteTestCase(
+	ctx context.Context, request *ExecuteTestCaseRequest, opts ...RequestOption,
+) (bool, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "tcase_instance/execute", request, opts)
+	if err != nil {
+		return false, nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return false, resp, err
+	}
+
+	return true, resp, nil
+}
+
+func (s *testService) GetTestCaseRelatedStories(
+	ctx context.Context, request *GetTestCaseRelatedStoriesRequest, opts ...RequestOption,
+) ([]*TestCaseRelatedStory, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tcases/get_story_by_tcase_id", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var relations []*TestCaseRelatedStory
+	resp, err := s.client.Do(req, &relations)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return relations, resp, nil
+}
+
+func (s *testService) GetTestCaseCategories(
+	ctx context.Context, request *GetTestCaseCategoriesRequest, opts ...RequestOption,
+) ([]*TestCaseCategory, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tcase_categories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		TestCaseCategory *TestCaseCategory `json:"TcaseCategory,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	categories := make([]*TestCaseCategory, 0, len(items))
+	for _, item := range items {
+		categories = append(categories, item.TestCaseCategory)
+	}
+
+	return categories, resp, nil
+}
+
+func (s *testService) GetTestCaseCategoriesCount(
+	ctx context.Context, request *GetTestCaseCategoriesCountRequest, opts ...RequestOption,
+) (int, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tcase_categories/count", request, opts)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var count CountResponse
+	resp, err := s.client.Do(req, &count)
+	if err != nil {
+		return 0, resp, err
+	}
+
+	return count.Count, resp, nil
 }

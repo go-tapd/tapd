@@ -304,3 +304,140 @@ func TestTestService_DeleteTestPlanStoryRelation(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, ok)
 }
+
+func TestTestService_DeleteTestCaseStoryRelation(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/tcase_instance/delete_tcase_story_relation", r.URL.Path)
+
+		var req DeleteTestCaseStoryRelationRequest
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 10158231, *req.WorkspaceID)
+		assert.Equal(t, int64(1020357849500705291), *req.StoryID)
+		assert.Equal(t, int64(1020357849077231363), *req.TestCaseID)
+		assert.Equal(t, int64(1020357849000015397), *req.TestPlanID)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/delete_test_case_story_relation.json"))
+	}))
+
+	ok, _, err := client.TestService.DeleteTestCaseStoryRelation(ctx, &DeleteTestCaseStoryRelationRequest{
+		WorkspaceID: Ptr(10158231),
+		StoryID:     Ptr[int64](1020357849500705291),
+		TestCaseID:  Ptr[int64](1020357849077231363),
+		TestPlanID:  Ptr[int64](1020357849000015397),
+	})
+	assert.NoError(t, err)
+	assert.True(t, ok)
+}
+
+func TestTestService_ExecuteTestCase(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/tcase_instance/execute", r.URL.Path)
+
+		var req struct {
+			TestPlanID   int64  `json:"test_plan_id"`
+			TestCaseID   string `json:"tcase_id"`
+			WorkspaceID  int    `json:"workspace_id"`
+			ResultStatus string `json:"result_status"`
+			LastExecutor string `json:"last_executor"`
+			ResultRemark string `json:"result_remark"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, int64(1010158231077224799), req.TestPlanID)
+		assert.Equal(t, "1020357849077231381,1020357849077231382", req.TestCaseID)
+		assert.Equal(t, 10158231, req.WorkspaceID)
+		assert.Equal(t, "pass", req.ResultStatus)
+		assert.Equal(t, "peter", req.LastExecutor)
+		assert.Equal(t, "执行通过", req.ResultRemark)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/execute_test_case.json"))
+	}))
+
+	ok, _, err := client.TestService.ExecuteTestCase(ctx, &ExecuteTestCaseRequest{
+		TestPlanID:   Ptr[int64](1010158231077224799),
+		TestCaseID:   NewMulti[int64](1020357849077231381, 1020357849077231382),
+		WorkspaceID:  Ptr(10158231),
+		ResultStatus: Ptr(TestCaseResultStatusPass),
+		LastExecutor: Ptr("peter"),
+		ResultRemark: Ptr("执行通过"),
+	})
+	assert.NoError(t, err)
+	assert.True(t, ok)
+}
+
+func TestTestService_GetTestCaseRelatedStories(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tcases/get_story_by_tcase_id", r.URL.Path)
+		assert.Equal(t, "20358306", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1020358306077237055,1020358306077237053", r.URL.Query().Get("tcase_ids"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_case_related_stories.json"))
+	}))
+
+	relations, _, err := client.TestService.GetTestCaseRelatedStories(ctx, &GetTestCaseRelatedStoriesRequest{
+		WorkspaceID: Ptr(20358306),
+		TestCaseIDs: NewMulti[int64](1020358306077237055, 1020358306077237053),
+	})
+	assert.NoError(t, err)
+	require.Len(t, relations, 2)
+	assert.Equal(t, "20358306", relations[0].WorkspaceID)
+	assert.Equal(t, "1020358306077237053", relations[0].TestCaseID)
+	assert.Equal(t, "1020358306854812395", relations[0].StoryID)
+	assert.Equal(t, "0", relations[0].TestPlanID)
+	assert.Equal(t, "1020358306077237055", relations[1].TestCaseID)
+}
+
+func TestTestService_GetTestCaseCategories(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tcase_categories", r.URL.Path)
+		assert.Equal(t, "10158231", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "用例目录", r.URL.Query().Get("name"))
+		assert.Equal(t, "30", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "id,name,parent_id", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_case_categories.json"))
+	}))
+
+	categories, _, err := client.TestService.GetTestCaseCategories(ctx, &GetTestCaseCategoriesRequest{
+		WorkspaceID: Ptr(10158231),
+		Name:        Ptr("用例目录"),
+		Limit:       Ptr(30),
+		Page:        Ptr(1),
+		Fields:      NewMulti("id", "name", "parent_id"),
+	})
+	assert.NoError(t, err)
+	require.Len(t, categories, 2)
+	assert.Equal(t, "1010158231075917759", categories[0].ID)
+	assert.Equal(t, "10158231", categories[0].WorkspaceID)
+	assert.Equal(t, "None Category", categories[0].Name)
+	require.NotNil(t, categories[0].Description)
+	assert.Equal(t, "未规划目录", *categories[0].Description)
+	assert.Equal(t, "0", categories[0].ParentID)
+	assert.Nil(t, categories[0].Creator)
+	assert.Equal(t, "1010158231000082521", categories[1].ID)
+	assert.Equal(t, "用例目录3", categories[1].Name)
+	require.NotNil(t, categories[1].Creator)
+	assert.Equal(t, "system", *categories[1].Creator)
+}
+
+func TestTestService_GetTestCaseCategoriesCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tcase_categories/count", r.URL.Path)
+		assert.Equal(t, "10158231", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "用例目录", r.URL.Query().Get("name"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_case_categories_count.json"))
+	}))
+
+	count, _, err := client.TestService.GetTestCaseCategoriesCount(ctx, &GetTestCaseCategoriesCountRequest{
+		WorkspaceID: Ptr(10158231),
+		Name:        Ptr("用例目录"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 4, count)
+}
