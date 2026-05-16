@@ -1,0 +1,26 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "EntityPermission": {
+        "id": "1210158241000001519",
+        "workspace_id": "10158241",
+        "entry_type": "wiki",
+        "target_type": "role_id",
+        "target_id": "1000000000000000002",
+        "wiki_id": "1210158241000048769"
+      }
+    },
+    {
+      "EntityPermission": {
+        "id": "1210158241000001513",
+        "workspace_id": "10158241",
+        "entry_type": "wiki",
+        "target_type": "nick",
+        "target_id": "jmyan",
+        "wiki_id": "1210158241000048769"
+      }
+    }
+  ],
+  "info": "success"
+}

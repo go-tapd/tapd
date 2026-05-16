@@ -1,0 +1,21 @@
+{
+  "status": 1,
+  "data": {
+    "Wiki": {
+      "id": "1210104801000043897",
+      "name": "test111",
+      "workspace_id": "10104801",
+      "description": "内容被更新",
+      "markdown_description": "## updated",
+      "is_rich": "1",
+      "parent_wiki_id": "0",
+      "note": "note updated",
+      "view_count": "1",
+      "created": "2020-08-26 10:15:28",
+      "creator": "v_xuanfang",
+      "modified": "2020-08-26 10:30:11",
+      "modifier": "dev"
+    }
+  },
+  "info": "success"
+}
