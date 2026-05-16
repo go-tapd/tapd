@@ -1,0 +1,52 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "WorkitemType": {
+        "id": "1111112222001000103",
+        "workspace_id": "11112222",
+        "app_id": "11000",
+        "entity_type": "story",
+        "name": "用户故事",
+        "english_name": "custom_story",
+        "status": "1",
+        "color": "#21c17a",
+        "workflow_id": "1210104801000000001",
+        "children_ids": "1111112222001000104",
+        "parent_ids": "",
+        "icon": "story",
+        "icon_small": "story-small",
+        "creator": "xinweihe",
+        "created": "2024-01-02 03:04:05",
+        "modified_by": "xinweihe",
+        "modified": "2024-01-03 03:04:05",
+        "icon_viper": "story-viper",
+        "icon_small_viper": "story-small-viper"
+      }
+    },
+    {
+      "WorkitemType": {
+        "id": "1111112222001000104",
+        "workspace_id": "11112222",
+        "app_id": "11000",
+        "entity_type": "story",
+        "name": "任务",
+        "english_name": "task_story",
+        "status": "1",
+        "color": "#3f7df6",
+        "workflow_id": "1210104801000000002",
+        "children_ids": "",
+        "parent_ids": "1111112222001000103",
+        "icon": "task",
+        "icon_small": "task-small",
+        "creator": "xinweihe",
+        "created": "2024-01-04 03:04:05",
+        "modified_by": "xinweihe",
+        "modified": "2024-01-05 03:04:05",
+        "icon_viper": "task-viper",
+        "icon_small_viper": "task-small-viper"
+      }
+    }
+  ],
+  "info": "success"
+}

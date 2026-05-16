@@ -346,6 +346,89 @@ func TestStoryService_GetStorySecretInfo(t *testing.T) {
 	assert.Equal(t, "secret", info.SecretScope)
 }
 
+func TestStoryService_BatchUpdateStorySecretInfo(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/batch_update_secret_info", r.URL.Path)
+
+		var req struct {
+			WorkspaceID          int    `json:"workspace_id"`
+			StoryIDList          string `json:"story_id_list"`
+			SecretScope          string `json:"secret_scope"`
+			AllowList            string `json:"allow_list"`
+			AddParticipantFields string `json:"add_participant_fields"`
+			OperationType        int    `json:"operation_type"`
+			CurrentUser          string `json:"current_user"`
+		}
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, "1111112222001000103|1111112222001000104", req.StoryIDList)
+		assert.Equal(t, "secret", req.SecretScope)
+		assert.Equal(t, "xinweihe;1000000000000000002", req.AllowList)
+		assert.Equal(t, "false", req.AddParticipantFields)
+		assert.Equal(t, 0, req.OperationType)
+		assert.Equal(t, "xinweihe", req.CurrentUser)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/batch_update_story_secret_info.json"))
+	}))
+
+	result, _, err := client.StoryService.BatchUpdateStorySecretInfo(ctx, &BatchUpdateStorySecretInfoRequest{
+		WorkspaceID:          Ptr(11112222),
+		StoryIDList:          NewEnum[int64](1111112222001000103, 1111112222001000104),
+		SecretScope:          Ptr("secret"),
+		AllowList:            Ptr("xinweihe;1000000000000000002"),
+		AddParticipantFields: Ptr("false"),
+		OperationType:        Ptr(0),
+		CurrentUser:          Ptr("xinweihe"),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, "succeed", result.Code)
+	assert.Equal(t, "需求可访问人员设置成功", result.Msg)
+}
+
+func TestStoryService_GetStoryWorkitemTypes(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/workitem_types", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000103,1111112222001000104", r.URL.Query().Get("id"))
+		assert.Equal(t, "需求", r.URL.Query().Get("name"))
+		assert.Equal(t, "story", r.URL.Query().Get("entity_type"))
+		assert.Equal(t, "custom_story", r.URL.Query().Get("english_name"))
+		assert.Equal(t, "1210104801000000001", r.URL.Query().Get("workflow_id"))
+		assert.Equal(t, "1", r.URL.Query().Get("status"))
+		assert.Equal(t, "10", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "created desc", r.URL.Query().Get("order"))
+		assert.Equal(t, "id,name,workflow_id", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_workitem_types.json"))
+	}))
+
+	workitemTypes, _, err := client.StoryService.GetStoryWorkitemTypes(ctx, &GetStoryWorkitemTypesRequest{
+		WorkspaceID: Ptr(11112222),
+		ID:          NewMulti[int64](1111112222001000103, 1111112222001000104),
+		Name:        Ptr("需求"),
+		EntityType:  Ptr("story"),
+		EnglishName: Ptr("custom_story"),
+		WorkflowID:  Ptr[int64](1210104801000000001),
+		Status:      Ptr(1),
+		Limit:       Ptr(10),
+		Page:        Ptr(1),
+		Order:       NewOrder("created", OrderByDesc),
+		Fields:      NewMulti("id", "name", "workflow_id"),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, workitemTypes, 2)
+	assert.Equal(t, "1111112222001000103", workitemTypes[0].ID)
+	assert.Equal(t, "11112222", workitemTypes[0].WorkspaceID)
+	assert.Equal(t, "用户故事", workitemTypes[0].Name)
+	assert.Equal(t, "custom_story", workitemTypes[0].EnglishName)
+	assert.Equal(t, "1210104801000000001", workitemTypes[0].WorkflowID)
+	assert.Equal(t, "任务", workitemTypes[1].Name)
+}
+
 func TestStoryService_GetStoryFieldsLabel(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

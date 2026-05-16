@@ -1031,6 +1031,61 @@ type (
 		SecretScope          string `json:"secret_scrope,omitempty"`          // 保密范围，secret 为保密，public 为公开
 	}
 
+	BatchUpdateStorySecretInfoRequest struct {
+		WorkspaceID          *int         `json:"workspace_id,omitempty"`           // [必须]项目ID
+		StoryIDList          *Enum[int64] `json:"story_id_list,omitempty"`          // [必须]需求ID列表，多个用|分隔
+		SecretScope          *string      `json:"secret_scope,omitempty"`           // [必须]保密范围，public 为公开，secret 为保密
+		AllowList            *string      `json:"allow_list,omitempty"`             // [必须]保密白名单，成员 nick 或用户组ID用;分隔
+		AddParticipantFields *string      `json:"add_participant_fields,omitempty"` // [必须]保密范围是否纳入参与人，true 或 false
+		OperationType        *int         `json:"operation_type,omitempty"`         // 操作类型，0覆盖，1新增，2删除
+		CurrentUser          *string      `json:"current_user,omitempty"`           // [必须]操作人 nick
+	}
+
+	BatchUpdateStorySecretInfoResult struct {
+		Code string `json:"code,omitempty"` // 结果码
+		Msg  string `json:"msg,omitempty"`  // 结果提示
+	}
+
+	GetStoryWorkitemTypesRequest struct {
+		ID          *Multi[int64]  `url:"id,omitempty"`           // ID，支持多ID查询
+		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
+		Name        *string        `url:"name,omitempty"`         // 需求类别名称，支持模糊匹配
+		EntityType  *string        `url:"entity_type,omitempty"`  // 类别别名
+		EnglishName *string        `url:"english_name,omitempty"` // 英文名称
+		WorkflowID  *int64         `url:"workflow_id,omitempty"`  // 工作流ID
+		Status      *int           `url:"status,omitempty"`       // 状态
+		Created     *string        `url:"created,omitempty"`      // 创建时间
+		Creator     *string        `url:"creator,omitempty"`      // 创建人
+		ModifiedBy  *string        `url:"modified_by,omitempty"`  // 最后修改人
+		Modified    *string        `url:"modified,omitempty"`     // 最后修改时间
+		Limit       *int           `url:"limit,omitempty"`        // 每页数量
+		Page        *int           `url:"page,omitempty"`         // 页码
+		Order       *Order         `url:"order,omitempty"`        // 排序规则
+		Fields      *Multi[string] `url:"fields,omitempty"`       // 返回字段列表
+	}
+
+	StoryWorkitemType struct {
+		ID             string `json:"id,omitempty"`               // 需求类别ID
+		WorkspaceID    string `json:"workspace_id,omitempty"`     // 项目ID
+		AppID          string `json:"app_id,omitempty"`           // 应用ID
+		EntityType     string `json:"entity_type,omitempty"`      // 类别别名
+		Name           string `json:"name,omitempty"`             // 需求类别名称
+		EnglishName    string `json:"english_name,omitempty"`     // 英文名称
+		Status         string `json:"status,omitempty"`           // 状态
+		Color          string `json:"color,omitempty"`            // 颜色
+		WorkflowID     string `json:"workflow_id,omitempty"`      // 工作流ID
+		ChildrenIDs    string `json:"children_ids,omitempty"`     // 子类别ID
+		ParentIDs      string `json:"parent_ids,omitempty"`       // 父类别ID
+		Icon           string `json:"icon,omitempty"`             // 图标
+		IconSmall      string `json:"icon_small,omitempty"`       // 小图标
+		Creator        string `json:"creator,omitempty"`          // 创建人
+		Created        string `json:"created,omitempty"`          // 创建时间
+		ModifiedBy     string `json:"modified_by,omitempty"`      // 最后修改人
+		Modified       string `json:"modified,omitempty"`         // 最后修改时间
+		IconViper      string `json:"icon_viper,omitempty"`       // Viper图标
+		IconSmallViper string `json:"icon_small_viper,omitempty"` // Viper小图标
+	}
+
 	GetStoryFieldsLabelRequest struct {
 		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目ID
 	}
@@ -1458,8 +1513,15 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_secret_info.html
 	GetStorySecretInfo(ctx context.Context, request *GetStorySecretInfoRequest, opts ...RequestOption) (*StorySecretInfo, *Response, error)
 
-	// 批量修改保密信息
-	// 获取需求类别
+	// BatchUpdateStorySecretInfo 批量修改保密信息
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/batch_update_secret_info.html
+	BatchUpdateStorySecretInfo(ctx context.Context, request *BatchUpdateStorySecretInfoRequest, opts ...RequestOption) (*BatchUpdateStorySecretInfoResult, *Response, error)
+
+	// GetStoryWorkitemTypes 获取需求类别
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_workitem_types.html
+	GetStoryWorkitemTypes(ctx context.Context, request *GetStoryWorkitemTypesRequest, opts ...RequestOption) ([]*StoryWorkitemType, *Response, error)
 
 	// UpdateStory 更新需求
 	//
@@ -1813,6 +1875,46 @@ func (s *storyService) GetStorySecretInfo(
 	}
 
 	return &info, resp, nil
+}
+
+func (s *storyService) BatchUpdateStorySecretInfo(
+	ctx context.Context, request *BatchUpdateStorySecretInfoRequest, opts ...RequestOption,
+) (*BatchUpdateStorySecretInfoResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/batch_update_secret_info", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var result BatchUpdateStorySecretInfoResult
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &result, resp, nil
+}
+
+func (s *storyService) GetStoryWorkitemTypes(
+	ctx context.Context, request *GetStoryWorkitemTypesRequest, opts ...RequestOption,
+) ([]*StoryWorkitemType, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workitem_types", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response []struct {
+		WorkitemType *StoryWorkitemType `json:"WorkitemType"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	workitemTypes := make([]*StoryWorkitemType, 0, len(response))
+	for _, item := range response {
+		workitemTypes = append(workitemTypes, item.WorkitemType)
+	}
+	return workitemTypes, resp, nil
 }
 
 func (s *storyService) UpdateStory(
