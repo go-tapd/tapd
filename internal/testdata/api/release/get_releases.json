@@ -1,0 +1,20 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Release": {
+        "id": "1010158231100000905",
+        "workspace_id": "10158231",
+        "name": "发布计划1",
+        "description": "熟悉敏捷研发全生命周期",
+        "startdate": "2017-06-12",
+        "enddate": "2017-07-07",
+        "creator": "anyechen",
+        "created": "2017-06-20 16:49:01",
+        "modified": "2017-06-20 16:49:01",
+        "status": "open"
+      }
+    }
+  ],
+  "info": "success"
+}

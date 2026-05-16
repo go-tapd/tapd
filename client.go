@@ -65,6 +65,7 @@ type Client struct {
 	TestService       TestService
 	BoardService      BoardService
 	WikiService       WikiService
+	ReleaseService    ReleaseService
 }
 
 // NewClient returns a new Tapd API client.
@@ -120,6 +121,7 @@ func newClient(opts ...ClientOption) (*Client, error) {
 	c.TestService = NewTestService(c)
 	c.BoardService = NewBoardService(c)
 	c.WikiService = NewWikiService(c)
+	c.ReleaseService = NewReleaseService(c)
 
 	return c, nil
 }

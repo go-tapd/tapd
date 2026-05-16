@@ -1,0 +1,20 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "CustomFieldConfig": {
+        "id": "1120003271001000004",
+        "workspace_id": "20003271",
+        "entry_type": "launchform",
+        "custom_field": "custom_field_one",
+        "type": "textarea",
+        "name": "DB变更",
+        "options": null,
+        "enabled": "1",
+        "sort": null,
+        "memo": null
+      }
+    }
+  ],
+  "info": "success"
+}

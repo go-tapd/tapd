@@ -1,0 +1,40 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "LaunchAccessory": {
+        "id": "1010104801000253485",
+        "form_id": "1010104801000402051",
+        "workspace_id": "10104801",
+        "type": "launch_tasks_list",
+        "tag": null,
+        "title": "任务列表",
+        "content": "1010104801500601739",
+        "description": null,
+        "content_type": "task",
+        "created_by": "v_xuanfang",
+        "created": "2020-06-11 16:17:56",
+        "group_id": null,
+        "source": ""
+      }
+    },
+    {
+      "LaunchAccessory": {
+        "id": "1010104801000253477",
+        "form_id": "1010104801000402051",
+        "workspace_id": "10104801",
+        "type": "launch_url",
+        "tag": null,
+        "title": "URL",
+        "content": "baidu.com",
+        "description": null,
+        "content_type": null,
+        "created_by": "v_xuanfang",
+        "created": "2020-06-10 19:30:56",
+        "group_id": null,
+        "source": ""
+      }
+    }
+  ],
+  "info": "success"
+}
