@@ -450,7 +450,7 @@ type (
 	}
 
 	BugFieldsInfoOption struct {
-		Value string `json:"key,omitempty"`   // 值
+		Key   string `json:"key,omitempty"`   // 英文Key
 		Label string `json:"label,omitempty"` // 中文名称
 	}
 
@@ -1190,7 +1190,7 @@ type (
 	}
 
 	BugRelatedStory struct {
-		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
+		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID，官方响应为字符串
 		BugID       string `json:"bug_id,omitempty"`       // 缺陷ID
 		StoryID     string `json:"story_id,omitempty"`     // 需求ID
 	}
@@ -1685,7 +1685,7 @@ func (s *bugService) GetBugFieldsInfo(
 			for key, value := range os {
 				if v, ok2 := value.(string); ok2 {
 					options = append(options, BugFieldsInfoOption{
-						Value: key,
+						Key:   key,
 						Label: v,
 					})
 				}

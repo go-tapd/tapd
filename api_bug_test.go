@@ -323,7 +323,7 @@ func TestBugService_GetBugFieldsInfo(t *testing.T) {
 			assert.Equal(t, "状态", field.Label)
 			assert.Equal(t, BugFieldsInfoHTMLTypeSelect, field.HTMLType)
 			assert.Contains(t, field.Options, BugFieldsInfoOption{
-				Value: "new",
+				Key:   "new",
 				Label: "新",
 			})
 			assert.Contains(t, field.PureOptions, BugFieldsInfoPureOption{
