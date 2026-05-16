@@ -62,6 +62,35 @@ func TestIterationService_CreateIteration(t *testing.T) {
 	assert.Equal(t, "11111222001000218", iteration.TemplatedID)
 }
 
+func TestIterationService_GetIterationCustomFieldsSettings(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iterations/custom_fields_settings", r.URL.Path)
+		assert.Equal(t, "111", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iteration_custom_fields_settings.json"))
+	}))
+
+	settings, _, err := client.IterationService.GetIterationCustomFieldsSettings(
+		ctx,
+		&GetIterationCustomFieldsSettingsRequest{
+			WorkspaceID: Ptr(111),
+		},
+	)
+	assert.NoError(t, err)
+	require.Len(t, settings, 1)
+	assert.Equal(t, "1010158231214902319", settings[0].ID)
+	assert.Equal(t, "10158231", settings[0].WorkspaceID)
+	assert.Equal(t, "iteration", settings[0].EntryType)
+	assert.Equal(t, "custom_field_50", settings[0].CustomField)
+	assert.Equal(t, "text", settings[0].Type)
+	assert.Equal(t, "倒计时", settings[0].Name)
+	assert.Nil(t, settings[0].Options)
+	assert.Equal(t, "1", settings[0].Enabled)
+	assert.Nil(t, settings[0].Sort)
+	assert.Nil(t, settings[0].Memo)
+}
+
 func TestIterationService_GetIterations(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -94,6 +123,44 @@ func TestIterationService_GetIterations(t *testing.T) {
 	assert.Equal(t, "11111222001002235:", iteration.Path)
 	assert.Equal(t, "11111222001000098", iteration.WorkitemTypeID)
 	assert.Equal(t, "11111222001000218", iteration.TemplatedID)
+}
+
+func TestIterationService_GetIterationChanges(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iteration_changes", r.URL.Path)
+		assert.Equal(t, "111", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "11111222001002235", r.URL.Query().Get("iteration_id"))
+		assert.Equal(t, "name", r.URL.Query().Get("field"))
+		assert.Equal(t, "v_xinyucao", r.URL.Query().Get("author"))
+		assert.Equal(t, "20", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "id,iteration_id,field", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iteration_changes.json"))
+	}))
+
+	changes, _, err := client.IterationService.GetIterationChanges(ctx, &GetIterationChangesRequest{
+		WorkspaceID: Ptr(111),
+		IterationID: Ptr[int64](11111222001002235),
+		Field:       Ptr("name"),
+		Author:      Ptr("v_xinyucao"),
+		Limit:       Ptr(20),
+		Page:        Ptr(1),
+		Fields:      NewMulti("id", "iteration_id", "field"),
+	})
+	assert.NoError(t, err)
+	require.Len(t, changes, 1)
+	assert.Equal(t, "1020355782015033213", changes[0].ID)
+	assert.Equal(t, "1020355782000700291", changes[0].IterationID)
+	assert.Equal(t, "v_xinyucao", changes[0].Author)
+	assert.Equal(t, "name", changes[0].Field)
+	assert.Nil(t, changes[0].OldValue)
+	require.NotNil(t, changes[0].NewValue)
+	assert.Equal(t, "对方的身份", *changes[0].NewValue)
+	assert.Equal(t, "1588128122", changes[0].ModifyVersion)
+	assert.Equal(t, "add", changes[0].OperaterType)
+	assert.Equal(t, "20355782", changes[0].WorkspaceID)
 }
 
 func TestIterationService_GetIterationsCount(t *testing.T) {

@@ -1,0 +1,20 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "CustomFieldConfig": {
+        "id": "1010158231214902319",
+        "workspace_id": "10158231",
+        "entry_type": "iteration",
+        "custom_field": "custom_field_50",
+        "type": "text",
+        "name": "倒计时",
+        "options": null,
+        "enabled": "1",
+        "sort": null,
+        "memo": null
+      }
+    }
+  ],
+  "info": "success"
+}

@@ -85,6 +85,30 @@ type (
 		OriginName     string `json:"origin_name,omitempty"`
 	}
 
+	GetIterationCustomFieldsSettingsRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	IterationCustomFieldsSetting struct {
+		ID              string  `json:"id,omitempty"`           // 自定义字段配置的ID
+		WorkspaceID     string  `json:"workspace_id,omitempty"` // 所属项目ID
+		AppID           string  `json:"app_id,omitempty"`       // 应用ID
+		EntryType       string  `json:"entry_type,omitempty"`   // 所属实体对象
+		CustomField     string  `json:"custom_field,omitempty"` // 自定义字段标识
+		Type            string  `json:"type,omitempty"`         // 输入类型
+		Name            string  `json:"name,omitempty"`         // 自定义字段显示名称
+		Options         *string `json:"options,omitempty"`      // 自定义字段可选值
+		ExtraConfig     *string `json:"extra_config,omitempty"` // 额外配置
+		Enabled         string  `json:"enabled,omitempty"`      // 是否启用
+		Freeze          string  `json:"freeze,omitempty"`       // 是否冻结
+		Sort            *string `json:"sort,omitempty"`         // 显示时排序系数
+		Memo            *string `json:"memo,omitempty"`         // 备注
+		OpenExtensionID string  `json:"open_extension_id,omitempty"`
+		IsOut           int     `json:"is_out,omitempty"`
+		IsUninstall     int     `json:"is_uninstall,omitempty"`
+		AppName         string  `json:"app_name,omitempty"`
+	}
+
 	CreateIterationRequest struct {
 		Name           *string       `json:"name,omitempty"`             // [必须] 标题 支持模糊匹配
 		WorkspaceID    *int          `json:"workspace_id,omitempty"`     // [必须] 项目 ID
@@ -284,6 +308,34 @@ type (
 		CustomField50  *string       `url:"custom_field_50,omitempty"`  // 自定义字段参数
 	}
 
+	GetIterationChangesRequest struct {
+		ID          *Multi[int64]  `url:"id,omitempty"`           // 变更记录ID，支持多ID查询
+		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
+		IterationID *int64         `url:"iteration_id,omitempty"` // [必须]迭代ID
+		Author      *string        `url:"author,omitempty"`       // 变更人
+		Field       *string        `url:"field,omitempty"`        // 字段名称
+		OldValue    *string        `url:"old_value,omitempty"`    // 变更前
+		NewValue    *string        `url:"new_value,omitempty"`    // 变更后
+		Created     *string        `url:"created,omitempty"`      // 创建时间，支持时间查询
+		Limit       *int           `url:"limit,omitempty"`        // 设置返回数量限制，默认为30，最大取200
+		Page        *int           `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1（第一页）
+		Fields      *Multi[string] `url:"fields,omitempty"`       // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	IterationChange struct {
+		ID            string  `json:"id,omitempty"`            // 变更记录ID
+		IterationID   string  `json:"iteration_id,omitempty"`  // 迭代ID
+		Author        string  `json:"author,omitempty"`        // 变更人
+		Field         string  `json:"field,omitempty"`         // 字段名称
+		OldValue      *string `json:"old_value,omitempty"`     // 变更前
+		NewValue      *string `json:"new_value,omitempty"`     // 变更后
+		Memo          *string `json:"memo,omitempty"`          // 备注
+		Created       string  `json:"created,omitempty"`       // 创建时间
+		ModifyVersion string  `json:"modifyversion,omitempty"` // 变更版本
+		OperaterType  string  `json:"operater_type,omitempty"` // 变更类型
+		WorkspaceID   string  `json:"workspace_id,omitempty"`  // 项目ID
+	}
+
 	UpdateIterationRequest struct {
 		ID            *int64        `json:"id,omitempty"`              // [必须] ID
 		WorkspaceID   *int          `json:"workspace_id,omitempty"`    // [必须] 项目 ID
@@ -385,7 +437,12 @@ type IterationService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/add_iteration.html
 	CreateIteration(ctx context.Context, request *CreateIterationRequest, opts ...RequestOption) (*Iteration, *Response, error)
 
-	// 获取迭代自定义字段配置
+	// GetIterationCustomFieldsSettings 获取迭代自定义字段配置
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/get_iteration_custom_fields_settings.html
+	GetIterationCustomFieldsSettings(
+		ctx context.Context, request *GetIterationCustomFieldsSettingsRequest, opts ...RequestOption,
+	) ([]*IterationCustomFieldsSetting, *Response, error)
 
 	// GetIterations 获取迭代
 	//
@@ -402,7 +459,11 @@ type IterationService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/update_iteration.html
 	UpdateIteration(ctx context.Context, request *UpdateIterationRequest, opts ...RequestOption) (*Iteration, *Response, error)
 
-	// 获取迭代变更历史
+	// GetIterationChanges 获取迭代变更历史
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/get_iteration_changes.html
+	GetIterationChanges(ctx context.Context, request *GetIterationChangesRequest, opts ...RequestOption) ([]*IterationChange, *Response, error)
+
 	// 获取迭代仪表盘自定义卡片内容
 	// 修改迭代仪表盘自定义卡片内容
 	// 锁定迭代
@@ -453,6 +514,30 @@ func (s *iterationService) CreateIteration(
 	}
 
 	return item.Iteration, resp, nil
+}
+
+func (s *iterationService) GetIterationCustomFieldsSettings(
+	ctx context.Context, request *GetIterationCustomFieldsSettingsRequest, opts ...RequestOption,
+) ([]*IterationCustomFieldsSetting, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "iterations/custom_fields_settings", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		CustomFieldConfig *IterationCustomFieldsSetting `json:"CustomFieldConfig,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	settings := make([]*IterationCustomFieldsSetting, 0, len(items))
+	for _, item := range items {
+		settings = append(settings, item.CustomFieldConfig)
+	}
+
+	return settings, resp, nil
 }
 
 func (s *iterationService) GetIterations(
@@ -515,6 +600,30 @@ func (s *iterationService) UpdateIteration(
 	}
 
 	return item.Iteration, resp, nil
+}
+
+func (s *iterationService) GetIterationChanges(
+	ctx context.Context, request *GetIterationChangesRequest, opts ...RequestOption,
+) ([]*IterationChange, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "iteration_changes", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		IterationChange *IterationChange `json:"IterationChange"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	changes := make([]*IterationChange, 0, len(items))
+	for _, item := range items {
+		changes = append(changes, item.IterationChange)
+	}
+
+	return changes, resp, nil
 }
 
 func (s *iterationService) GetWorkitemTypes(
