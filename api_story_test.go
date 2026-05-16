@@ -868,6 +868,65 @@ func TestStoryService_CreateStoryTestCaseRelation(t *testing.T) {
 	assert.Equal(t, []string{"1111112222001077291", "1111112222001077292"}, result.SuccessID)
 }
 
+func TestStoryService_GetStoriesByViewConfID(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/stories/get_stories_by_view_conf_id", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000001", r.URL.Query().Get("view_conf_id"))
+		assert.Equal(t, "xinweihe", r.URL.Query().Get("current_user"))
+		assert.Equal(t, "planning", r.URL.Query().Get("status"))
+		assert.Equal(t, "20", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "id,name,status", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_stories_by_view_conf_id.json"))
+	}))
+
+	stories, _, err := client.StoryService.GetStoriesByViewConfID(ctx, &GetStoriesByViewConfIDRequest{
+		ViewConfID:  Ptr[int64](1111112222001000001),
+		CurrentUser: Ptr("xinweihe"),
+		GetStoriesRequest: GetStoriesRequest{
+			WorkspaceID: Ptr(11112222),
+			Status:      NewEnum(StoryStatusPlanning),
+			Limit:       Ptr(20),
+			Page:        Ptr(1),
+			Fields:      NewMulti("id", "name", "status"),
+		},
+	})
+	assert.NoError(t, err)
+	assert.Len(t, stories, 2)
+	assert.Equal(t, "1111112222001063941", stories[0].ID)
+	assert.Equal(t, "视图需求一", stories[0].Name)
+	assert.Equal(t, StoryStatusPlanning, stories[0].Status)
+	assert.Equal(t, "1111112222001063942", stories[1].ID)
+}
+
+func TestStoryService_CreateStoryLinkRelation(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/add_story_link_relations", r.URL.Path)
+
+		var req CreateStoryLinkRelationRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, int64(1111112222001063941), *req.SourceStoryID)
+		assert.Equal(t, int64(1111112222001063942), *req.TargetStoryID)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/create_story_link_relation.json"))
+	}))
+
+	result, _, err := client.StoryService.CreateStoryLinkRelation(ctx, &CreateStoryLinkRelationRequest{
+		WorkspaceID:   Ptr(11112222),
+		SourceStoryID: Ptr[int64](1111112222001063941),
+		TargetStoryID: Ptr[int64](1111112222001063942),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, 1, result.Success)
+}
+
 func TestStoryService_GetStoryTemplates(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

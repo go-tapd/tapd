@@ -1,0 +1,16 @@
+{
+  "status": 1,
+  "data": {
+    "Relation": {
+      "id": "22265547",
+      "workspace_id": "11112222",
+      "source_type": "story",
+      "source_id": "1111112222001063941",
+      "target_type": "bug",
+      "target_id": "1111112222001035927",
+      "modified": "2025-07-08 15:22:49",
+      "created": "2025-07-08 15:22:49"
+    }
+  },
+  "info": "success"
+}

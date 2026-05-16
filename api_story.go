@@ -1570,6 +1570,22 @@ type (
 		SuccessID []string `json:"success_id,omitempty"` // 成功关联的测试用例ID
 	}
 
+	GetStoriesByViewConfIDRequest struct {
+		ViewConfID  *int64  `url:"view_conf_id,omitempty"` // [必须]视图ID
+		CurrentUser *string `url:"current_user,omitempty"` // 当前登录用户视图
+		GetStoriesRequest
+	}
+
+	CreateStoryLinkRelationRequest struct {
+		WorkspaceID   *int   `json:"workspace_id,omitempty"`    // [必须]项目ID
+		SourceStoryID *int64 `json:"src_story_id,omitempty"`    // [必须]源需求ID
+		TargetStoryID *int64 `json:"target_story_id,omitempty"` // [必须]目标需求ID
+	}
+
+	CreateStoryLinkRelationResult struct {
+		Success int `json:"success,omitempty"` // 是否创建成功
+	}
+
 	GetConvertStoryIDsToQueryTokenRequest struct {
 		WorkspaceID *int          `json:"workspace_id,omitempty"` // 项目ID
 		StoryIDs    *Multi[int64] `json:"ids,omitempty"`          // 需求ID
@@ -1759,7 +1775,11 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/create_story_tcase.html
 	CreateStoryTestCaseRelation(ctx context.Context, request *CreateStoryTestCaseRelationRequest, opts ...RequestOption) (*CreateStoryTestCaseRelationResult, *Response, error)
 
-	// 获取视图对应的需求列表
+	// GetStoriesByViewConfID 获取视图对应的需求列表
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_stories_by_view_conf_id.html
+	GetStoriesByViewConfID(ctx context.Context, request *GetStoriesByViewConfIDRequest, opts ...RequestOption) ([]*Story, *Response, error)
+
 	// 转换需求ID成列表queryToken
 
 	// GetConvertStoryIDsToQueryToken 转换需求ID成列表queryToken
@@ -1767,7 +1787,10 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/story_ids_to_query_token.html
 	GetConvertStoryIDsToQueryToken(ctx context.Context, request *GetConvertStoryIDsToQueryTokenRequest, opts ...RequestOption) (*GetConvertStoryIDsToQueryTokenResponse, *Response, error)
 
-	// 创建需求关联关系
+	// CreateStoryLinkRelation 创建需求关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/add_story_link_relations.html
+	CreateStoryLinkRelation(ctx context.Context, request *CreateStoryLinkRelationRequest, opts ...RequestOption) (*CreateStoryLinkRelationResult, *Response, error)
 }
 
 type storyService struct {
@@ -2487,6 +2510,35 @@ func (s *storyService) CreateStoryTestCaseRelation(
 	return result, resp, nil
 }
 
+func (s *storyService) GetStoriesByViewConfID(
+	ctx context.Context, request *GetStoriesByViewConfIDRequest, opts ...RequestOption,
+) ([]*Story, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_stories_by_view_conf_id", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		Story      *Story `json:"Story"`
+		StoryLower *Story `json:"story"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	stories := make([]*Story, 0, len(items))
+	for _, item := range items {
+		if item.Story != nil {
+			stories = append(stories, item.Story)
+			continue
+		}
+		stories = append(stories, item.StoryLower)
+	}
+
+	return stories, resp, nil
+}
+
 func (s *storyService) GetConvertStoryIDsToQueryToken(
 	ctx context.Context, request *GetConvertStoryIDsToQueryTokenRequest, opts ...RequestOption,
 ) (*GetConvertStoryIDsToQueryTokenResponse, *Response, error) {
@@ -2502,4 +2554,21 @@ func (s *storyService) GetConvertStoryIDsToQueryToken(
 	}
 
 	return response, resp, nil
+}
+
+func (s *storyService) CreateStoryLinkRelation(
+	ctx context.Context, request *CreateStoryLinkRelationRequest, opts ...RequestOption,
+) (*CreateStoryLinkRelationResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/add_story_link_relations", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(CreateStoryLinkRelationResult)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return result, resp, nil
 }

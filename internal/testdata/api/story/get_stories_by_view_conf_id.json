@@ -1,0 +1,28 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Story": {
+        "id": "1111112222001063941",
+        "workspace_id": "11112222",
+        "name": "视图需求一",
+        "status": "planning",
+        "creator": "xinweihe",
+        "created": "2025-07-08 15:22:49",
+        "modified": "2025-07-08 15:22:49"
+      }
+    },
+    {
+      "Story": {
+        "id": "1111112222001063942",
+        "workspace_id": "11112222",
+        "name": "视图需求二",
+        "status": "planning",
+        "creator": "xinweihe",
+        "created": "2025-07-08 15:22:50",
+        "modified": "2025-07-08 15:22:50"
+      }
+    }
+  ],
+  "info": "success"
+}
