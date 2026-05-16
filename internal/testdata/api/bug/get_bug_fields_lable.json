@@ -1,0 +1,28 @@
+{
+  "status": 1,
+  "data": {
+    "id": "ID",
+    "title": "标题",
+    "description": "详细描述",
+    "workspace_id": "项目ID",
+    "priority": "优先级",
+    "severity": "严重程度",
+    "module": "模块",
+    "status": "状态",
+    "reporter": "创建人",
+    "created": "创建时间",
+    "modified": "最后修改时间",
+    "lastmodify": "最后修改人",
+    "current_owner": "处理人",
+    "iteration_id": "迭代",
+    "version_report": "发现版本",
+    "version_test": "验证版本",
+    "version_fix": "合入版本",
+    "version_close": "关闭版本",
+    "source": "缺陷根源",
+    "bugtype": "缺陷类型",
+    "custom_field_one": "自定义字段1",
+    "custom_field_two": "自定义字段2"
+  },
+  "info": "success"
+}
