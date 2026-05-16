@@ -343,3 +343,135 @@ func TestReleaseService_CreateLaunchAccessory(t *testing.T) {
 	assert.Equal(t, "tapd", accessory.CreatedBy)
 	assert.Equal(t, "2022-09-08 16:45:30", accessory.Created)
 }
+
+func TestReleaseService_GetLaunchFormsCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/launch_forms/count", r.URL.Path)
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1010104801079697767", r.URL.Query().Get("id"))
+		assert.Equal(t, "v_xuanfang", r.URL.Query().Get("creator"))
+		assert.Equal(t, "2021-01-15", r.URL.Query().Get("created"))
+		assert.Equal(t, "发布评审", r.URL.Query().Get("title"))
+		assert.Equal(t, "LAUNCHFORM_STATUS_INITIAL", r.URL.Query().Get("status"))
+		assert.Equal(t, "version", r.URL.Query().Get("version_type"))
+		assert.Equal(t, "baseline", r.URL.Query().Get("baseline"))
+		assert.Equal(t, "module", r.URL.Query().Get("release_model"))
+		assert.Equal(t, "roadmap", r.URL.Query().Get("roadmap_version"))
+		assert.Equal(t, "正常发布", r.URL.Query().Get("release_type"))
+		assert.Equal(t, "normal", r.URL.Query().Get("change_type"))
+		assert.Equal(t, "signer", r.URL.Query().Get("signed_by"))
+		assert.Equal(t, "archiver", r.URL.Query().Get("archived_by"))
+		assert.Equal(t, "cc", r.URL.Query().Get("cc"))
+		assert.Equal(t, "notifier", r.URL.Query().Get("change_notifier"))
+		assert.Equal(t, "10", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "id,title", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/release/get_launch_forms_count.json"))
+	}))
+
+	count, _, err := client.ReleaseService.GetLaunchFormsCount(ctx, &GetLaunchFormsCountRequest{
+		WorkspaceID:    Ptr(10104801),
+		ID:             Ptr[int64](1010104801079697767),
+		Creator:        Ptr("v_xuanfang"),
+		Created:        Ptr("2021-01-15"),
+		Title:          Ptr("发布评审"),
+		Status:         Ptr("LAUNCHFORM_STATUS_INITIAL"),
+		VersionType:    Ptr("version"),
+		Baseline:       Ptr("baseline"),
+		ReleaseModel:   Ptr("module"),
+		RoadmapVersion: Ptr("roadmap"),
+		ReleaseType:    Ptr("正常发布"),
+		ChangeType:     Ptr("normal"),
+		SignedBy:       Ptr("signer"),
+		ArchivedBy:     Ptr("archiver"),
+		CC:             Ptr("cc"),
+		ChangeNotifier: Ptr("notifier"),
+		Limit:          Ptr(10),
+		Page:           Ptr(1),
+		Fields:         NewMulti("id", "title"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 1, count)
+}
+
+func TestReleaseService_GetLaunchFormCustomFieldsSettings(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/launch_forms/custom_fields_settings", r.URL.Path)
+		assert.Equal(t, "20003271", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/release/get_launch_form_custom_fields_settings.json"))
+	}))
+
+	settings, _, err := client.ReleaseService.GetLaunchFormCustomFieldsSettings(
+		ctx,
+		&GetLaunchFormCustomFieldsSettingsRequest{
+			WorkspaceID: Ptr(20003271),
+		},
+	)
+	assert.NoError(t, err)
+	assert.Len(t, settings, 1)
+	assert.Equal(t, "1120003271001000004", settings[0].ID)
+	assert.Equal(t, "20003271", settings[0].WorkspaceID)
+	assert.Equal(t, "launchform", settings[0].EntryType)
+	assert.Equal(t, "custom_field_one", settings[0].CustomField)
+	assert.Equal(t, "textarea", settings[0].Type)
+	assert.Equal(t, "DB变更", settings[0].Name)
+	assert.Nil(t, settings[0].Options)
+	assert.Equal(t, "1", settings[0].Enabled)
+	assert.Nil(t, settings[0].Sort)
+	assert.Nil(t, settings[0].Memo)
+}
+
+func TestReleaseService_GetLaunchFormTemplates(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/launch_forms/templates", r.URL.Path)
+		assert.Equal(t, "20042301", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/release/get_launch_form_templates.json"))
+	}))
+
+	templates, _, err := client.ReleaseService.GetLaunchFormTemplates(ctx, &GetLaunchFormTemplatesRequest{
+		WorkspaceID: Ptr(20042301),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, templates, 3)
+	assert.Equal(t, "1120042301001000009", templates[0].ID)
+	assert.Equal(t, "系统默认流程", templates[0].Name)
+	assert.Equal(t, "1120042301001000079", templates[2].ID)
+	assert.Equal(t, "迭代", templates[2].Name)
+}
+
+func TestReleaseService_GetLaunchFormActivityLogs(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/launch_forms/get_activity_logs", r.URL.Path)
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1010104801079777231", r.URL.Query().Get("form_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/release/get_launch_form_activity_logs.json"))
+	}))
+
+	logs, _, err := client.ReleaseService.GetLaunchFormActivityLogs(ctx, &GetLaunchFormActivityLogsRequest{
+		WorkspaceID: Ptr(10104801),
+		FormID:      Ptr[int64](1010104801079777231),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, logs, 2)
+	assert.Equal(t, "1010104801083448610", logs[0].ID)
+	assert.Equal(t, "10104801", logs[0].WorkspaceID)
+	assert.Equal(t, "audit", logs[0].Type)
+	assert.Equal(t, "1010104801079777231", logs[0].FormID)
+	assert.Equal(t, "audit_result", logs[0].Field)
+	assert.JSONEq(t, `{"result":"pass","audited_by":"v_xuanfang"}`, string(logs[0].NewValue))
+	assert.JSONEq(t, `[]`, string(logs[0].FactorResult))
+	assert.Equal(t, "v_xuanfang", logs[0].CreatedBy)
+	assert.Equal(t, "2023-07-13 10:41:23", logs[0].Created)
+	assert.Equal(t, "audit_absolutely", logs[0].Operation)
+	assert.Equal(t, "initialization", logs[1].Field)
+	assert.JSONEq(t, `null`, string(logs[1].OldValue))
+	assert.JSONEq(t, `null`, string(logs[1].NewValue))
+}

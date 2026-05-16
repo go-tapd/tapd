@@ -2,6 +2,7 @@ package tapd
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -169,6 +170,74 @@ type (
 		Type        *string `json:"type,omitempty"`         // [必须]类型，仅支持 launch_url
 		Content     *string `json:"content,omitempty"`      // [必须]url 地址
 	}
+
+	GetLaunchFormsCountRequest struct {
+		WorkspaceID    *int           `url:"workspace_id,omitempty"`    // [必须]项目ID
+		ID             *int64         `url:"id,omitempty"`              // 发布评审ID
+		Creator        *string        `url:"creator,omitempty"`         // 创建人
+		Created        *string        `url:"created,omitempty"`         // 创建时间，支持时间查询
+		Title          *string        `url:"title,omitempty"`           // 标题
+		Status         *string        `url:"status,omitempty"`          // 状态
+		VersionType    *string        `url:"version_type,omitempty"`    // 版本类型
+		Baseline       *string        `url:"baseline,omitempty"`        // 基线
+		ReleaseModel   *string        `url:"release_model,omitempty"`   // 发布模块
+		RoadmapVersion *string        `url:"roadmap_version,omitempty"` // 路标版本
+		ReleaseType    *string        `url:"release_type,omitempty"`    // 发布类型
+		ChangeType     *string        `url:"change_type,omitempty"`     // 变更类型
+		SignedBy       *string        `url:"signed_by,omitempty"`       // 签发人
+		ArchivedBy     *string        `url:"archived_by,omitempty"`     // 发布确认人
+		CC             *string        `url:"cc,omitempty"`              // 抄送人
+		ChangeNotifier *string        `url:"change_notifier,omitempty"` // 变更通知人
+		Limit          *int           `url:"limit,omitempty"`           // 设置返回数量限制，默认为30，最大取200
+		Page           *int           `url:"page,omitempty"`            // 返回当前数量限制下第N页的数据，默认为1
+		Fields         *Multi[string] `url:"fields,omitempty"`          // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	GetLaunchFormCustomFieldsSettingsRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	LaunchFormCustomFieldsSetting struct {
+		ID          string  `json:"id,omitempty"`           // 自定义字段配置的ID
+		WorkspaceID string  `json:"workspace_id,omitempty"` // 所属项目ID
+		EntryType   string  `json:"entry_type,omitempty"`   // 所属实体对象
+		CustomField string  `json:"custom_field,omitempty"` // 自定义字段标识
+		Type        string  `json:"type,omitempty"`         // 输入类型
+		Name        string  `json:"name,omitempty"`         // 自定义字段显示名称
+		Options     *string `json:"options,omitempty"`      // 自定义字段可选值
+		Enabled     string  `json:"enabled,omitempty"`      // 是否启用
+		Sort        *string `json:"sort,omitempty"`         // 显示时排序系数
+		Memo        *string `json:"memo,omitempty"`         // 备注
+	}
+
+	GetLaunchFormTemplatesRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	LaunchFormTemplate struct {
+		ID   string `json:"id,omitempty"`   // 模板ID
+		Name string `json:"name,omitempty"` // 模板名称
+	}
+
+	GetLaunchFormActivityLogsRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		FormID      *int64 `url:"form_id,omitempty"`      // [必须]发布评审ID
+	}
+
+	LaunchFormActivityLog struct {
+		ID             string          `json:"id,omitempty"`               // 评审日志记录ID
+		WorkspaceID    string          `json:"workspace_id,omitempty"`     // 所属项目ID
+		Type           string          `json:"type,omitempty"`             // 类型
+		FormID         string          `json:"form_id,omitempty"`          // 评审单ID
+		ActivityFormID *string         `json:"activity_form_id,omitempty"` // 发布评审活动ID
+		Field          string          `json:"field,omitempty"`            // 字段名
+		OldValue       json.RawMessage `json:"old_value,omitempty"`        // 变更前
+		NewValue       json.RawMessage `json:"new_value,omitempty"`        // 变更后
+		CreatedBy      string          `json:"created_by,omitempty"`       // 创建人
+		Created        string          `json:"created,omitempty"`          // 创建时间
+		Operation      string          `json:"operation,omitempty"`        // 流程状态
+		FactorResult   json.RawMessage `json:"factor_result,omitempty"`    // 评审要素
+	}
 )
 
 // ReleaseService 发布服务。
@@ -214,6 +283,30 @@ type ReleaseService interface {
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/release/add_launch_accessories.html
 	CreateLaunchAccessory(ctx context.Context, request *CreateLaunchAccessoryRequest, opts ...RequestOption) (*LaunchAccessory, *Response, error)
+
+	// GetLaunchFormsCount 获取发布评审数量
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/release/get_launch_forms_count.html
+	GetLaunchFormsCount(ctx context.Context, request *GetLaunchFormsCountRequest, opts ...RequestOption) (int, *Response, error)
+
+	// GetLaunchFormCustomFieldsSettings 获取发布评审自定义字段配置
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/release/get_launch_forms_custom_fields_settings.html
+	GetLaunchFormCustomFieldsSettings(
+		ctx context.Context, request *GetLaunchFormCustomFieldsSettingsRequest, opts ...RequestOption,
+	) ([]*LaunchFormCustomFieldsSetting, *Response, error)
+
+	// GetLaunchFormTemplates 获取发布评审模板
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/release/get_launch_forms_templates.html
+	GetLaunchFormTemplates(ctx context.Context, request *GetLaunchFormTemplatesRequest, opts ...RequestOption) ([]*LaunchFormTemplate, *Response, error)
+
+	// GetLaunchFormActivityLogs 获取发布评审日志
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/release/get_lauch_forms_activity_logs.html
+	GetLaunchFormActivityLogs(
+		ctx context.Context, request *GetLaunchFormActivityLogsRequest, opts ...RequestOption,
+	) ([]*LaunchFormActivityLog, *Response, error)
 }
 
 type releaseService struct {
@@ -391,4 +484,93 @@ func (s *releaseService) CreateLaunchAccessory(
 	}
 
 	return response.LaunchAccessory, resp, nil
+}
+
+func (s *releaseService) GetLaunchFormsCount(
+	ctx context.Context, request *GetLaunchFormsCountRequest, opts ...RequestOption,
+) (int, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "launch_forms/count", request, opts)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var response CountResponse
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return 0, resp, err
+	}
+
+	return response.Count, resp, nil
+}
+
+func (s *releaseService) GetLaunchFormCustomFieldsSettings(
+	ctx context.Context, request *GetLaunchFormCustomFieldsSettingsRequest, opts ...RequestOption,
+) ([]*LaunchFormCustomFieldsSetting, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "launch_forms/custom_fields_settings", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		CustomFieldConfig *LaunchFormCustomFieldsSetting `json:"CustomFieldConfig"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	settings := make([]*LaunchFormCustomFieldsSetting, 0, len(items))
+	for _, item := range items {
+		settings = append(settings, item.CustomFieldConfig)
+	}
+
+	return settings, resp, nil
+}
+
+func (s *releaseService) GetLaunchFormTemplates(
+	ctx context.Context, request *GetLaunchFormTemplatesRequest, opts ...RequestOption,
+) ([]*LaunchFormTemplate, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "launch_forms/templates", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		Template *LaunchFormTemplate `json:"template"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	templates := make([]*LaunchFormTemplate, 0, len(items))
+	for _, item := range items {
+		templates = append(templates, item.Template)
+	}
+
+	return templates, resp, nil
+}
+
+func (s *releaseService) GetLaunchFormActivityLogs(
+	ctx context.Context, request *GetLaunchFormActivityLogsRequest, opts ...RequestOption,
+) ([]*LaunchFormActivityLog, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "launch_forms/get_activity_logs", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		LaunchChange *LaunchFormActivityLog `json:"LaunchChange"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	logs := make([]*LaunchFormActivityLog, 0, len(items))
+	for _, item := range items {
+		logs = append(logs, item.LaunchChange)
+	}
+
+	return logs, resp, nil
 }
