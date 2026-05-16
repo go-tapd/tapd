@@ -883,3 +883,24 @@ func findTestPlanFieldsInfo(fields []*TestPlanFieldsInfo, name string) *TestPlan
 
 	return nil
 }
+
+func TestTestService_GetTestPlanRelatedStories(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/test_plans/get_relative_stories", r.URL.Path)
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1010104801077236545", r.URL.Query().Get("test_plan_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/get_test_plan_related_stories.json"))
+	}))
+
+	storyIDs, _, err := client.TestService.GetTestPlanRelatedStories(ctx, &GetTestPlanRelatedStoriesRequest{
+		WorkspaceID: Ptr(10104801),
+		TestPlanID:  Ptr[int64](1010104801077236545),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, []string{
+		"1010104801500706241",
+		"1010104801854890913",
+	}, storyIDs)
+}

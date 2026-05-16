@@ -622,6 +622,11 @@ type (
 		Label    string                     `json:"label,omitempty"`     // 中文名称
 		Options  []TestCaseFieldsInfoOption `json:"options,omitempty"`   // 候选值
 	}
+
+	GetTestPlanRelatedStoriesRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		TestPlanID  *int64 `url:"test_plan_id,omitempty"` // [必须]测试计划ID
+	}
 )
 
 // TestService 测试
@@ -810,6 +815,13 @@ type TestService interface {
 	GetTestPlanFieldsInfo(
 		ctx context.Context, request *GetTestPlanFieldsInfoRequest, opts ...RequestOption,
 	) ([]*TestPlanFieldsInfo, *Response, error)
+
+	// GetTestPlanRelatedStories 获取测试计划关联的需求
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/get_test_plan_relative_stories.html
+	GetTestPlanRelatedStories(
+		ctx context.Context, request *GetTestPlanRelatedStoriesRequest, opts ...RequestOption,
+	) ([]string, *Response, error)
 }
 
 type testService struct {
@@ -1403,6 +1415,25 @@ func (s *testService) GetTestPlanFieldsInfo(
 	}
 
 	return fields, resp, nil
+}
+
+func (s *testService) GetTestPlanRelatedStories(
+	ctx context.Context, request *GetTestPlanRelatedStoriesRequest, opts ...RequestOption,
+) ([]string, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "test_plans/get_relative_stories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var result struct {
+		StoryIDs []string `json:"story_ids,omitempty"`
+	}
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return result.StoryIDs, resp, nil
 }
 
 func (r *TestCaseResult) UnmarshalJSON(data []byte) error {
