@@ -1,0 +1,32 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "RemovedBug": {
+        "id": "1111122233300103707",
+        "title": "回收站缺陷一",
+        "reporter": "creator",
+        "created": "2021-04-22 21:29:41",
+        "operation_user": "operator",
+        "modified": "2021-04-23 11:04:59",
+        "removed_comment": "{\"action\":\"delete\"}",
+        "type": "delete",
+        "new_bug_url": ""
+      }
+    },
+    {
+      "RemovedBug": {
+        "id": "1111122233300103708",
+        "title": "回收站缺陷二",
+        "reporter": "creator",
+        "created": "2021-04-22 21:17:13",
+        "operation_user": "operator",
+        "modified": "2021-04-23 10:25:05",
+        "removed_comment": "{\"action\":\"merge\"}",
+        "type": "merge",
+        "new_bug_url": "http://tapd.example.com/bugs/view?bug_id=1111122233300103707"
+      }
+    }
+  ],
+  "info": "success"
+}

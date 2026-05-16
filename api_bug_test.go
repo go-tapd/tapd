@@ -268,6 +268,52 @@ func TestBugService_GetBugsByViewConfID(t *testing.T) {
 	assert.Equal(t, "11111222333083011055", bugs[1].ID)
 }
 
+func TestBugService_GetBugFieldsInfo(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bugs/get_fields_info", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1", r.URL.Query().Get("all_options"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bug_fields_info.json"))
+	}))
+
+	fields, _, err := client.BugService.GetBugFieldsInfo(ctx, &GetBugFieldsInfoRequest{
+		WorkspaceID: Ptr(11112222),
+		AllOptions:  Ptr(1),
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, fields)
+
+	var foundID, foundStatus bool
+	for _, field := range fields {
+		if field.Name == "id" {
+			foundID = true
+			assert.Equal(t, "ID", field.Label)
+			assert.Equal(t, BugFieldsInfoHTMLTypeInput, field.HTMLType)
+		}
+		if field.Name == "status" {
+			foundStatus = true
+			assert.Equal(t, "状态", field.Label)
+			assert.Equal(t, BugFieldsInfoHTMLTypeSelect, field.HTMLType)
+			assert.Contains(t, field.Options, BugFieldsInfoOption{
+				Value: "new",
+				Label: "新",
+			})
+			assert.Contains(t, field.PureOptions, BugFieldsInfoPureOption{
+				ParentID:    "0",
+				WorkspaceID: "11112222",
+				Sort:        "1",
+				Value:       "new",
+				Label:       "新",
+				Panel:       0,
+			})
+		}
+	}
+	assert.True(t, foundID)
+	assert.True(t, foundStatus)
+}
+
 func TestBugService_GetBugs(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -341,6 +387,83 @@ func TestBugService_UpdateBug(t *testing.T) {
 	assert.Equal(t, BugSeverityNormal, bug.Severity)
 }
 
+func TestBugService_UpdateBugSystemSelectFieldOptions(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/bugs/update_system_select_field_options", r.URL.Path)
+
+		var req UpdateBugSystemSelectFieldOptionsRequest
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, "bugtype", *req.Field)
+		require.Len(t, req.Options, 2)
+		assert.Equal(t, "test", *req.Options[0].Value)
+		assert.Equal(t, "test111", *req.Options[1].Value)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/update_bug_system_select_field_options.json"))
+	}))
+
+	result, _, err := client.BugService.UpdateBugSystemSelectFieldOptions(ctx, &UpdateBugSystemSelectFieldOptionsRequest{
+		WorkspaceID: Ptr(11112222),
+		Field:       Ptr("bugtype"),
+		Options: []*BugSystemSelectFieldOption{
+			{Value: Ptr("test")},
+			{Value: Ptr("test111")},
+		},
+	})
+	require.NoError(t, err)
+	assert.True(t, result)
+}
+
+func TestBugService_BatchUpdateBugs(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/bugs/batch_update_bug", r.URL.Path)
+
+		var req struct {
+			ProjectID int `json:"project_id"`
+			Workitems []struct {
+				ID           int64  `json:"id"`
+				Title        string `json:"title"`
+				Status       string `json:"status"`
+				CurrentOwner string `json:"current_owner"`
+				WorkspaceID  *int   `json:"workspace_id"`
+			} `json:"workitems"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, req.ProjectID)
+		require.Len(t, req.Workitems, 2)
+		assert.Equal(t, int64(1111122233300103707), req.Workitems[0].ID)
+		assert.Nil(t, req.Workitems[0].WorkspaceID)
+		assert.Equal(t, "first bug", req.Workitems[0].Title)
+		assert.Equal(t, "new", req.Workitems[0].Status)
+		assert.Equal(t, int64(1111122233300103708), req.Workitems[1].ID)
+		assert.Equal(t, "second bug", req.Workitems[1].Title)
+		assert.Equal(t, "owner", req.Workitems[1].CurrentOwner)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/batch_update_bugs.json"))
+	}))
+
+	result, _, err := client.BugService.BatchUpdateBugs(ctx, &BatchUpdateBugsRequest{
+		ProjectID: Ptr(11112222),
+		Workitems: []*UpdateBugRequest{
+			{
+				ID:     Ptr[int64](1111122233300103707),
+				Title:  Ptr("first bug"),
+				Status: NewEnum("new"),
+			},
+			{
+				ID:           Ptr[int64](1111122233300103708),
+				Title:        Ptr("second bug"),
+				CurrentOwner: Ptr("owner"),
+			},
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, result)
+	assert.Equal(t, "batch update success", result.Msg)
+}
+
 func TestBugService_GetBugsCount(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -357,6 +480,43 @@ func TestBugService_GetBugsCount(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.Equal(t, 2, count)
+}
+
+func TestBugService_GetRemovedBugs(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bugs/get_removed_bugs", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111122233300103707,1111122233300103708", r.URL.Query().Get("id"))
+		assert.Equal(t, "creator", r.URL.Query().Get("creator"))
+		assert.Equal(t, "2021-01-01", r.URL.Query().Get("created"))
+		assert.Equal(t, "2021-01-02", r.URL.Query().Get("modified"))
+		assert.Equal(t, "1", r.URL.Query().Get("include_all"))
+		assert.Equal(t, "10", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_removed_bugs.json"))
+	}))
+
+	bugs, _, err := client.BugService.GetRemovedBugs(ctx, &GetRemovedBugsRequest{
+		WorkspaceID: Ptr(11112222),
+		ID:          NewMulti[int64](1111122233300103707, 1111122233300103708),
+		Creator:     Ptr("creator"),
+		Created:     Ptr("2021-01-01"),
+		Modified:    Ptr("2021-01-02"),
+		IncludeAll:  Ptr(1),
+		Limit:       Ptr(10),
+		Page:        Ptr(1),
+	})
+	require.NoError(t, err)
+	require.Len(t, bugs, 2)
+	assert.Equal(t, "1111122233300103707", bugs[0].ID)
+	assert.Equal(t, "回收站缺陷一", bugs[0].Title)
+	assert.Equal(t, "creator", bugs[0].Reporter)
+	assert.Equal(t, "delete", bugs[0].Type)
+	assert.Equal(t, "{\"action\":\"delete\"}", bugs[0].RemovedComment)
+	assert.Equal(t, "http://tapd.example.com/bugs/view?bug_id=1111122233300103707", bugs[1].NewBugURL)
 }
 
 func TestBugService_GetBugFieldsLabel(t *testing.T) {

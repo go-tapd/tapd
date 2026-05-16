@@ -39,6 +39,22 @@ func (s BugSeverity) Human() string {
 	}
 }
 
+// BugFieldsInfoHTMLType 缺陷字段控件类型。
+type BugFieldsInfoHTMLType string
+
+const (
+	BugFieldsInfoHTMLTypeInput       BugFieldsInfoHTMLType = "input"
+	BugFieldsInfoHTMLTypeSelect      BugFieldsInfoHTMLType = "select"
+	BugFieldsInfoHTMLTypeRichEdit    BugFieldsInfoHTMLType = "rich_edit"
+	BugFieldsInfoHTMLTypeUserChooser BugFieldsInfoHTMLType = "user_chooser"
+	BugFieldsInfoHTMLTypeDatetime    BugFieldsInfoHTMLType = "datetime"
+	BugFieldsInfoHTMLTypeFloat       BugFieldsInfoHTMLType = "float"
+	BugFieldsInfoHTMLTypeMixChooser  BugFieldsInfoHTMLType = "mix_chooser"
+	BugFieldsInfoHTMLTypeDateInput   BugFieldsInfoHTMLType = "dateinput"
+	BugFieldsInfoHTMLTypeCheckbox    BugFieldsInfoHTMLType = "checkbox"
+	BugFieldsInfoHTMLTypeMultiSelect BugFieldsInfoHTMLType = "multi_select"
+)
+
 type (
 	Bug struct {
 		ID                string        `json:"id,omitempty"`
@@ -402,6 +418,42 @@ type (
 		ViewConfID  *int64  `url:"view_conf_id,omitempty"` // [必须]视图ID
 		CurrentUser *string `url:"current_user,omitempty"` // 当前登录用户视图
 		GetBugsRequest
+	}
+
+	GetBugFieldsInfoRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+		AllOptions  *int `url:"all_options,omitempty"`  // 是否返回已关闭的选项，all_options=1 则返回
+	}
+
+	BugFieldsInfoOption struct {
+		Value string `json:"key,omitempty"`   // 值
+		Label string `json:"label,omitempty"` // 中文名称
+	}
+
+	BugFieldsInfoColorOption struct {
+		Value string `json:"value,omitempty"` // 值
+		Label string `json:"label,omitempty"` // 中文名称
+		Color string `json:"color,omitempty"` // 颜色
+	}
+
+	BugFieldsInfoPureOption struct {
+		ParentID    string `json:"parent_id,omitempty"`    // 父选项ID
+		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
+		Sort        string `json:"sort,omitempty"`         // 排序
+		OriginName  string `json:"origin_name,omitempty"`  // 原始名称
+		Value       string `json:"value,omitempty"`        // 值
+		Label       string `json:"label,omitempty"`        // 中文名称
+		Panel       int    `json:"panel,omitempty"`        // 面板
+	}
+
+	BugFieldsInfo struct {
+		Name         string                     `json:"name,omitempty"`          // 字段名
+		HTMLType     BugFieldsInfoHTMLType      `json:"html_type,omitempty"`     // 类型
+		Label        string                     `json:"label,omitempty"`         // 中文名称
+		Memo         string                     `json:"memo,omitempty"`          // 备注
+		Options      []BugFieldsInfoOption      `json:"options,omitempty"`       // 候选值
+		ColorOptions []BugFieldsInfoColorOption `json:"color_options,omitempty"` // 带颜色的候选值
+		PureOptions  []BugFieldsInfoPureOption  `json:"pure_options,omitempty"`  // 原始候选值
 	}
 
 	GetBugsRequest struct {
@@ -1065,6 +1117,48 @@ type (
 		CustomPlanField9  *string            `json:"custom_plan_field_9,omitempty"`
 		CustomPlanField10 *string            `json:"custom_plan_field_10,omitempty"`
 	}
+
+	UpdateBugSystemSelectFieldOptionsRequest struct {
+		WorkspaceID *int                          `json:"workspace_id,omitempty"` // [必须]项目ID
+		Field       *string                       `json:"field,omitempty"`        // [必须]字段，目前支持 bugtype
+		Options     []*BugSystemSelectFieldOption `json:"options,omitempty"`      // [必须]选项列表，会覆盖原有选项
+	}
+
+	BugSystemSelectFieldOption struct {
+		Value *string `json:"value,omitempty"` // 选项对应 value
+	}
+
+	BatchUpdateBugsRequest struct {
+		ProjectID *int                `json:"project_id,omitempty"` // [必须]项目ID
+		Workitems []*UpdateBugRequest `json:"workitems,omitempty"`  // [必须]批量更新的缺陷，每次最多50条
+	}
+
+	BatchUpdateBugsResponse struct {
+		Msg string `json:"msg,omitempty"` // 更新结果提示
+	}
+
+	GetRemovedBugsRequest struct {
+		WorkspaceID *int          `url:"workspace_id,omitempty"` // [必须]项目ID
+		ID          *Multi[int64] `url:"id,omitempty"`           // 缺陷ID
+		Creator     *string       `url:"creator,omitempty"`      // 创建人
+		Created     *string       `url:"created,omitempty"`      // 创建时间
+		Modified    *string       `url:"modified,omitempty"`     // 删除时间
+		IncludeAll  *int          `url:"include_all,omitempty"`  // 取 1 会返回所有删除的缺陷，包括移动、合并、删除
+		Limit       *int          `url:"limit,omitempty"`        // 设置返回数量限制，默认为30
+		Page        *int          `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1（第一页）
+	}
+
+	RemovedBug struct {
+		ID             string `json:"id,omitempty"`              // 缺陷ID
+		Title          string `json:"title,omitempty"`           // 标题
+		Reporter       string `json:"reporter,omitempty"`        // 创建人
+		Created        string `json:"created,omitempty"`         // 创建时间
+		OperationUser  string `json:"operation_user,omitempty"`  // 删除人
+		Modified       string `json:"modified,omitempty"`        // 删除时间
+		RemovedComment string `json:"removed_comment,omitempty"` // 删除附加信息
+		Type           string `json:"type,omitempty"`            // 删除操作类型
+		NewBugURL      string `json:"new_bug_url,omitempty"`     // 新缺陷链接
+	}
 )
 
 type BugService interface {
@@ -1120,7 +1214,10 @@ type BugService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bugs_by_view_conf_id.html
 	GetBugsByViewConfID(ctx context.Context, request *GetBugsByViewConfIDRequest, opts ...RequestOption) ([]*Bug, *Response, error)
 
-	// 获取缺陷所有字段及候选值
+	// GetBugFieldsInfo 获取缺陷所有字段及候选值
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bug_fields_info.html
+	GetBugFieldsInfo(ctx context.Context, request *GetBugFieldsInfoRequest, opts ...RequestOption) ([]*BugFieldsInfo, *Response, error)
 
 	// GetBugFieldsLabel 获取缺陷所有字段的中英文
 	//
@@ -1132,7 +1229,23 @@ type BugService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/update_bug.html
 	UpdateBug(ctx context.Context, request *UpdateBugRequest, opts ...RequestOption) (*Bug, *Response, error)
 
-	// 获取回收站下的缺陷
+	// UpdateBugSystemSelectFieldOptions 更新系统字段
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/update_system_select_field_options.html
+	UpdateBugSystemSelectFieldOptions(
+		ctx context.Context, request *UpdateBugSystemSelectFieldOptionsRequest, opts ...RequestOption,
+	) (bool, *Response, error)
+
+	// BatchUpdateBugs 批量更新缺陷
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/batch_update_bug.html
+	BatchUpdateBugs(ctx context.Context, request *BatchUpdateBugsRequest, opts ...RequestOption) (*BatchUpdateBugsResponse, *Response, error)
+
+	// GetRemovedBugs 获取回收站下的缺陷
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_removed_bugs.html
+	GetRemovedBugs(ctx context.Context, request *GetRemovedBugsRequest, opts ...RequestOption) ([]*RemovedBug, *Response, error)
+
 	// 获取缺陷关联的需求ID
 	// 转换缺陷ID成列表queryToken
 	// 缺陷说明
@@ -1366,6 +1479,59 @@ func (s *bugService) GetBugsByViewConfID(
 	return bugs, resp, nil
 }
 
+type rawBugFieldsInfo map[string]struct {
+	Name         string                     `json:"name,omitempty"`
+	HTMLType     BugFieldsInfoHTMLType      `json:"html_type,omitempty"`
+	Label        string                     `json:"label,omitempty"`
+	Memo         string                     `json:"memo,omitempty"`
+	Options      any                        `json:"options,omitempty"`
+	ColorOptions []BugFieldsInfoColorOption `json:"color_options,omitempty"`
+	PureOptions  []BugFieldsInfoPureOption  `json:"pure_options,omitempty"`
+}
+
+func (s *bugService) GetBugFieldsInfo(
+	ctx context.Context, request *GetBugFieldsInfoRequest, opts ...RequestOption,
+) ([]*BugFieldsInfo, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs/get_fields_info", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var raw rawBugFieldsInfo
+	resp, err := s.client.Do(req, &raw)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	fields := make([]*BugFieldsInfo, 0, len(raw))
+	for _, item := range raw {
+		options := make([]BugFieldsInfoOption, 0)
+		if os, ok := item.Options.(map[string]any); ok {
+			options = make([]BugFieldsInfoOption, 0, len(os))
+			for key, value := range os {
+				if v, ok2 := value.(string); ok2 {
+					options = append(options, BugFieldsInfoOption{
+						Value: key,
+						Label: v,
+					})
+				}
+			}
+		}
+
+		fields = append(fields, &BugFieldsInfo{
+			Name:         item.Name,
+			HTMLType:     item.HTMLType,
+			Label:        item.Label,
+			Memo:         item.Memo,
+			Options:      options,
+			ColorOptions: item.ColorOptions,
+			PureOptions:  item.PureOptions,
+		})
+	}
+
+	return fields, resp, nil
+}
+
 func (s *bugService) GetBugFieldsLabel(
 	ctx context.Context, request *GetBugFieldsLabelRequest, opts ...RequestOption,
 ) ([]*BugFieldLabel, *Response, error) {
@@ -1408,4 +1574,62 @@ func (s *bugService) UpdateBug(
 	}
 
 	return item.Bug, resp, nil
+}
+
+func (s *bugService) UpdateBugSystemSelectFieldOptions(
+	ctx context.Context, request *UpdateBugSystemSelectFieldOptionsRequest, opts ...RequestOption,
+) (bool, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "bugs/update_system_select_field_options", request, opts)
+	if err != nil {
+		return false, nil, err
+	}
+
+	var result bool
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return false, resp, err
+	}
+
+	return result, resp, nil
+}
+
+func (s *bugService) BatchUpdateBugs(
+	ctx context.Context, request *BatchUpdateBugsRequest, opts ...RequestOption,
+) (*BatchUpdateBugsResponse, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "bugs/batch_update_bug", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response BatchUpdateBugsResponse
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &response, resp, nil
+}
+
+func (s *bugService) GetRemovedBugs(
+	ctx context.Context, request *GetRemovedBugsRequest, opts ...RequestOption,
+) ([]*RemovedBug, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs/get_removed_bugs", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		RemovedBug *RemovedBug `json:"RemovedBug"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	bugs := make([]*RemovedBug, 0, len(items))
+	for _, item := range items {
+		bugs = append(bugs, item.RemovedBug)
+	}
+
+	return bugs, resp, nil
 }
