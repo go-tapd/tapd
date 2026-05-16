@@ -121,3 +121,31 @@ func TestBugService_GetBugsCount(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, 2, count)
 }
+
+func TestBugService_GetBugFieldsLabel(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bugs/get_fields_lable", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bug_fields_lable.json"))
+	}))
+
+	labels, _, err := client.BugService.GetBugFieldsLabel(ctx, &GetBugFieldsLabelRequest{
+		WorkspaceID: Ptr(11112222),
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, labels)
+
+	labelMap := make(map[string]string, len(labels))
+	for _, label := range labels {
+		labelMap[label.EN] = label.CN
+	}
+
+	assert.Equal(t, "ID", labelMap["id"])
+	assert.Equal(t, "标题", labelMap["title"])
+	assert.Equal(t, "详细描述", labelMap["description"])
+	assert.Equal(t, "项目ID", labelMap["workspace_id"])
+	assert.Equal(t, "严重程度", labelMap["severity"])
+	assert.Equal(t, "处理人", labelMap["current_owner"])
+}

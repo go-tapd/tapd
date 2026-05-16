@@ -273,6 +273,15 @@ type (
 		WorkspaceID       string        `json:"workspace_id,omitempty"`
 	}
 
+	GetBugFieldsLabelRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目ID
+	}
+
+	BugFieldLabel struct {
+		EN string `json:"en,omitempty"` // 字段英文名
+		CN string `json:"cn,omitempty"` // 字段中文标签
+	}
+
 	GetBugsRequest struct {
 		ID                *Multi[int64]      `url:"id,omitempty"`               // ID 支持多ID查询
 		Title             *string            `url:"title,omitempty"`            // 标题 支持模糊匹配
@@ -957,7 +966,11 @@ type BugService interface {
 	// 获取缺陷模板字段
 	// 获取视图对应的缺陷列表
 	// 获取缺陷所有字段及候选值
-	// 获取缺陷所有字段的中英文
+
+	// GetBugFieldsLabel 获取缺陷所有字段的中英文
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bug_fields_lable.html
+	GetBugFieldsLabel(ctx context.Context, request *GetBugFieldsLabelRequest, opts ...RequestOption) ([]*BugFieldLabel, *Response, error)
 
 	// UpdateBug 更新缺陷
 	//
@@ -1023,6 +1036,31 @@ func (s *bugService) GetBugsCount(
 	}
 
 	return response.Count, resp, nil
+}
+
+func (s *bugService) GetBugFieldsLabel(
+	ctx context.Context, request *GetBugFieldsLabelRequest, opts ...RequestOption,
+) ([]*BugFieldLabel, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs/get_fields_lable", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var labelsMap map[string]string
+	resp, err := s.client.Do(req, &labelsMap)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	labels := make([]*BugFieldLabel, 0, len(labelsMap))
+	for en, cn := range labelsMap {
+		labels = append(labels, &BugFieldLabel{
+			EN: en,
+			CN: cn,
+		})
+	}
+
+	return labels, resp, nil
 }
 
 func (s *bugService) UpdateBug(

@@ -1,0 +1,27 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "CustomFieldConfig": {
+        "id": "1111112222001000155",
+        "workspace_id": "11112222",
+        "app_id": "1",
+        "entry_type": "task",
+        "custom_field": "custom_field_100",
+        "type": "user_chooser",
+        "name": "任务处理人",
+        "options": null,
+        "extra_config": null,
+        "enabled": "1",
+        "freeze": "0",
+        "sort": null,
+        "memo": null,
+        "open_extension_id": "",
+        "is_out": 0,
+        "is_uninstall": 0,
+        "app_name": ""
+      }
+    }
+  ],
+  "info": "success"
+}

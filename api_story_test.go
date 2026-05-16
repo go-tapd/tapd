@@ -54,6 +54,39 @@ func TestStoryService_GetStoryCategories(t *testing.T) {
 	assert.Equal(t, "张三", categories[0].Modifier)
 }
 
+func TestStoryService_UpdateStoryCategory(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/story_categories", r.URL.Path)
+
+		var req UpdateStoryCategoryRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, int64(1111112222001000056), *req.ID)
+		assert.Equal(t, "产品需求", *req.Name)
+		assert.Equal(t, "产品需求描述", *req.Description)
+		assert.Equal(t, int64(0), *req.ParentID)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/update_story_category.json"))
+	}))
+
+	category, _, err := client.StoryService.UpdateStoryCategory(ctx, &UpdateStoryCategoryRequest{
+		WorkspaceID: Ptr(11112222),
+		ID:          Ptr[int64](1111112222001000056),
+		Name:        Ptr("产品需求"),
+		Description: Ptr("产品需求描述"),
+		ParentID:    Ptr[int64](0),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, category)
+	assert.Equal(t, "1111112222001000056", category.ID)
+	assert.Equal(t, "11112222", category.WorkspaceID)
+	assert.Equal(t, "产品需求", category.Name)
+	assert.Nil(t, category.Description)
+	assert.Equal(t, "0", category.ParentID)
+	assert.Equal(t, "xinweihe", category.Modifier)
+}
+
 func TestStoryService_GetStoryCategoriesCount(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -145,6 +178,26 @@ func TestStoryService_GetStoryChanges(t *testing.T) {
 	assert.Equal(t, "标题", storyChanges[0].FieldChanges[0].FieldLabel)
 }
 
+func TestStoryService_GetStoryChangesCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/story_changes/count", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000103,1111112222001000108", r.URL.Query().Get("story_id"))
+		assert.Equal(t, "TAPD", r.URL.Query().Get("creator"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_changes_count.json"))
+	}))
+
+	count, _, err := client.StoryService.GetStoryChangesCount(ctx, &GetStoryChangesCountRequest{
+		StoryID:     NewMulti[int64](1111112222001000103, 1111112222001000108),
+		WorkspaceID: Ptr(11112222),
+		Creator:     Ptr("TAPD"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 23, count)
+}
+
 func TestStoryService_GetStoryCustomFieldsSettings(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -204,6 +257,305 @@ func TestStoryService_GetStoryTestCaseRelation(t *testing.T) {
 	assert.Equal(t, "0", relations[0].Sort)
 	assert.Equal(t, "张三", relations[0].Creator)
 	assert.Equal(t, "0000-00-00 00:00:00", relations[0].Created)
+}
+
+func TestStoryService_GetStoryTimeRelations(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/stories/get_time_relative_stories", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000103", r.URL.Query().Get("story_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_time_relations.json"))
+	}))
+
+	relations, _, err := client.StoryService.GetStoryTimeRelations(ctx, &GetStoryTimeRelationsRequest{
+		WorkspaceID: Ptr(11112222),
+		StoryID:     Ptr[int64](1111112222001000103),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, relations, 2)
+	assert.Equal(t, "1210104801000007813", relations[0].ID)
+	assert.Equal(t, "11112222", relations[0].WorkspaceID)
+	assert.Equal(t, "story", relations[0].WorkitemType)
+	assert.Equal(t, "1111112222001000102", relations[0].WorkitemID)
+	assert.Equal(t, "begin", relations[0].SrcField)
+	assert.Equal(t, "11112222", relations[0].DstWorkspaceID)
+	assert.Equal(t, "story", relations[0].DstWorkitemType)
+	assert.Equal(t, "1111112222001000103", relations[0].DstWorkitemID)
+	assert.Equal(t, "due", relations[0].DstField)
+	assert.Equal(t, "after", relations[0].RelationType)
+	assert.Equal(t, "1210104801000007815", relations[1].ID)
+}
+
+func TestStoryService_SaveStoryTimeRelations(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/save_time_relations", r.URL.Path)
+
+		var req SaveStoryTimeRelationsRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, "testuser", *req.CurrentUser)
+		assert.Len(t, req.Relations, 1)
+		assert.Equal(t, int64(1111112222001000102), *req.Relations[0].WorkitemID)
+		assert.Equal(t, int64(1111112222001000103), *req.Relations[0].DstWorkitemID)
+		assert.Equal(t, "begin", *req.Relations[0].SrcField)
+		assert.Equal(t, "due", *req.Relations[0].DstField)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/save_story_time_relations.json"))
+	}))
+
+	result, _, err := client.StoryService.SaveStoryTimeRelations(ctx, &SaveStoryTimeRelationsRequest{
+		WorkspaceID: Ptr(11112222),
+		CurrentUser: Ptr("testuser"),
+		Relations: []*SaveStoryTimeRelation{
+			{
+				WorkitemID:    Ptr[int64](1111112222001000102),
+				DstWorkitemID: Ptr[int64](1111112222001000103),
+				SrcField:      Ptr("begin"),
+				DstField:      Ptr("due"),
+			},
+		},
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.True(t, result.Result)
+}
+
+func TestStoryService_DeleteStoryTimeRelations(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/delete_time_relations", r.URL.Path)
+
+		var req DeleteStoryTimeRelationsRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, "testuser", *req.CurrentUser)
+		assert.Len(t, req.Relations, 1)
+		assert.Equal(t, int64(1111112222001000102), *req.Relations[0].WorkitemID)
+		assert.Equal(t, int64(1111112222001000103), *req.Relations[0].DstWorkitemID)
+		assert.Equal(t, []int64{1210104801000007813}, *req.RelationIDs)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/delete_story_time_relations.json"))
+	}))
+
+	result, _, err := client.StoryService.DeleteStoryTimeRelations(ctx, &DeleteStoryTimeRelationsRequest{
+		WorkspaceID: Ptr(11112222),
+		CurrentUser: Ptr("testuser"),
+		Relations: []*DeleteStoryTimeRelation{
+			{
+				WorkitemID:    Ptr[int64](1111112222001000102),
+				DstWorkitemID: Ptr[int64](1111112222001000103),
+			},
+		},
+		RelationIDs: Ptr([]int64{1210104801000007813}),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, 1, result.Num)
+}
+
+func TestStoryService_GetStorySecretInfo(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/stories/get_secret_info", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000103", r.URL.Query().Get("story_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_secret_info.json"))
+	}))
+
+	info, _, err := client.StoryService.GetStorySecretInfo(ctx, &GetStorySecretInfoRequest{
+		WorkspaceID: Ptr(11112222),
+		StoryID:     Ptr[int64](1111112222001000103),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, info)
+	assert.Equal(t, "xinweihe", info.Creator)
+	assert.Equal(t, "xinweihe;1000000000000000002", info.AllowList)
+	assert.Equal(t, "1111112222001000103", info.SecretRootID)
+	assert.Equal(t, "true", info.AddParticipantFields)
+	assert.Equal(t, "secret", info.SecretScope)
+}
+
+func TestStoryService_BatchUpdateStorySecretInfo(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/batch_update_secret_info", r.URL.Path)
+
+		var req struct {
+			WorkspaceID          int    `json:"workspace_id"`
+			StoryIDList          string `json:"story_id_list"`
+			SecretScope          string `json:"secret_scope"`
+			AllowList            string `json:"allow_list"`
+			AddParticipantFields string `json:"add_participant_fields"`
+			OperationType        int    `json:"operation_type"`
+			CurrentUser          string `json:"current_user"`
+		}
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, "1111112222001000103|1111112222001000104", req.StoryIDList)
+		assert.Equal(t, "secret", req.SecretScope)
+		assert.Equal(t, "xinweihe;1000000000000000002", req.AllowList)
+		assert.Equal(t, "false", req.AddParticipantFields)
+		assert.Equal(t, 0, req.OperationType)
+		assert.Equal(t, "xinweihe", req.CurrentUser)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/batch_update_story_secret_info.json"))
+	}))
+
+	result, _, err := client.StoryService.BatchUpdateStorySecretInfo(ctx, &BatchUpdateStorySecretInfoRequest{
+		WorkspaceID:          Ptr(11112222),
+		StoryIDList:          NewEnum[int64](1111112222001000103, 1111112222001000104),
+		SecretScope:          Ptr("secret"),
+		AllowList:            Ptr("xinweihe;1000000000000000002"),
+		AddParticipantFields: Ptr("false"),
+		OperationType:        Ptr(0),
+		CurrentUser:          Ptr("xinweihe"),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, "succeed", result.Code)
+	assert.Equal(t, "需求可访问人员设置成功", result.Msg)
+}
+
+func TestStoryService_GetStoryWorkitemTypes(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/workitem_types", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000103,1111112222001000104", r.URL.Query().Get("id"))
+		assert.Equal(t, "需求", r.URL.Query().Get("name"))
+		assert.Equal(t, "story", r.URL.Query().Get("entity_type"))
+		assert.Equal(t, "custom_story", r.URL.Query().Get("english_name"))
+		assert.Equal(t, "1210104801000000001", r.URL.Query().Get("workflow_id"))
+		assert.Equal(t, "1", r.URL.Query().Get("status"))
+		assert.Equal(t, "10", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "created desc", r.URL.Query().Get("order"))
+		assert.Equal(t, "id,name,workflow_id", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_workitem_types.json"))
+	}))
+
+	workitemTypes, _, err := client.StoryService.GetStoryWorkitemTypes(ctx, &GetStoryWorkitemTypesRequest{
+		WorkspaceID: Ptr(11112222),
+		ID:          NewMulti[int64](1111112222001000103, 1111112222001000104),
+		Name:        Ptr("需求"),
+		EntityType:  Ptr("story"),
+		EnglishName: Ptr("custom_story"),
+		WorkflowID:  Ptr[int64](1210104801000000001),
+		Status:      Ptr(1),
+		Limit:       Ptr(10),
+		Page:        Ptr(1),
+		Order:       NewOrder("created", OrderByDesc),
+		Fields:      NewMulti("id", "name", "workflow_id"),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, workitemTypes, 2)
+	assert.Equal(t, "1111112222001000103", workitemTypes[0].ID)
+	assert.Equal(t, "11112222", workitemTypes[0].WorkspaceID)
+	assert.Equal(t, "用户故事", workitemTypes[0].Name)
+	assert.Equal(t, "custom_story", workitemTypes[0].EnglishName)
+	assert.Equal(t, "1210104801000000001", workitemTypes[0].WorkflowID)
+	assert.Equal(t, "任务", workitemTypes[1].Name)
+}
+
+func TestStoryService_BatchUpdateStories(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/batch_update_story", r.URL.Path)
+
+		var req BatchUpdateStoriesRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Len(t, req.Workitems, 2)
+		assert.Equal(t, int64(1111112222001000103), *req.Workitems[0].ID)
+		assert.Nil(t, req.Workitems[0].WorkspaceID)
+		assert.Equal(t, "first story", *req.Workitems[0].Name)
+		assert.Equal(t, "planning", *req.Workitems[0].Status)
+		assert.Equal(t, int64(1111112222001000104), *req.Workitems[1].ID)
+		assert.Equal(t, "second story", *req.Workitems[1].Name)
+		assert.Equal(t, "owner", *req.Workitems[1].Owner)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/batch_update_stories.json"))
+	}))
+
+	result, _, err := client.StoryService.BatchUpdateStories(ctx, &BatchUpdateStoriesRequest{
+		WorkspaceID: Ptr(11112222),
+		Workitems: []*UpdateStoryRequest{
+			{
+				ID:     Ptr[int64](1111112222001000103),
+				Name:   Ptr("first story"),
+				Status: Ptr("planning"),
+			},
+			{
+				ID:    Ptr[int64](1111112222001000104),
+				Name:  Ptr("second story"),
+				Owner: Ptr("owner"),
+			},
+		},
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, "batch update success", result.Msg)
+}
+
+func TestStoryService_UpdateStoryWorkitemType(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/change_workitem_type", r.URL.Path)
+
+		var req UpdateStoryWorkitemTypeRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, int64(1111112222001000103), *req.StoryID)
+		assert.Equal(t, int64(1111112222001000104), *req.WorkitemTypeID)
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/update_story_workitem_type.json"))
+	}))
+
+	story, _, err := client.StoryService.UpdateStoryWorkitemType(ctx, &UpdateStoryWorkitemTypeRequest{
+		StoryID:        Ptr[int64](1111112222001000103),
+		WorkitemTypeID: Ptr[int64](1111112222001000104),
+		WorkspaceID:    Ptr(11112222),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, story)
+	assert.Equal(t, "1111112222001000103", story.ID)
+	assert.Equal(t, "1111112222001000104", story.WorkitemTypeID)
+	assert.Equal(t, "用户故事", story.Name)
+	assert.Equal(t, StoryStatusPlanning, story.Status)
+}
+
+func TestStoryService_GetStorySteps(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/stories/get_story_step_list", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000103", r.URL.Query().Get("story_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_steps.json"))
+	}))
+
+	steps, _, err := client.StoryService.GetStorySteps(ctx, &GetStoryStepsRequest{
+		WorkspaceID: Ptr(11112222),
+		StoryID:     Ptr[int64](1111112222001000103),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, steps, 2)
+	assert.Equal(t, "1210104801000007813", steps[0].ID)
+	assert.Equal(t, "11112222", steps[0].WorkspaceID)
+	assert.Equal(t, "story", steps[0].EntityType)
+	assert.Equal(t, "1111112222001000103", steps[0].WorkitemID)
+	assert.Equal(t, "step_1", steps[0].Step)
+	assert.Equal(t, "0", steps[0].Status)
+	assert.Nil(t, steps[0].Begin)
+	assert.Nil(t, steps[0].Due)
+	assert.Equal(t, "3", steps[0].Effort)
+	assert.Equal(t, "2026-01-04 09:38:23", steps[0].CompleteTime)
+	assert.Equal(t, "xinweihe", steps[1].Owner)
 }
 
 func TestStoryService_GetStoryFieldsLabel(t *testing.T) {

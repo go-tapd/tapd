@@ -47,3 +47,15 @@ useful: `feat(story): add story field labels endpoint`. PRs should describe
 the user-visible change, list affected APIs/files, note test coverage, and
 link related issues. Include sample requests/responses when behavior changes
 or a new endpoint is added.
+
+<!-- project-memory:start -->
+## Project Memory
+
+Reusable project memory lives in `internal/docs/memories/`.
+
+Before non-trivial work, read `internal/docs/memories/index.md` and then open only the memory files relevant to the task.
+
+Update memories when the user requests memory maintenance or when the current task explicitly includes maintaining reusable project knowledge. If memory maintenance is outside the current task scope, recommend the update instead of editing memory files. Do not store one-off task notes, temporary debugging details, raw chat logs, secrets, credentials, or conversation-specific context.
+
+When changing memories, keep entries concise and actionable. Update `internal/docs/memories/index.md` when adding, removing, renaming, or materially changing memory files.
+<!-- project-memory:end -->

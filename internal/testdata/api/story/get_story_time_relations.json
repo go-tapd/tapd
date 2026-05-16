@@ -1,0 +1,34 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "WorkitemTimeRelation": {
+        "id": "1210104801000007813",
+        "workspace_id": "11112222",
+        "workitem_type": "story",
+        "workitem_id": "1111112222001000102",
+        "src_field": "begin",
+        "dst_workspace_id": "11112222",
+        "dst_workitem_type": "story",
+        "dst_workitem_id": "1111112222001000103",
+        "dst_field": "due",
+        "relation_type": "after"
+      }
+    },
+    {
+      "WorkitemTimeRelation": {
+        "id": "1210104801000007815",
+        "workspace_id": "11112222",
+        "workitem_type": "story",
+        "workitem_id": "1111112222001000103",
+        "src_field": "due",
+        "dst_workspace_id": "11112222",
+        "dst_workitem_type": "story",
+        "dst_workitem_id": "1111112222001000104",
+        "dst_field": "begin",
+        "relation_type": "after"
+      }
+    }
+  ],
+  "info": "success"
+}

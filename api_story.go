@@ -870,6 +870,26 @@ type (
 		Modifier    string `json:"modifier,omitempty"`     // 最后修改人
 	}
 
+	UpdateStoryCategoryRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		ID          *int64  `json:"id,omitempty"`           // [必须]需求分类ID
+		Name        *string `json:"name,omitempty"`         // 分类名称
+		Description *string `json:"description,omitempty"`  // 分类描述
+		ParentID    *int64  `json:"parent_id,omitempty"`    // 父分类ID
+	}
+
+	UpdatedStoryCategory struct {
+		ID          string  `json:"id,omitempty"`           // ID
+		WorkspaceID string  `json:"workspace_id,omitempty"` // 项目ID
+		Name        string  `json:"name,omitempty"`         // 需求分类名称
+		Description *string `json:"description,omitempty"`  // 需求分类描述
+		ParentID    string  `json:"parent_id,omitempty"`    // 父分类ID
+		Created     string  `json:"created,omitempty"`      // 创建时间
+		Modified    string  `json:"modified,omitempty"`     // 最后修改时间
+		Creator     string  `json:"creator,omitempty"`      // 创建人
+		Modifier    string  `json:"modifier,omitempty"`     // 最后修改人
+	}
+
 	GetStoryCategoriesCountRequest struct {
 		WorkspaceID *int          `url:"workspace_id,omitempty"` // [必须]项目ID
 		ID          *Multi[int64] `url:"id,omitempty"`           // ID 支持多ID查询，多个ID用逗号分隔
@@ -906,6 +926,19 @@ type (
 		Page             *int             `url:"page,omitempty"`               // 返回当前数量限制下第N页的数据，默认为1（第一页）
 		Order            *Order           `url:"order,omitempty"`              // 排序规则，规则：字段名 ASC或者DESC
 		Fields           *Multi[string]   `url:"fields,omitempty"`             // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	GetStoryChangesCountRequest struct {
+		ID            *Multi[int64]    `url:"id,omitempty"`             // 支持多ID查询
+		StoryID       *Multi[int64]    `url:"story_id,omitempty"`       // 需求id	支持多ID查询
+		WorkspaceID   *int             `url:"workspace_id,omitempty"`   // [必须]项目ID
+		Creator       *string          `url:"creator,omitempty"`        // 创建人（操作人）
+		Created       *string          `url:"created,omitempty"`        // 创建时间（变更时间）	支持时间查询
+		ChangeType    *StoreChangeType `url:"change_type,omitempty"`    // 变更类型
+		ChangeSummary *string          `url:"change_summary,omitempty"` // 需求变更描述
+		Comment       *string          `url:"comment,omitempty"`        // 评论
+		EntityType    *string          `url:"entity_type,omitempty"`    // 变更的对象类型
+		ChangeField   *string          `url:"change_field,omitempty"`   // 设置获取变更字段如（status）
 	}
 
 	StoryChange struct {
@@ -954,6 +987,125 @@ type (
 		Created     string `json:"created,omitempty"`
 	}
 
+	GetStoryTimeRelationsRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]源项目ID
+		StoryID     *int64 `url:"story_id,omitempty"`     // [必须]源需求ID
+	}
+
+	StoryTimeRelation struct {
+		ID              string `json:"id,omitempty"`                // 前后置关系ID
+		WorkspaceID     string `json:"workspace_id,omitempty"`      // 源项目ID
+		WorkitemType    string `json:"workitem_type,omitempty"`     // 业务对象类型，固定为 story
+		WorkitemID      string `json:"workitem_id,omitempty"`       // 源需求ID
+		SrcField        string `json:"src_field,omitempty"`         // 源需求被依赖的字段
+		DstWorkspaceID  string `json:"dst_workspace_id,omitempty"`  // 被依赖的项目ID
+		DstWorkitemType string `json:"dst_workitem_type,omitempty"` // 被依赖的业务对象类型，固定为 story
+		DstWorkitemID   string `json:"dst_workitem_id,omitempty"`   // 被依赖的需求ID
+		DstField        string `json:"dst_field,omitempty"`         // 被依赖的字段
+		RelationType    string `json:"relation_type,omitempty"`     // 依赖类型。before 为前置依赖，after 为后置依赖
+	}
+
+	SaveStoryTimeRelationsRequest struct {
+		WorkspaceID *int                     `json:"workspace_id,omitempty"` // [必须]项目ID
+		Relations   []*SaveStoryTimeRelation `json:"relations,omitempty"`    // [必须]需要新增或修改的关系列表
+		CurrentUser *string                  `json:"current_user,omitempty"` // [必须]执行此操作的用户 nick
+	}
+
+	SaveStoryTimeRelation struct {
+		WorkitemID    *int64  `json:"workitem_id,omitempty"`     // [必须]起点需求ID
+		DstWorkitemID *int64  `json:"dst_workitem_id,omitempty"` // [必须]终点需求ID
+		SrcField      *string `json:"src_field,omitempty"`       // [必须]起点字段，只能是 begin 或 due
+		DstField      *string `json:"dst_field,omitempty"`       // [必须]终点字段，只能是 begin 或 due
+	}
+
+	SaveStoryTimeRelationsResult struct {
+		Result bool `json:"result,omitempty"` // 是否保存成功
+	}
+
+	DeleteStoryTimeRelationsRequest struct {
+		WorkspaceID *int                       `json:"workspace_id,omitempty"` // [必须]项目ID
+		Relations   []*DeleteStoryTimeRelation `json:"relations,omitempty"`    // 按起点和终点删除的关系列表
+		RelationIDs *[]int64                   `json:"relation_ids,omitempty"` // 按关系ID删除的关系列表
+		CurrentUser *string                    `json:"current_user,omitempty"` // [必须]执行此操作的用户 nick
+	}
+
+	DeleteStoryTimeRelation struct {
+		WorkitemID    *int64 `json:"workitem_id,omitempty"`     // 起点需求ID
+		DstWorkitemID *int64 `json:"dst_workitem_id,omitempty"` // 终点需求ID
+	}
+
+	DeleteStoryTimeRelationsResult struct {
+		Num int `json:"num,omitempty"` // 实际删除的条数
+	}
+
+	GetStorySecretInfoRequest struct {
+		StoryID     *int64 `url:"story_id,omitempty"`     // [必须]需求ID
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	StorySecretInfo struct {
+		Creator              string `json:"creator,omitempty"`                // 需求创建人
+		AllowList            string `json:"allow_list,omitempty"`             // 保密需求树白名单
+		SecretRootID         string `json:"secret_root_id,omitempty"`         // 保密需求树根节点，公开时为0
+		AddParticipantFields string `json:"add_participant_fields,omitempty"` // 保密范围是否纳入参与人
+		SecretScope          string `json:"secret_scrope,omitempty"`          // 保密范围，secret 为保密，public 为公开
+	}
+
+	BatchUpdateStorySecretInfoRequest struct {
+		WorkspaceID          *int         `json:"workspace_id,omitempty"`           // [必须]项目ID
+		StoryIDList          *Enum[int64] `json:"story_id_list,omitempty"`          // [必须]需求ID列表，多个用|分隔
+		SecretScope          *string      `json:"secret_scope,omitempty"`           // [必须]保密范围，public 为公开，secret 为保密
+		AllowList            *string      `json:"allow_list,omitempty"`             // [必须]保密白名单，成员 nick 或用户组ID用;分隔
+		AddParticipantFields *string      `json:"add_participant_fields,omitempty"` // [必须]保密范围是否纳入参与人，true 或 false
+		OperationType        *int         `json:"operation_type,omitempty"`         // 操作类型，0覆盖，1新增，2删除
+		CurrentUser          *string      `json:"current_user,omitempty"`           // [必须]操作人 nick
+	}
+
+	BatchUpdateStorySecretInfoResult struct {
+		Code string `json:"code,omitempty"` // 结果码
+		Msg  string `json:"msg,omitempty"`  // 结果提示
+	}
+
+	GetStoryWorkitemTypesRequest struct {
+		ID          *Multi[int64]  `url:"id,omitempty"`           // ID，支持多ID查询
+		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
+		Name        *string        `url:"name,omitempty"`         // 需求类别名称，支持模糊匹配
+		EntityType  *string        `url:"entity_type,omitempty"`  // 类别别名
+		EnglishName *string        `url:"english_name,omitempty"` // 英文名称
+		WorkflowID  *int64         `url:"workflow_id,omitempty"`  // 工作流ID
+		Status      *int           `url:"status,omitempty"`       // 状态
+		Created     *string        `url:"created,omitempty"`      // 创建时间
+		Creator     *string        `url:"creator,omitempty"`      // 创建人
+		ModifiedBy  *string        `url:"modified_by,omitempty"`  // 最后修改人
+		Modified    *string        `url:"modified,omitempty"`     // 最后修改时间
+		Limit       *int           `url:"limit,omitempty"`        // 每页数量
+		Page        *int           `url:"page,omitempty"`         // 页码
+		Order       *Order         `url:"order,omitempty"`        // 排序规则
+		Fields      *Multi[string] `url:"fields,omitempty"`       // 返回字段列表
+	}
+
+	StoryWorkitemType struct {
+		ID             string `json:"id,omitempty"`               // 需求类别ID
+		WorkspaceID    string `json:"workspace_id,omitempty"`     // 项目ID
+		AppID          string `json:"app_id,omitempty"`           // 应用ID
+		EntityType     string `json:"entity_type,omitempty"`      // 类别别名
+		Name           string `json:"name,omitempty"`             // 需求类别名称
+		EnglishName    string `json:"english_name,omitempty"`     // 英文名称
+		Status         string `json:"status,omitempty"`           // 状态
+		Color          string `json:"color,omitempty"`            // 颜色
+		WorkflowID     string `json:"workflow_id,omitempty"`      // 工作流ID
+		ChildrenIDs    string `json:"children_ids,omitempty"`     // 子类别ID
+		ParentIDs      string `json:"parent_ids,omitempty"`       // 父类别ID
+		Icon           string `json:"icon,omitempty"`             // 图标
+		IconSmall      string `json:"icon_small,omitempty"`       // 小图标
+		Creator        string `json:"creator,omitempty"`          // 创建人
+		Created        string `json:"created,omitempty"`          // 创建时间
+		ModifiedBy     string `json:"modified_by,omitempty"`      // 最后修改人
+		Modified       string `json:"modified,omitempty"`         // 最后修改时间
+		IconViper      string `json:"icon_viper,omitempty"`       // Viper图标
+		IconSmallViper string `json:"icon_small_viper,omitempty"` // Viper小图标
+	}
+
 	GetStoryFieldsLabelRequest struct {
 		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目ID
 	}
@@ -984,8 +1136,8 @@ type (
 	}
 
 	UpdateStoryRequest struct {
-		ID                *int64         `json:"id"`                           // 必须
-		WorkspaceID       *int           `json:"workspace_id"`                 // 必须
+		ID                *int64         `json:"id,omitempty"`                 // 必须
+		WorkspaceID       *int           `json:"workspace_id,omitempty"`       // 必须
 		Name              *string        `json:"name,omitempty"`               // 标题
 		Priority          *string        `json:"priority,omitempty"`           // 优先级。
 		PriorityLabel     *PriorityLabel `json:"priority_label,omitempty"`     // 优先级。推荐使用这个字段
@@ -1226,6 +1378,44 @@ type (
 		CustomPlanField10 *string        `json:"custom_plan_field_10,omitempty"`
 	}
 
+	BatchUpdateStoriesRequest struct {
+		WorkspaceID *int                  `json:"workspace_id,omitempty"` // [必须]项目ID
+		Workitems   []*UpdateStoryRequest `json:"workitems,omitempty"`    // [必须]批量更新的需求，每次最多50条
+	}
+
+	BatchUpdateStoriesResponse struct {
+		Msg string `json:"msg,omitempty"` // 更新结果提示
+	}
+
+	UpdateStoryWorkitemTypeRequest struct {
+		StoryID        *int64 `json:"story_id,omitempty"`         // [必须]需求ID
+		WorkitemTypeID *int64 `json:"workitem_type_id,omitempty"` // [必须]目标需求类别ID
+		WorkspaceID    *int   `json:"workspace_id,omitempty"`     // [必须]项目ID
+	}
+
+	GetStoryStepsRequest struct {
+		StoryID     *int64 `url:"story_id,omitempty"`     // [必须]需求ID
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	StoryStepInfo struct {
+		ID           string  `json:"id,omitempty"`            // 节点记录ID
+		WorkspaceID  string  `json:"workspace_id,omitempty"`  // 项目ID
+		EntityType   string  `json:"entity_type,omitempty"`   // 对象类型
+		WorkitemID   string  `json:"workitem_id,omitempty"`   // 需求ID
+		Step         string  `json:"step,omitempty"`          // 节点原名
+		Status       string  `json:"status,omitempty"`        // 节点状态
+		Owner        string  `json:"owner,omitempty"`         // 节点负责人
+		Begin        *string `json:"begin,omitempty"`         // 节点预计开始
+		Due          *string `json:"due,omitempty"`           // 节点预计结束时间
+		Effort       string  `json:"effort,omitempty"`        // 节点预估工时
+		IterationID  string  `json:"iteration_id,omitempty"`  // 节点迭代
+		BeginTime    string  `json:"begin_time,omitempty"`    // 实际开始时间
+		CompleteTime string  `json:"complete_time,omitempty"` // 实际完成时间
+		TimeCost     string  `json:"time_cost,omitempty"`     // 节点停留时长
+		Completer    string  `json:"completer,omitempty"`     // 操作完成人
+	}
+
 	GetStoryTemplatesRequest struct {
 		WorkspaceID    *int `url:"workspace_id,omitempty"`     // [必须]项目ID
 		WorkitemTypeID *int `url:"workitem_type_id,omitempty"` // 需求类别ID
@@ -1346,32 +1536,70 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_changes.html
 	GetStoryChanges(ctx context.Context, request *GetStoryChangesRequest, opts ...RequestOption) ([]*StoryChange, *Response, error)
 
+	// GetStoryChangesCount 获取需求变更次数
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_changes_count.html
+	GetStoryChangesCount(ctx context.Context, request *GetStoryChangesCountRequest, opts ...RequestOption) (int, *Response, error)
+
 	// GetStoryCustomFieldsSettings 获取需求自定义字段配置
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_custom_fields_settings.html
 	GetStoryCustomFieldsSettings(ctx context.Context, request *GetStoryCustomFieldsSettingsRequest, opts ...RequestOption) ([]*StoryCustomFieldsSetting, *Response, error)
-
-	// 获取需求变更次数
 
 	// GetStoryTestCaseRelation 获取需求与测试用例关联关系
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_tcase.html
 	GetStoryTestCaseRelation(ctx context.Context, request *GetStoryTestCaseRelationRequest, opts ...RequestOption) ([]*StoryTestCaseRelation, *Response, error)
 
-	// 获取需求前后置关系
-	// 批量新增或修改需求前后置关系
-	// 批量删除需求前后置关系
-	// 获取需求保密信息
-	// 批量修改保密信息
-	// 获取需求类别
+	// GetStoryTimeRelations 获取需求前后置关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_time_relative_stories.html
+	GetStoryTimeRelations(ctx context.Context, request *GetStoryTimeRelationsRequest, opts ...RequestOption) ([]*StoryTimeRelation, *Response, error)
+
+	// SaveStoryTimeRelations 批量新增或修改需求前后置关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/save_time_relations.html
+	SaveStoryTimeRelations(ctx context.Context, request *SaveStoryTimeRelationsRequest, opts ...RequestOption) (*SaveStoryTimeRelationsResult, *Response, error)
+
+	// DeleteStoryTimeRelations 批量删除需求前后置关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/delete_time_relations.html
+	DeleteStoryTimeRelations(ctx context.Context, request *DeleteStoryTimeRelationsRequest, opts ...RequestOption) (*DeleteStoryTimeRelationsResult, *Response, error)
+
+	// GetStorySecretInfo 获取需求保密信息
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_secret_info.html
+	GetStorySecretInfo(ctx context.Context, request *GetStorySecretInfoRequest, opts ...RequestOption) (*StorySecretInfo, *Response, error)
+
+	// BatchUpdateStorySecretInfo 批量修改保密信息
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/batch_update_secret_info.html
+	BatchUpdateStorySecretInfo(ctx context.Context, request *BatchUpdateStorySecretInfoRequest, opts ...RequestOption) (*BatchUpdateStorySecretInfoResult, *Response, error)
+
+	// GetStoryWorkitemTypes 获取需求类别
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_workitem_types.html
+	GetStoryWorkitemTypes(ctx context.Context, request *GetStoryWorkitemTypesRequest, opts ...RequestOption) ([]*StoryWorkitemType, *Response, error)
 
 	// UpdateStory 更新需求
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/update_story.html
 	UpdateStory(ctx context.Context, request *UpdateStoryRequest, opts ...RequestOption) (*Story, *Response, error)
 
-	// 更新需求的需求类别
-	// 获取需求所有字段及候选值
+	// BatchUpdateStories 批量更新需求
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/batch_update_story.html
+	BatchUpdateStories(ctx context.Context, request *BatchUpdateStoriesRequest, opts ...RequestOption) (*BatchUpdateStoriesResponse, *Response, error)
+
+	// UpdateStoryWorkitemType 更新需求的需求类别
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/change_workitem_type.html
+	UpdateStoryWorkitemType(ctx context.Context, request *UpdateStoryWorkitemTypeRequest, opts ...RequestOption) (*Story, *Response, error)
+
+	// GetStorySteps 使用并行工作流的需求，获取其节点信息
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_steps.html
+	GetStorySteps(ctx context.Context, request *GetStoryStepsRequest, opts ...RequestOption) ([]*StoryStepInfo, *Response, error)
 
 	// GetStoryFieldsLabel 获取需求所有字段的中英文
 	//
@@ -1388,7 +1616,10 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_default_story_template.html
 	GetStoryTemplateFields(ctx context.Context, request *GetStoryTemplateFieldsRequest, opts ...RequestOption) ([]*StoryTemplateField, *Response, error)
 
-	// 更新需求分类
+	// UpdateStoryCategory 更新需求分类
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/update_story_category.html
+	UpdateStoryCategory(ctx context.Context, request *UpdateStoryCategoryRequest, opts ...RequestOption) (*UpdatedStoryCategory, *Response, error)
 
 	// GetRemovedStories 获取回收站中的需求
 	//
@@ -1579,6 +1810,23 @@ func (s *storyService) GetStoryChanges(
 	return changes, resp, nil
 }
 
+func (s *storyService) GetStoryChangesCount(
+	ctx context.Context, request *GetStoryChangesCountRequest, opts ...RequestOption,
+) (int, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "story_changes/count", request, opts)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var response CountResponse
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return 0, resp, err
+	}
+
+	return response.Count, resp, nil
+}
+
 func (s *storyService) GetStoryCustomFieldsSettings(
 	ctx context.Context, request *GetStoryCustomFieldsSettingsRequest, opts ...RequestOption,
 ) ([]*StoryCustomFieldsSetting, *Response, error) {
@@ -1627,6 +1875,121 @@ func (s *storyService) GetStoryTestCaseRelation(
 	return relations, resp, nil
 }
 
+func (s *storyService) GetStoryTimeRelations(
+	ctx context.Context, request *GetStoryTimeRelationsRequest, opts ...RequestOption,
+) ([]*StoryTimeRelation, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_time_relative_stories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		WorkitemTimeRelation *StoryTimeRelation `json:"WorkitemTimeRelation"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	relations := make([]*StoryTimeRelation, 0, len(items))
+	for _, item := range items {
+		relations = append(relations, item.WorkitemTimeRelation)
+	}
+
+	return relations, resp, nil
+}
+
+func (s *storyService) SaveStoryTimeRelations(
+	ctx context.Context, request *SaveStoryTimeRelationsRequest, opts ...RequestOption,
+) (*SaveStoryTimeRelationsResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/save_time_relations", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var result SaveStoryTimeRelationsResult
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &result, resp, nil
+}
+
+func (s *storyService) DeleteStoryTimeRelations(
+	ctx context.Context, request *DeleteStoryTimeRelationsRequest, opts ...RequestOption,
+) (*DeleteStoryTimeRelationsResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/delete_time_relations", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var result DeleteStoryTimeRelationsResult
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &result, resp, nil
+}
+
+func (s *storyService) GetStorySecretInfo(
+	ctx context.Context, request *GetStorySecretInfoRequest, opts ...RequestOption,
+) (*StorySecretInfo, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_secret_info", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var info StorySecretInfo
+	resp, err := s.client.Do(req, &info)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &info, resp, nil
+}
+
+func (s *storyService) BatchUpdateStorySecretInfo(
+	ctx context.Context, request *BatchUpdateStorySecretInfoRequest, opts ...RequestOption,
+) (*BatchUpdateStorySecretInfoResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/batch_update_secret_info", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var result BatchUpdateStorySecretInfoResult
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &result, resp, nil
+}
+
+func (s *storyService) GetStoryWorkitemTypes(
+	ctx context.Context, request *GetStoryWorkitemTypesRequest, opts ...RequestOption,
+) ([]*StoryWorkitemType, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workitem_types", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response []struct {
+		WorkitemType *StoryWorkitemType `json:"WorkitemType"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	workitemTypes := make([]*StoryWorkitemType, 0, len(response))
+	for _, item := range response {
+		workitemTypes = append(workitemTypes, item.WorkitemType)
+	}
+	return workitemTypes, resp, nil
+}
+
 func (s *storyService) UpdateStory(
 	ctx context.Context, request *UpdateStoryRequest, opts ...RequestOption,
 ) (*Story, *Response, error) {
@@ -1644,6 +2007,64 @@ func (s *storyService) UpdateStory(
 	}
 
 	return response.Story, resp, nil
+}
+
+func (s *storyService) BatchUpdateStories(
+	ctx context.Context, request *BatchUpdateStoriesRequest, opts ...RequestOption,
+) (*BatchUpdateStoriesResponse, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/batch_update_story", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response BatchUpdateStoriesResponse
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &response, resp, nil
+}
+
+func (s *storyService) UpdateStoryWorkitemType(
+	ctx context.Context, request *UpdateStoryWorkitemTypeRequest, opts ...RequestOption,
+) (*Story, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/change_workitem_type", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var story Story
+	resp, err := s.client.Do(req, &story)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &story, resp, nil
+}
+
+func (s *storyService) GetStorySteps(
+	ctx context.Context, request *GetStoryStepsRequest, opts ...RequestOption,
+) ([]*StoryStepInfo, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_story_step_list", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		WorkitemStepInfo *StoryStepInfo `json:"WorkitemStepInfo"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	steps := make([]*StoryStepInfo, 0, len(items))
+	for _, item := range items {
+		steps = append(steps, item.WorkitemStepInfo)
+	}
+
+	return steps, resp, nil
 }
 
 func (s *storyService) GetStoryFieldsLabel(
@@ -1717,6 +2138,25 @@ func (s *storyService) GetStoryTemplateFields(
 	}
 
 	return templates, resp, nil
+}
+
+func (s *storyService) UpdateStoryCategory(
+	ctx context.Context, request *UpdateStoryCategoryRequest, opts ...RequestOption,
+) (*UpdatedStoryCategory, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "story_categories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Category *UpdatedStoryCategory `json:"Category"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Category, resp, nil
 }
 
 func (s *storyService) GetRemovedStories(

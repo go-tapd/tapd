@@ -126,6 +126,28 @@ type (
 		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
 		Memo        *string `json:"memo,omitempty"`         // [可选]花费描述
 	}
+
+	DeleteTimesheetsRequest struct {
+		EntityType  *EntityType `json:"entity_type,omitempty"`  // [必须]对象类型，如story、task、bug等
+		EntityID    *int64      `json:"entity_id,omitempty"`    // [必须]对象ID
+		WorkspaceID *int        `json:"workspace_id,omitempty"` // [必须]项目ID
+		CostIDs     *[]int64    `json:"cost_ids,omitempty"`     // [必须]工时花费ID列表，一次最多100条
+	}
+
+	DeleteTimesheetsResponse struct {
+		Msg  string                 `json:"msg,omitempty"`  // 处理结果消息
+		Data DeleteTimesheetsResult `json:"data,omitempty"` // 删除结果明细
+	}
+
+	DeleteTimesheetsResult struct {
+		Success DeleteTimesheetsResultItem   `json:"success,omitempty"` // 删除成功明细
+		Failed  []DeleteTimesheetsResultItem `json:"failed,omitempty"`  // 删除失败明细
+	}
+
+	DeleteTimesheetsResultItem struct {
+		CostIDs []string `json:"cost_ids,omitempty"` // 工时花费ID列表
+		Msg     string   `json:"msg,omitempty"`      // 处理结果消息
+	}
 )
 
 type TimesheetService interface {
@@ -148,6 +170,11 @@ type TimesheetService interface {
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/update_timesheet.html
 	UpdateTimesheet(ctx context.Context, request *UpdateTimesheetRequest, opts ...RequestOption) (*Timesheet, *Response, error)
+
+	// DeleteTimesheets 删除工时花费
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/timesheet/delete_timesheets.html
+	DeleteTimesheets(ctx context.Context, request *DeleteTimesheetsRequest, opts ...RequestOption) (*DeleteTimesheetsResponse, *Response, error)
 }
 
 type timesheetService struct {
@@ -239,4 +266,21 @@ func (s *timesheetService) UpdateTimesheet(
 	}
 
 	return response.Timesheet, resp, nil
+}
+
+func (s *timesheetService) DeleteTimesheets(
+	ctx context.Context, request *DeleteTimesheetsRequest, opts ...RequestOption,
+) (*DeleteTimesheetsResponse, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "timesheets/delete_timesheets", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	response := new(DeleteTimesheetsResponse)
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
 }

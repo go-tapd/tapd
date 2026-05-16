@@ -1,0 +1,18 @@
+{
+  "status": 1,
+  "data": {
+    "id": "1111112222001000103",
+    "workitem_type_id": "1111112222001000104",
+    "name": "用户故事",
+    "description": "test story",
+    "workspace_id": "11112222",
+    "creator": "xinweihe",
+    "created": "2024-01-02 03:04:05",
+    "modified": "2024-01-03 03:04:05",
+    "status": "planning",
+    "owner": "owner",
+    "priority": "High",
+    "category_id": "0"
+  },
+  "info": "success"
+}
