@@ -908,6 +908,19 @@ type (
 		Fields           *Multi[string]   `url:"fields,omitempty"`             // 设置获取的字段，多个字段间以','逗号隔开
 	}
 
+	GetStoryChangesCountRequest struct {
+		ID            *Multi[int64]    `url:"id,omitempty"`             // 支持多ID查询
+		StoryID       *Multi[int64]    `url:"story_id,omitempty"`       // 需求id	支持多ID查询
+		WorkspaceID   *int             `url:"workspace_id,omitempty"`   // [必须]项目ID
+		Creator       *string          `url:"creator,omitempty"`        // 创建人（操作人）
+		Created       *string          `url:"created,omitempty"`        // 创建时间（变更时间）	支持时间查询
+		ChangeType    *StoreChangeType `url:"change_type,omitempty"`    // 变更类型
+		ChangeSummary *string          `url:"change_summary,omitempty"` // 需求变更描述
+		Comment       *string          `url:"comment,omitempty"`        // 评论
+		EntityType    *string          `url:"entity_type,omitempty"`    // 变更的对象类型
+		ChangeField   *string          `url:"change_field,omitempty"`   // 设置获取变更字段如（status）
+	}
+
 	StoryChange struct {
 		ID             string          `json:"id,omitempty"`
 		WorkspaceID    string          `json:"workspace_id,omitempty"`
@@ -1346,12 +1359,15 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_changes.html
 	GetStoryChanges(ctx context.Context, request *GetStoryChangesRequest, opts ...RequestOption) ([]*StoryChange, *Response, error)
 
+	// GetStoryChangesCount 获取需求变更次数
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_changes_count.html
+	GetStoryChangesCount(ctx context.Context, request *GetStoryChangesCountRequest, opts ...RequestOption) (int, *Response, error)
+
 	// GetStoryCustomFieldsSettings 获取需求自定义字段配置
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_custom_fields_settings.html
 	GetStoryCustomFieldsSettings(ctx context.Context, request *GetStoryCustomFieldsSettingsRequest, opts ...RequestOption) ([]*StoryCustomFieldsSetting, *Response, error)
-
-	// 获取需求变更次数
 
 	// GetStoryTestCaseRelation 获取需求与测试用例关联关系
 	//
@@ -1577,6 +1593,23 @@ func (s *storyService) GetStoryChanges(
 	}
 
 	return changes, resp, nil
+}
+
+func (s *storyService) GetStoryChangesCount(
+	ctx context.Context, request *GetStoryChangesCountRequest, opts ...RequestOption,
+) (int, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "story_changes/count", request, opts)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	var response CountResponse
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return 0, resp, err
+	}
+
+	return response.Count, resp, nil
 }
 
 func (s *storyService) GetStoryCustomFieldsSettings(

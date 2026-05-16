@@ -145,6 +145,26 @@ func TestStoryService_GetStoryChanges(t *testing.T) {
 	assert.Equal(t, "标题", storyChanges[0].FieldChanges[0].FieldLabel)
 }
 
+func TestStoryService_GetStoryChangesCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/story_changes/count", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000103,1111112222001000108", r.URL.Query().Get("story_id"))
+		assert.Equal(t, "TAPD", r.URL.Query().Get("creator"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_changes_count.json"))
+	}))
+
+	count, _, err := client.StoryService.GetStoryChangesCount(ctx, &GetStoryChangesCountRequest{
+		StoryID:     NewMulti[int64](1111112222001000103, 1111112222001000108),
+		WorkspaceID: Ptr(11112222),
+		Creator:     Ptr("TAPD"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 23, count)
+}
+
 func TestStoryService_GetStoryCustomFieldsSettings(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
