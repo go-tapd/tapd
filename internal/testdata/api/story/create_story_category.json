@@ -1,0 +1,17 @@
+{
+  "status": 1,
+  "data": {
+    "Category": {
+      "id": "1111112222001000056",
+      "workspace_id": "11112222",
+      "name": "产品需求",
+      "description": "产品需求描述",
+      "parent_id": "0",
+      "modified": "2025-07-08 15:22:49",
+      "created": "2025-06-16 16:20:51",
+      "creator": "xinweihe",
+      "modifier": "xinweihe"
+    }
+  },
+  "info": "success"
+}

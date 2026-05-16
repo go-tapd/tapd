@@ -594,6 +594,32 @@ type (
 		Label           *string        `json:"label,omitempty"`            // 标签，标签不存在时将自动创建，多个以英文坚线分格
 	}
 
+	CopyStoryRequest struct {
+		WorkspaceID       *int           `json:"workspace_id,omitempty"`         // [必须]源项目ID
+		SrcStoryID        *int64         `json:"src_story_id,omitempty"`         // [必须]源需求ID
+		DstWorkspaceID    *int           `json:"dst_workspace_id,omitempty"`     // [必须]目标项目ID
+		SyncFields        *Multi[string] `json:"sync_fields,omitempty"`          // 需要同步的字段，多个字段以逗号分隔
+		DstWorkitemTypeID *int64         `json:"dst_workitem_type_id,omitempty"` // 目标需求类别ID
+		NewCreator        *string        `json:"new_creator,omitempty"`          // 新需求创建人
+		NewStatus         *StoryStatus   `json:"new_status,omitempty"`           // 新需求状态
+	}
+
+	GetStoryLinkStoriesRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		StoryID     *int64 `url:"story_id,omitempty"`     // [必须]需求ID
+	}
+
+	StoryLinkRelation struct {
+		Type              string `json:"type,omitempty"`                // 关系类型
+		ID                string `json:"id,omitempty"`                  // 关联的需求ID
+		StoryID           string `json:"story_id,omitempty"`            // 原需求ID
+		WorkspaceID       string `json:"workspace_id,omitempty"`        // 项目ID
+		ActAs             string `json:"actas,omitempty"`               // 角色
+		Created           string `json:"created,omitempty"`             // 创建时间
+		Modified          string `json:"modified,omitempty"`            // 最后修改时间
+		LinkedWorkspaceID int    `json:"linked_workspace_id,omitempty"` // 关联项目ID
+	}
+
 	GetStoriesCountRequest struct {
 		ID                *Multi[int64]  `url:"id,omitempty"`               // ID	支持多ID查询,多个ID用逗号分隔
 		Name              *string        `url:"name,omitempty"`             // 标题	支持模糊匹配
@@ -844,6 +870,17 @@ type (
 		CustomPlanField10 *string        `url:"custom_plan_field_10,omitempty"`
 	}
 
+	GetSecretStoriesRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		Limit       *int   `url:"limit,omitempty"`        // 设置返回数量限制，默认为30，最大取200
+		Page        *int   `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1（第一页）
+		Order       *Order `url:"order,omitempty"`        // 排序规则，规则：字段名 ASC或者DESC
+	}
+
+	GetSecretStoriesCountRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
 	GetStoryCategoriesRequest struct {
 		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
 		ID          *Multi[int64]  `url:"id,omitempty"`           // ID 支持多ID查询，多个ID用逗号分隔
@@ -856,6 +893,13 @@ type (
 		Page        *int           `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1（第一页）
 		Order       *Order         `url:"order,omitempty"`        //nolint:lll // 排序规则，规则：字段名 ASC或者DESC，然后 urlencode	如按创建时间逆序：order=created%20desc
 		Fields      *Multi[string] `url:"fields,omitempty"`       // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
+	CreateStoryCategoryRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		Name        *string `json:"name,omitempty"`         // [必须]需求分类名称
+		Description *string `json:"description,omitempty"`  // 需求分类描述
+		ParentID    *int64  `json:"parent_id,omitempty"`    // 父分类ID
 	}
 
 	StoryCategory struct {
@@ -1480,6 +1524,68 @@ type (
 		BugID       string `json:"bug_id,omitempty"`
 	}
 
+	RemoveStoryBugRelationRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		StoryID     *int64  `json:"story_id,omitempty"`     // [必须]需求ID
+		BugID       *int64  `json:"bug_id,omitempty"`       // [必须]缺陷ID
+		CurrentUser *string `json:"current_user,omitempty"` // 操作人
+	}
+
+	RemoveStoryBugRelationResult struct {
+		Success bool `json:"success,omitempty"` // 是否解除成功
+	}
+
+	UpdateStoryParentRequest struct {
+		WorkspaceID *int   `json:"workspace_id,omitempty"` // [必须]项目ID
+		StoryID     *int64 `json:"story_id,omitempty"`     // [必须]需求ID
+		ParentID    *int64 `json:"parent_id,omitempty"`    // [必须]父需求ID
+	}
+
+	CreateStoryBugRelationRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		SourceType  *string `json:"source_type,omitempty"`  // [必须]源对象类型，story 或 bug
+		SourceID    *int64  `json:"source_id,omitempty"`    // [必须]源对象ID
+		TargetType  *string `json:"target_type,omitempty"`  // [必须]目标对象类型，story 或 bug
+		TargetID    *int64  `json:"target_id,omitempty"`    // [必须]目标对象ID
+	}
+
+	StoryBugRelation struct {
+		ID          string `json:"id,omitempty"`           // 主键ID
+		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
+		SourceType  string `json:"source_type,omitempty"`  // 源对象类型
+		SourceID    string `json:"source_id,omitempty"`    // 源对象ID
+		TargetType  string `json:"target_type,omitempty"`  // 目标对象类型
+		TargetID    string `json:"target_id,omitempty"`    // 目标对象ID
+		Created     string `json:"created,omitempty"`      // 创建时间
+		Modified    string `json:"modified,omitempty"`     // 最后修改时间
+	}
+
+	CreateStoryTestCaseRelationRequest struct {
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		StoryID     *int64        `json:"story_id,omitempty"`     // [必须]需求ID
+		TestCaseID  *Multi[int64] `json:"tcase_id,omitempty"`     // [必须]测试用例ID，支持多ID，英文逗号分隔，不超过20个
+	}
+
+	CreateStoryTestCaseRelationResult struct {
+		SuccessID []string `json:"success_id,omitempty"` // 成功关联的测试用例ID
+	}
+
+	GetStoriesByViewConfIDRequest struct {
+		ViewConfID  *int64  `url:"view_conf_id,omitempty"` // [必须]视图ID
+		CurrentUser *string `url:"current_user,omitempty"` // 当前登录用户视图
+		GetStoriesRequest
+	}
+
+	CreateStoryLinkRelationRequest struct {
+		WorkspaceID   *int   `json:"workspace_id,omitempty"`    // [必须]项目ID
+		SourceStoryID *int64 `json:"src_story_id,omitempty"`    // [必须]源需求ID
+		TargetStoryID *int64 `json:"target_story_id,omitempty"` // [必须]目标需求ID
+	}
+
+	CreateStoryLinkRelationResult struct {
+		Success int `json:"success,omitempty"` // 是否创建成功
+	}
+
 	GetConvertStoryIDsToQueryTokenRequest struct {
 		WorkspaceID *int          `json:"workspace_id,omitempty"` // 项目ID
 		StoryIDs    *Multi[int64] `json:"ids,omitempty"`          // 需求ID
@@ -1497,9 +1603,20 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/add_story.html
 	CreateStory(ctx context.Context, request *CreateStoryRequest, opts ...RequestOption) (*Story, *Response, error)
 
-	// 创建需求分类
-	// 复制需求
-	// 获取需求与其它需求的所有关联关系
+	// CreateStoryCategory 创建需求分类
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/add_story_category.html
+	CreateStoryCategory(ctx context.Context, request *CreateStoryCategoryRequest, opts ...RequestOption) (*StoryCategory, *Response, error)
+
+	// CopyStory 复制需求
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/copy_story.html
+	CopyStory(ctx context.Context, request *CopyStoryRequest, opts ...RequestOption) (*Story, *Response, error)
+
+	// GetStoryLinkStories 获取需求与其它需求的所有关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_link_stories.html
+	GetStoryLinkStories(ctx context.Context, request *GetStoryLinkStoriesRequest, opts ...RequestOption) ([]*StoryLinkRelation, *Response, error)
 
 	// GetStories 获取需求
 	//
@@ -1511,8 +1628,15 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_stories_count.html
 	GetStoriesCount(ctx context.Context, request *GetStoriesCountRequest, opts ...RequestOption) (int, *Response, error)
 
-	// 获取保密需求
-	// 获取保密需求数量
+	// GetSecretStories 获取保密需求
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_secret_stories.html
+	GetSecretStories(ctx context.Context, request *GetSecretStoriesRequest, opts ...RequestOption) ([]string, *Response, error)
+
+	// GetSecretStoriesCount 获取保密需求数量
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_secret_stories_count.html
+	GetSecretStoriesCount(ctx context.Context, request *GetSecretStoriesCountRequest, opts ...RequestOption) (int, *Response, error)
 
 	// GetStoryCategories 获取需求分类
 	//
@@ -1631,11 +1755,31 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_related_bugs.html
 	GetStoryRelatedBugs(ctx context.Context, request *GetStoryRelatedBugsRequest, opts ...RequestOption) ([]*StoryRelatedBug, *Response, error)
 
-	// 解除需求缺陷关联关系
-	// 更新父需求
-	// 创建需求与缺陷关联关系
-	// 创建需求与测试用例关联关系
-	// 获取视图对应的需求列表
+	// RemoveStoryBugRelation 解除需求缺陷关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/remove_story_bug_raletions.html
+	RemoveStoryBugRelation(ctx context.Context, request *RemoveStoryBugRelationRequest, opts ...RequestOption) (*RemoveStoryBugRelationResult, *Response, error)
+
+	// UpdateStoryParent 更新父需求
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/update_story_parent.html
+	UpdateStoryParent(ctx context.Context, request *UpdateStoryParentRequest, opts ...RequestOption) (*Story, *Response, error)
+
+	// CreateStoryBugRelation 创建需求与缺陷关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/create_story_bug.html
+	CreateStoryBugRelation(ctx context.Context, request *CreateStoryBugRelationRequest, opts ...RequestOption) (*StoryBugRelation, *Response, error)
+
+	// CreateStoryTestCaseRelation 创建需求与测试用例关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/create_story_tcase.html
+	CreateStoryTestCaseRelation(ctx context.Context, request *CreateStoryTestCaseRelationRequest, opts ...RequestOption) (*CreateStoryTestCaseRelationResult, *Response, error)
+
+	// GetStoriesByViewConfID 获取视图对应的需求列表
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_stories_by_view_conf_id.html
+	GetStoriesByViewConfID(ctx context.Context, request *GetStoriesByViewConfIDRequest, opts ...RequestOption) ([]*Story, *Response, error)
+
 	// 转换需求ID成列表queryToken
 
 	// GetConvertStoryIDsToQueryToken 转换需求ID成列表queryToken
@@ -1643,7 +1787,10 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/story_ids_to_query_token.html
 	GetConvertStoryIDsToQueryToken(ctx context.Context, request *GetConvertStoryIDsToQueryTokenRequest, opts ...RequestOption) (*GetConvertStoryIDsToQueryTokenResponse, *Response, error)
 
-	// 创建需求关联关系
+	// CreateStoryLinkRelation 创建需求关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/add_story_link_relations.html
+	CreateStoryLinkRelation(ctx context.Context, request *CreateStoryLinkRelationRequest, opts ...RequestOption) (*CreateStoryLinkRelationResult, *Response, error)
 }
 
 type storyService struct {
@@ -1675,6 +1822,61 @@ func (s *storyService) CreateStory(
 	}
 
 	return response.Story, resp, nil
+}
+
+func (s *storyService) CreateStoryCategory(
+	ctx context.Context, request *CreateStoryCategoryRequest, opts ...RequestOption,
+) (*StoryCategory, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "story_categories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Category *StoryCategory `json:"Category"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Category, resp, nil
+}
+
+func (s *storyService) CopyStory(
+	ctx context.Context, request *CopyStoryRequest, opts ...RequestOption,
+) (*Story, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/copy_story", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Story *Story `json:"Story"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Story, resp, nil
+}
+
+func (s *storyService) GetStoryLinkStories(
+	ctx context.Context, request *GetStoryLinkStoriesRequest, opts ...RequestOption,
+) ([]*StoryLinkRelation, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_link_stories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var relations []*StoryLinkRelation
+	resp, err := s.client.Do(req, &relations)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return relations, resp, nil
 }
 
 func (s *storyService) GetStories(
@@ -1712,6 +1914,42 @@ func (s *storyService) GetStoriesCount(
 	var response struct {
 		Count int `json:"count,omitempty"`
 	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return 0, resp, err
+	}
+
+	return response.Count, resp, nil
+}
+
+func (s *storyService) GetSecretStories(
+	ctx context.Context, request *GetSecretStoriesRequest, opts ...RequestOption,
+) ([]string, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "secret_stories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		List []string `json:"list,omitempty"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.List, resp, nil
+}
+
+func (s *storyService) GetSecretStoriesCount(
+	ctx context.Context, request *GetSecretStoriesCountRequest, opts ...RequestOption,
+) (int, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "secret_stories/count", request, opts)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	response := new(CountResponse)
 	resp, err := s.client.Do(req, &response)
 	if err != nil {
 		return 0, resp, err
@@ -2200,6 +2438,107 @@ func (s *storyService) GetStoryRelatedBugs(
 	return bugs, resp, nil
 }
 
+func (s *storyService) RemoveStoryBugRelation(
+	ctx context.Context, request *RemoveStoryBugRelationRequest, opts ...RequestOption,
+) (*RemoveStoryBugRelationResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/remove_story_bug_raletions", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(RemoveStoryBugRelationResult)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return result, resp, nil
+}
+
+func (s *storyService) UpdateStoryParent(
+	ctx context.Context, request *UpdateStoryParentRequest, opts ...RequestOption,
+) (*Story, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/update_story_parent", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Story *Story `json:"Story"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Story, resp, nil
+}
+
+func (s *storyService) CreateStoryBugRelation(
+	ctx context.Context, request *CreateStoryBugRelationRequest, opts ...RequestOption,
+) (*StoryBugRelation, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "relations", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Relation *StoryBugRelation `json:"Relation"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Relation, resp, nil
+}
+
+func (s *storyService) CreateStoryTestCaseRelation(
+	ctx context.Context, request *CreateStoryTestCaseRelationRequest, opts ...RequestOption,
+) (*CreateStoryTestCaseRelationResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/add_story_tcase", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(CreateStoryTestCaseRelationResult)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return result, resp, nil
+}
+
+func (s *storyService) GetStoriesByViewConfID(
+	ctx context.Context, request *GetStoriesByViewConfIDRequest, opts ...RequestOption,
+) ([]*Story, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_stories_by_view_conf_id", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		Story      *Story `json:"Story"`
+		StoryLower *Story `json:"story"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	stories := make([]*Story, 0, len(items))
+	for _, item := range items {
+		if item.Story != nil {
+			stories = append(stories, item.Story)
+			continue
+		}
+		stories = append(stories, item.StoryLower)
+	}
+
+	return stories, resp, nil
+}
+
 func (s *storyService) GetConvertStoryIDsToQueryToken(
 	ctx context.Context, request *GetConvertStoryIDsToQueryTokenRequest, opts ...RequestOption,
 ) (*GetConvertStoryIDsToQueryTokenResponse, *Response, error) {
@@ -2215,4 +2554,21 @@ func (s *storyService) GetConvertStoryIDsToQueryToken(
 	}
 
 	return response, resp, nil
+}
+
+func (s *storyService) CreateStoryLinkRelation(
+	ctx context.Context, request *CreateStoryLinkRelationRequest, opts ...RequestOption,
+) (*CreateStoryLinkRelationResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/add_story_link_relations", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(CreateStoryLinkRelationResult)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return result, resp, nil
 }
