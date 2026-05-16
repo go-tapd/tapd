@@ -176,10 +176,10 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
 
 ### Wiki
 
-- [ ] 创建 wiki
-- [ ] 获取 wiki
-- [ ] 获取 Wiki 数量
-- [ ] 更新 wiki
+- [x] 创建 wiki —— AI 实现，未人工验证
+- [x] 获取 wiki —— AI 实现，未人工验证
+- [x] 获取 Wiki 数量 —— AI 实现，未人工验证
+- [x] 更新 wiki —— AI 实现，未人工验证
 - [ ] 获取wiki drawio数据
 - [ ] 获取wiki关注人数据
 - [ ] 获取wiki关注人数量
