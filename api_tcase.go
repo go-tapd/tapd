@@ -236,6 +236,27 @@ type (
 		Executor    *string       `json:"executor,omitempty"`     // 执行人
 		Assignee    *string       `json:"assignee,omitempty"`     // 负责人
 	}
+
+	CreateTestPlanStoryRelationRequest struct {
+		PlanID      *int64        `json:"plan_id,omitempty"`      // [必须]测试计划ID
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		StoryIDs    *Multi[int64] `json:"story_ids,omitempty"`    // [必须]需求ID，多个使用英文逗号分隔
+		Creator     *string       `json:"creator,omitempty"`      // [必须]创建人
+	}
+
+	CreateTestPlanTestCaseRelationRequest struct {
+		TestPlanID  *int64        `json:"test_plan_id,omitempty"` // [必须]测试计划ID
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		TestCaseIDs *Multi[int64] `json:"tcase_ids,omitempty"`    // [必须]测试用例ID，多个使用英文逗号分隔
+		Creator     *string       `json:"creator,omitempty"`      // [必须]创建人
+	}
+
+	DeleteTestPlanStoryRelationRequest struct {
+		PlanID      *int64        `json:"plan_id,omitempty"`      // [必须]测试计划ID
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		StoryIDs    *Multi[int64] `json:"story_ids,omitempty"`    // [必须]需求ID，多个使用英文逗号分隔
+		Creator     *string       `json:"creator,omitempty"`      // [必须]操作人
+	}
 )
 
 // TestService 测试
@@ -270,6 +291,27 @@ type TestService interface {
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/assign_tcase_instance.html
 	AssignTestCase(ctx context.Context, request *AssignTestCaseRequest, opts ...RequestOption) (bool, *Response, error)
+
+	// CreateTestPlanStoryRelation 创建测试计划和需求关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/create_story_relation.html
+	CreateTestPlanStoryRelation(
+		ctx context.Context, request *CreateTestPlanStoryRelationRequest, opts ...RequestOption,
+	) (bool, *Response, error)
+
+	// CreateTestPlanTestCaseRelation 创建测试计划和测试用例关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/create_tcase_relation.html
+	CreateTestPlanTestCaseRelation(
+		ctx context.Context, request *CreateTestPlanTestCaseRelationRequest, opts ...RequestOption,
+	) (bool, *Response, error)
+
+	// DeleteTestPlanStoryRelation 解除测试计划和需求关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/tcase/delete_story_relation.html
+	DeleteTestPlanStoryRelation(
+		ctx context.Context, request *DeleteTestPlanStoryRelationRequest, opts ...RequestOption,
+	) (bool, *Response, error)
 }
 
 type testService struct {
@@ -369,6 +411,54 @@ func (s *testService) AssignTestCase(
 	ctx context.Context, request *AssignTestCaseRequest, opts ...RequestOption,
 ) (bool, *Response, error) {
 	req, err := s.client.NewRequest(ctx, http.MethodPost, "tcase_instance/assign", request, opts)
+	if err != nil {
+		return false, nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return false, resp, err
+	}
+
+	return true, resp, nil
+}
+
+func (s *testService) CreateTestPlanStoryRelation(
+	ctx context.Context, request *CreateTestPlanStoryRelationRequest, opts ...RequestOption,
+) (bool, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "test_plans/create_story_relation", request, opts)
+	if err != nil {
+		return false, nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return false, resp, err
+	}
+
+	return true, resp, nil
+}
+
+func (s *testService) CreateTestPlanTestCaseRelation(
+	ctx context.Context, request *CreateTestPlanTestCaseRelationRequest, opts ...RequestOption,
+) (bool, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "test_plans/create_tcase_relation", request, opts)
+	if err != nil {
+		return false, nil, err
+	}
+
+	resp, err := s.client.Do(req, nil)
+	if err != nil {
+		return false, resp, err
+	}
+
+	return true, resp, nil
+}
+
+func (s *testService) DeleteTestPlanStoryRelation(
+	ctx context.Context, request *DeleteTestPlanStoryRelationRequest, opts ...RequestOption,
+) (bool, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "test_plans/delete_story_relation", request, opts)
 	if err != nil {
 		return false, nil, err
 	}

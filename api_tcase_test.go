@@ -214,3 +214,93 @@ func TestTestService_AssignTestCase(t *testing.T) {
 	assert.NoError(t, err)
 	assert.True(t, ok)
 }
+
+func TestTestService_CreateTestPlanStoryRelation(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/test_plans/create_story_relation", r.URL.Path)
+
+		var req struct {
+			PlanID      int64  `json:"plan_id"`
+			WorkspaceID int    `json:"workspace_id"`
+			StoryIDs    string `json:"story_ids"`
+			Creator     string `json:"creator"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, int64(1010158231077224799), req.PlanID)
+		assert.Equal(t, 10158231, req.WorkspaceID)
+		assert.Equal(t, "123123123,123123124", req.StoryIDs)
+		assert.Equal(t, "peter", req.Creator)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/create_test_plan_story_relation.json"))
+	}))
+
+	ok, _, err := client.TestService.CreateTestPlanStoryRelation(ctx, &CreateTestPlanStoryRelationRequest{
+		PlanID:      Ptr[int64](1010158231077224799),
+		WorkspaceID: Ptr(10158231),
+		StoryIDs:    NewMulti[int64](123123123, 123123124),
+		Creator:     Ptr("peter"),
+	})
+	assert.NoError(t, err)
+	assert.True(t, ok)
+}
+
+func TestTestService_CreateTestPlanTestCaseRelation(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/test_plans/create_tcase_relation", r.URL.Path)
+
+		var req struct {
+			TestPlanID  int64  `json:"test_plan_id"`
+			WorkspaceID int    `json:"workspace_id"`
+			TestCaseIDs string `json:"tcase_ids"`
+			Creator     string `json:"creator"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, int64(1010158231077224799), req.TestPlanID)
+		assert.Equal(t, 10158231, req.WorkspaceID)
+		assert.Equal(t, "1020357849077231603,1020357849077231393", req.TestCaseIDs)
+		assert.Equal(t, "peter", req.Creator)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/create_test_plan_test_case_relation.json"))
+	}))
+
+	ok, _, err := client.TestService.CreateTestPlanTestCaseRelation(ctx, &CreateTestPlanTestCaseRelationRequest{
+		TestPlanID:  Ptr[int64](1010158231077224799),
+		WorkspaceID: Ptr(10158231),
+		TestCaseIDs: NewMulti[int64](1020357849077231603, 1020357849077231393),
+		Creator:     Ptr("peter"),
+	})
+	assert.NoError(t, err)
+	assert.True(t, ok)
+}
+
+func TestTestService_DeleteTestPlanStoryRelation(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/test_plans/delete_story_relation", r.URL.Path)
+
+		var req struct {
+			PlanID      int64  `json:"plan_id"`
+			WorkspaceID int    `json:"workspace_id"`
+			StoryIDs    string `json:"story_ids"`
+			Creator     string `json:"creator"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, int64(1010158231077224799), req.PlanID)
+		assert.Equal(t, 10158231, req.WorkspaceID)
+		assert.Equal(t, "123123123,123123124", req.StoryIDs)
+		assert.Equal(t, "peter", req.Creator)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/tcase/delete_test_plan_story_relation.json"))
+	}))
+
+	ok, _, err := client.TestService.DeleteTestPlanStoryRelation(ctx, &DeleteTestPlanStoryRelationRequest{
+		PlanID:      Ptr[int64](1010158231077224799),
+		WorkspaceID: Ptr(10158231),
+		StoryIDs:    NewMulti[int64](123123123, 123123124),
+		Creator:     Ptr("peter"),
+	})
+	assert.NoError(t, err)
+	assert.True(t, ok)
+}
