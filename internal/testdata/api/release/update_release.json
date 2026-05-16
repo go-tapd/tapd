@@ -1,0 +1,18 @@
+{
+  "status": 1,
+  "data": {
+    "Release": {
+      "id": "1010104801100003081",
+      "workspace_id": "10104801",
+      "name": "test2",
+      "description": "内容被更新",
+      "startdate": "2020-10-20",
+      "enddate": "2020-11-20",
+      "creator": "dev",
+      "created": "2020-10-27 11:09:14",
+      "modified": "2020-10-27 11:24:48",
+      "status": "open"
+    }
+  },
+  "info": "success"
+}
