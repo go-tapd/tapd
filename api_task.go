@@ -552,7 +552,7 @@ type (
 	}
 
 	TaskFieldsInfoOption struct {
-		Value string `json:"key,omitempty"`   // 值
+		Key   string `json:"key,omitempty"`   // 英文Key
 		Label string `json:"label,omitempty"` // 中文名称
 	}
 
@@ -921,7 +921,7 @@ func (s *taskService) GetTaskFieldsInfo(
 				for key, value := range os {
 					if v, ok2 := value.(string); ok2 {
 						options = append(options, TaskFieldsInfoOption{
-							Value: key,
+							Key:   key,
 							Label: v,
 						})
 					}
