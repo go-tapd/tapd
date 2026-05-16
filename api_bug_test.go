@@ -180,6 +180,94 @@ func TestBugService_GetBugLinkBugs(t *testing.T) {
 	assert.Equal(t, "1162187798001000534", relations[0].LinkID)
 }
 
+func TestBugService_GetBugTemplates(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bugs/template_list", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bug_templates.json"))
+	}))
+
+	templates, _, err := client.BugService.GetBugTemplates(ctx, &GetBugTemplatesRequest{
+		WorkspaceID: Ptr(11112222),
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, templates)
+	assert.Equal(t, "1111222233300068639", templates[0].ID)
+	assert.Equal(t, "创建模板", templates[0].Name)
+	assert.Equal(t, "AA", templates[0].Description)
+	assert.Equal(t, "1", templates[0].Sort)
+	assert.Equal(t, "0", templates[0].Default)
+	assert.Equal(t, "v_xuanfang", templates[0].Creator)
+	assert.Equal(t, "1", templates[0].EditorType)
+}
+
+func TestBugService_GetBugTemplateFields(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bugs/get_default_bug_template", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111222233300068639", r.URL.Query().Get("template_id"))
+		assert.Equal(t, "1", r.URL.Query().Get("use_priority_label"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bug_template_fields.json"))
+	}))
+
+	fields, _, err := client.BugService.GetBugTemplateFields(ctx, &GetBugTemplateFieldsRequest{
+		WorkspaceID:      Ptr(11112222),
+		TemplateID:       Ptr[int64](1111222233300068639),
+		UsePriorityLabel: Ptr(1),
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, fields)
+	assert.Equal(t, "1111222233300778831", fields[0].ID)
+	assert.Equal(t, "11112222", fields[0].WorkspaceID)
+	assert.Equal(t, "bug", fields[0].Type)
+	assert.Equal(t, "1111222233300068639", fields[0].TemplateID)
+	assert.Equal(t, "title", fields[0].Field)
+	assert.Equal(t, "", fields[0].Value)
+	assert.Equal(t, "1", fields[0].Required)
+	assert.Equal(t, "0", fields[0].Sort)
+}
+
+func TestBugService_GetBugsByViewConfID(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bugs/get_bugs_by_view_conf_id", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111122233301000001", r.URL.Query().Get("view_conf_id"))
+		assert.Equal(t, "xinweihe", r.URL.Query().Get("current_user"))
+		assert.Equal(t, "new", r.URL.Query().Get("status"))
+		assert.Equal(t, "20", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "id,title,status", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bugs_by_view_conf_id.json"))
+	}))
+
+	bugs, _, err := client.BugService.GetBugsByViewConfID(ctx, &GetBugsByViewConfIDRequest{
+		ViewConfID:  Ptr[int64](1111122233301000001),
+		CurrentUser: Ptr("xinweihe"),
+		GetBugsRequest: GetBugsRequest{
+			WorkspaceID: Ptr(11112222),
+			Status:      NewEnum("new"),
+			Limit:       Ptr(20),
+			Page:        Ptr(1),
+			Fields:      NewMulti("id", "title", "status"),
+		},
+	})
+	require.NoError(t, err)
+	require.Len(t, bugs, 2)
+	assert.Equal(t, "11111222333084955735", bugs[0].ID)
+	assert.Equal(t, "视图缺陷一", bugs[0].Title)
+	assert.Equal(t, "new", bugs[0].Status)
+	assert.Equal(t, "11111222333083011055", bugs[1].ID)
+}
+
 func TestBugService_GetBugs(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

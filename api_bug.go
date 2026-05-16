@@ -366,6 +366,44 @@ type (
 		LinkID            string `json:"link_id,omitempty"`             // 缺陷之间关联关系link的ID
 	}
 
+	GetBugTemplatesRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	BugTemplate struct {
+		ID          string `json:"id,omitempty"`          // 模板ID
+		Name        string `json:"name,omitempty"`        // 标题
+		Description string `json:"description,omitempty"` // 详细描述
+		Sort        string `json:"sort,omitempty"`        // 排序
+		Default     string `json:"default,omitempty"`     // 是否启用
+		Creator     string `json:"creator,omitempty"`     // 提交人
+		EditorType  string `json:"editor_type,omitempty"` // 编辑器类型
+	}
+
+	GetBugTemplateFieldsRequest struct {
+		WorkspaceID      *int   `url:"workspace_id,omitempty"`       // [必须]项目ID
+		TemplateID       *int64 `url:"template_id,omitempty"`        // [必须]模板ID
+		UsePriorityLabel *int   `url:"use_priority_label,omitempty"` // 是否替换优先级字段为 priority_label，取值0和1
+	}
+
+	BugTemplateField struct {
+		ID           string `json:"id,omitempty"`           // 模板字段ID
+		WorkspaceID  string `json:"workspace_id,omitempty"` // 项目ID
+		Type         string `json:"type,omitempty"`         // 类型
+		TemplateID   string `json:"template_id,omitempty"`  // 模板ID
+		Field        string `json:"field,omitempty"`        // 字段名称
+		Value        string `json:"value,omitempty"`        // 默认值
+		Required     string `json:"required,omitempty"`     // 是否必填
+		Sort         string `json:"sort,omitempty"`         // 排序
+		LinkageRules string `json:"linkage_rules,omitempty"`
+	}
+
+	GetBugsByViewConfIDRequest struct {
+		ViewConfID  *int64  `url:"view_conf_id,omitempty"` // [必须]视图ID
+		CurrentUser *string `url:"current_user,omitempty"` // 当前登录用户视图
+		GetBugsRequest
+	}
+
 	GetBugsRequest struct {
 		ID                *Multi[int64]      `url:"id,omitempty"`               // ID 支持多ID查询
 		Title             *string            `url:"title,omitempty"`            // 标题 支持模糊匹配
@@ -1067,9 +1105,21 @@ type BugService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_link_bugs.html
 	GetBugLinkBugs(ctx context.Context, request *GetBugLinkBugsRequest, opts ...RequestOption) ([]*BugLinkRelation, *Response, error)
 
-	// 获取缺陷模板列表
-	// 获取缺陷模板字段
-	// 获取视图对应的缺陷列表
+	// GetBugTemplates 获取缺陷模板列表
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bug_template_list.html
+	GetBugTemplates(ctx context.Context, request *GetBugTemplatesRequest, opts ...RequestOption) ([]*BugTemplate, *Response, error)
+
+	// GetBugTemplateFields 获取缺陷模板字段
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_default_bug_template.html
+	GetBugTemplateFields(ctx context.Context, request *GetBugTemplateFieldsRequest, opts ...RequestOption) ([]*BugTemplateField, *Response, error)
+
+	// GetBugsByViewConfID 获取视图对应的缺陷列表
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bugs_by_view_conf_id.html
+	GetBugsByViewConfID(ctx context.Context, request *GetBugsByViewConfIDRequest, opts ...RequestOption) ([]*Bug, *Response, error)
+
 	// 获取缺陷所有字段及候选值
 
 	// GetBugFieldsLabel 获取缺陷所有字段的中英文
@@ -1237,6 +1287,83 @@ func (s *bugService) GetBugLinkBugs(
 	}
 
 	return relations, resp, nil
+}
+
+func (s *bugService) GetBugTemplates(
+	ctx context.Context, request *GetBugTemplatesRequest, opts ...RequestOption,
+) ([]*BugTemplate, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs/template_list", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		WorkitemTemplate *BugTemplate `json:"WorkitemTemplate,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	templates := make([]*BugTemplate, 0, len(items))
+	for _, item := range items {
+		templates = append(templates, item.WorkitemTemplate)
+	}
+
+	return templates, resp, nil
+}
+
+func (s *bugService) GetBugTemplateFields(
+	ctx context.Context, request *GetBugTemplateFieldsRequest, opts ...RequestOption,
+) ([]*BugTemplateField, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs/get_default_bug_template", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		WorkitemTemplateField *BugTemplateField `json:"WorkitemTemplateField,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	fields := make([]*BugTemplateField, 0, len(items))
+	for _, item := range items {
+		fields = append(fields, item.WorkitemTemplateField)
+	}
+
+	return fields, resp, nil
+}
+
+func (s *bugService) GetBugsByViewConfID(
+	ctx context.Context, request *GetBugsByViewConfIDRequest, opts ...RequestOption,
+) ([]*Bug, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs/get_bugs_by_view_conf_id", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		Bug      *Bug `json:"Bug"`
+		BugLower *Bug `json:"bug"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	bugs := make([]*Bug, 0, len(items))
+	for _, item := range items {
+		if item.Bug != nil {
+			bugs = append(bugs, item.Bug)
+			continue
+		}
+		bugs = append(bugs, item.BugLower)
+	}
+
+	return bugs, resp, nil
 }
 
 func (s *bugService) GetBugFieldsLabel(
