@@ -1018,6 +1018,19 @@ type (
 		Num int `json:"num,omitempty"` // 实际删除的条数
 	}
 
+	GetStorySecretInfoRequest struct {
+		StoryID     *int64 `url:"story_id,omitempty"`     // [必须]需求ID
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	StorySecretInfo struct {
+		Creator              string `json:"creator,omitempty"`                // 需求创建人
+		AllowList            string `json:"allow_list,omitempty"`             // 保密需求树白名单
+		SecretRootID         string `json:"secret_root_id,omitempty"`         // 保密需求树根节点，公开时为0
+		AddParticipantFields string `json:"add_participant_fields,omitempty"` // 保密范围是否纳入参与人
+		SecretScope          string `json:"secret_scrope,omitempty"`          // 保密范围，secret 为保密，public 为公开
+	}
+
 	GetStoryFieldsLabelRequest struct {
 		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目ID
 	}
@@ -1440,7 +1453,11 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/delete_time_relations.html
 	DeleteStoryTimeRelations(ctx context.Context, request *DeleteStoryTimeRelationsRequest, opts ...RequestOption) (*DeleteStoryTimeRelationsResult, *Response, error)
 
-	// 获取需求保密信息
+	// GetStorySecretInfo 获取需求保密信息
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_secret_info.html
+	GetStorySecretInfo(ctx context.Context, request *GetStorySecretInfoRequest, opts ...RequestOption) (*StorySecretInfo, *Response, error)
+
 	// 批量修改保密信息
 	// 获取需求类别
 
@@ -1779,6 +1796,23 @@ func (s *storyService) DeleteStoryTimeRelations(
 	}
 
 	return &result, resp, nil
+}
+
+func (s *storyService) GetStorySecretInfo(
+	ctx context.Context, request *GetStorySecretInfoRequest, opts ...RequestOption,
+) (*StorySecretInfo, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_secret_info", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var info StorySecretInfo
+	resp, err := s.client.Do(req, &info)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &info, resp, nil
 }
 
 func (s *storyService) UpdateStory(
