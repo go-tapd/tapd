@@ -155,6 +155,32 @@ func TestBugService_GetBugChangesCount(t *testing.T) {
 	assert.Equal(t, 2, count)
 }
 
+func TestBugService_GetBugCustomFieldsSettings(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bugs/custom_fields_settings", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bug_custom_fields_settings.json"))
+	}))
+
+	settings, _, err := client.BugService.GetBugCustomFieldsSettings(ctx, &GetBugCustomFieldsSettingsRequest{
+		WorkspaceID: Ptr(11112222),
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, settings)
+	assert.Equal(t, "11111222333077902981", settings[0].ID)
+	assert.Equal(t, "11112222", settings[0].WorkspaceID)
+	assert.Equal(t, "bug", settings[0].EntryType)
+	assert.Equal(t, "custom_field_one", settings[0].CustomField)
+	assert.Equal(t, "radio", settings[0].Type)
+	assert.Equal(t, "安全漏洞类型", settings[0].Name)
+	assert.Equal(t, "XSS注入|SQL注入|越权", *settings[0].Options)
+	assert.Equal(t, "1", settings[0].Enabled)
+	assert.Equal(t, "1", *settings[0].Sort)
+}
+
 func TestBugService_GetBugLinkBugs(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -517,6 +543,107 @@ func TestBugService_GetRemovedBugs(t *testing.T) {
 	assert.Equal(t, "delete", bugs[0].Type)
 	assert.Equal(t, "{\"action\":\"delete\"}", bugs[0].RemovedComment)
 	assert.Equal(t, "http://tapd.example.com/bugs/view?bug_id=1111122233300103707", bugs[1].NewBugURL)
+}
+
+func TestBugService_GetBugRelatedStories(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/bugs/get_related_stories", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111122233301037078,1111122233301037079", r.URL.Query().Get("bug_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_bug_related_stories.json"))
+	}))
+
+	stories, _, err := client.BugService.GetBugRelatedStories(ctx, &GetBugRelatedStoriesRequest{
+		WorkspaceID: Ptr(11112222),
+		BugID:       NewMulti[int64](1111122233301037078, 1111122233301037079),
+	})
+	require.NoError(t, err)
+	require.Len(t, stories, 2)
+	assert.Equal(t, "11112222", stories[0].WorkspaceID)
+	assert.Equal(t, "1111122233301037078", stories[0].BugID)
+	assert.Equal(t, "1111112222001063941", stories[0].StoryID)
+}
+
+func TestBugService_LinkBugs(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/bugs/link_bugs", r.URL.Path)
+
+		var req struct {
+			WorkspaceID int    `json:"workspace_id"`
+			BugID       int64  `json:"bug_id"`
+			RelateBugs  string `json:"relate_bugs"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, int64(1111122233301037078), req.BugID)
+		assert.Equal(t, "1111122233301037079,1111122233301037080", req.RelateBugs)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/link_bugs.json"))
+	}))
+
+	result, _, err := client.BugService.LinkBugs(ctx, &LinkBugsRequest{
+		WorkspaceID: Ptr(11112222),
+		BugID:       Ptr[int64](1111122233301037078),
+		RelateBugs:  NewMulti[int64](1111122233301037079, 1111122233301037080),
+	})
+	require.NoError(t, err)
+	assert.True(t, result)
+}
+
+func TestBugService_DeleteLinkBugs(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/bugs/delete_link_bugs", r.URL.Path)
+
+		var req struct {
+			WorkspaceID int    `json:"workspace_id"`
+			BugID       int64  `json:"bug_id"`
+			LinkIDs     string `json:"link_ids"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, int64(1111122233301037078), req.BugID)
+		assert.Equal(t, "1162187798001000534,1162187798001000535", req.LinkIDs)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/delete_link_bugs.json"))
+	}))
+
+	result, _, err := client.BugService.DeleteLinkBugs(ctx, &DeleteLinkBugsRequest{
+		WorkspaceID: Ptr(11112222),
+		BugID:       Ptr[int64](1111122233301037078),
+		LinkIDs:     NewMulti[int64](1162187798001000534, 1162187798001000535),
+	})
+	require.NoError(t, err)
+	assert.True(t, result)
+}
+
+func TestBugService_GetConvertBugIDsToQueryToken(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/bugs/ids_to_query_token", r.URL.Path)
+
+		var req struct {
+			WorkspaceID int    `json:"workspace_id"`
+			BugIDs      string `json:"ids"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, "1111122233301037078,1111122233301037079", req.BugIDs)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/bug/get_convert_bug_ids_to_query_token.json"))
+	}))
+
+	response, _, err := client.BugService.GetConvertBugIDsToQueryToken(ctx, &GetConvertBugIDsToQueryTokenRequest{
+		WorkspaceID: Ptr(11112222),
+		BugIDs:      NewMulti[int64](1111122233301037078, 1111122233301037079),
+	})
+	require.NoError(t, err)
+	assert.Equal(t, "71ab88eeb45d084d8fbc85686a0d2399", response.QueryToken)
+	assert.Contains(t, response.Href, "71ab88eeb45d084d8fbc85686a0d2399")
 }
 
 func TestBugService_GetBugFieldsLabel(t *testing.T) {

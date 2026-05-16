@@ -298,6 +298,30 @@ type (
 		CN string `json:"cn,omitempty"` // 字段中文标签
 	}
 
+	GetBugCustomFieldsSettingsRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	BugCustomFieldsSetting struct {
+		ID              string  `json:"id,omitempty"`           // 自定义字段配置的ID
+		WorkspaceID     string  `json:"workspace_id,omitempty"` // 所属项目ID
+		AppID           string  `json:"app_id,omitempty"`       // 应用ID
+		EntryType       string  `json:"entry_type,omitempty"`   // 所属实体对象
+		CustomField     string  `json:"custom_field,omitempty"` // 自定义字段标识
+		Type            string  `json:"type,omitempty"`         // 输入类型
+		Name            string  `json:"name,omitempty"`         // 自定义字段显示名称
+		Options         *string `json:"options,omitempty"`      // 自定义字段可选值
+		ExtraConfig     *string `json:"extra_config,omitempty"` // 额外配置
+		Enabled         string  `json:"enabled,omitempty"`      // 是否启用
+		Freeze          string  `json:"freeze,omitempty"`       // 是否冻结
+		Sort            *string `json:"sort,omitempty"`         // 显示时排序系数
+		Memo            *string `json:"memo,omitempty"`         // 备注
+		OpenExtensionID string  `json:"open_extension_id,omitempty"`
+		IsOut           int     `json:"is_out,omitempty"`
+		IsUninstall     int     `json:"is_uninstall,omitempty"`
+		AppName         string  `json:"app_name,omitempty"`
+	}
+
 	CreateBugRequest struct {
 		WorkspaceID   *int           `json:"workspace_id,omitempty"`   // [必须]项目ID
 		Title         *string        `json:"title,omitempty"`          // [必须]缺陷标题
@@ -1159,6 +1183,39 @@ type (
 		Type           string `json:"type,omitempty"`            // 删除操作类型
 		NewBugURL      string `json:"new_bug_url,omitempty"`     // 新缺陷链接
 	}
+
+	GetBugRelatedStoriesRequest struct {
+		WorkspaceID *int          `url:"workspace_id,omitempty"` // [必须]项目ID
+		BugID       *Multi[int64] `url:"bug_id,omitempty"`       // [必须]缺陷ID，支持多ID查询
+	}
+
+	BugRelatedStory struct {
+		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
+		BugID       string `json:"bug_id,omitempty"`       // 缺陷ID
+		StoryID     string `json:"story_id,omitempty"`     // 需求ID
+	}
+
+	LinkBugsRequest struct {
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		BugID       *int64        `json:"bug_id,omitempty"`       // [必须]原始缺陷ID
+		RelateBugs  *Multi[int64] `json:"relate_bugs,omitempty"`  // [必须]关联缺陷ID，多个以逗号分隔
+	}
+
+	DeleteLinkBugsRequest struct {
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		BugID       *int64        `json:"bug_id,omitempty"`       // [必须]缺陷ID
+		LinkIDs     *Multi[int64] `json:"link_ids,omitempty"`     // [必须]关联关系ID，多个以逗号分隔
+	}
+
+	GetConvertBugIDsToQueryTokenRequest struct {
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		BugIDs      *Multi[int64] `json:"ids,omitempty"`          // [必须]缺陷ID，多个以逗号分隔
+	}
+
+	GetConvertBugIDsToQueryTokenResponse struct {
+		QueryToken string `json:"queryToken,omitempty"` // 列表queryToken
+		Href       string `json:"href,omitempty"`       // 对应的TAPD缺陷列表链接
+	}
 )
 
 type BugService interface {
@@ -1182,7 +1239,12 @@ type BugService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bug_changes_count.html
 	GetBugChangesCount(ctx context.Context, request *GetBugChangesCountRequest, opts ...RequestOption) (int, *Response, error)
 
-	// 获取缺陷自定义字段配置
+	// GetBugCustomFieldsSettings 获取缺陷自定义字段配置
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_bug_custom_fields_settings.html
+	GetBugCustomFieldsSettings(
+		ctx context.Context, request *GetBugCustomFieldsSettingsRequest, opts ...RequestOption,
+	) ([]*BugCustomFieldsSetting, *Response, error)
 
 	// GetBugs 获取缺陷
 	//
@@ -1246,8 +1308,28 @@ type BugService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_removed_bugs.html
 	GetRemovedBugs(ctx context.Context, request *GetRemovedBugsRequest, opts ...RequestOption) ([]*RemovedBug, *Response, error)
 
-	// 获取缺陷关联的需求ID
-	// 转换缺陷ID成列表queryToken
+	// GetBugRelatedStories 获取缺陷关联的需求ID
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/get_related_stories.html
+	GetBugRelatedStories(ctx context.Context, request *GetBugRelatedStoriesRequest, opts ...RequestOption) ([]*BugRelatedStory, *Response, error)
+
+	// LinkBugs 关联缺陷
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/link_bugs.html
+	LinkBugs(ctx context.Context, request *LinkBugsRequest, opts ...RequestOption) (bool, *Response, error)
+
+	// DeleteLinkBugs 取消关联缺陷
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/delete_link_bugs.html
+	DeleteLinkBugs(ctx context.Context, request *DeleteLinkBugsRequest, opts ...RequestOption) (bool, *Response, error)
+
+	// GetConvertBugIDsToQueryToken 转换缺陷ID成列表queryToken
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/bug/bug_ids_to_query_token.html
+	GetConvertBugIDsToQueryToken(
+		ctx context.Context, request *GetConvertBugIDsToQueryTokenRequest, opts ...RequestOption,
+	) (*GetConvertBugIDsToQueryTokenResponse, *Response, error)
+
 	// 缺陷说明
 }
 
@@ -1342,6 +1424,30 @@ func (s *bugService) GetBugChangesCount(
 	return response.Count, resp, nil
 }
 
+func (s *bugService) GetBugCustomFieldsSettings(
+	ctx context.Context, request *GetBugCustomFieldsSettingsRequest, opts ...RequestOption,
+) ([]*BugCustomFieldsSetting, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs/custom_fields_settings", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	response := make([]struct {
+		CustomFieldConfig *BugCustomFieldsSetting `json:"CustomFieldConfig,omitempty"`
+	}, 0)
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	settings := make([]*BugCustomFieldsSetting, 0, len(response))
+	for _, item := range response {
+		settings = append(settings, item.CustomFieldConfig)
+	}
+
+	return settings, resp, nil
+}
+
 func (s *bugService) GetBugs(
 	ctx context.Context, request *GetBugsRequest, opts ...RequestOption,
 ) ([]*Bug, *Response, error) {
@@ -1364,6 +1470,74 @@ func (s *bugService) GetBugs(
 	}
 
 	return bugs, resp, nil
+}
+
+func (s *bugService) GetBugRelatedStories(
+	ctx context.Context, request *GetBugRelatedStoriesRequest, opts ...RequestOption,
+) ([]*BugRelatedStory, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "bugs/get_related_stories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var stories []*BugRelatedStory
+	resp, err := s.client.Do(req, &stories)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return stories, resp, nil
+}
+
+func (s *bugService) LinkBugs(
+	ctx context.Context, request *LinkBugsRequest, opts ...RequestOption,
+) (bool, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "bugs/link_bugs", request, opts)
+	if err != nil {
+		return false, nil, err
+	}
+
+	var result bool
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return false, resp, err
+	}
+
+	return result, resp, nil
+}
+
+func (s *bugService) DeleteLinkBugs(
+	ctx context.Context, request *DeleteLinkBugsRequest, opts ...RequestOption,
+) (bool, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "bugs/delete_link_bugs", request, opts)
+	if err != nil {
+		return false, nil, err
+	}
+
+	var result bool
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return false, resp, err
+	}
+
+	return result, resp, nil
+}
+
+func (s *bugService) GetConvertBugIDsToQueryToken(
+	ctx context.Context, request *GetConvertBugIDsToQueryTokenRequest, opts ...RequestOption,
+) (*GetConvertBugIDsToQueryTokenResponse, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "bugs/ids_to_query_token", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	response := new(GetConvertBugIDsToQueryTokenResponse)
+	resp, err := s.client.Do(req, response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response, resp, nil
 }
 
 func (s *bugService) GetBugsCount(
