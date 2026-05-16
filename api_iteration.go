@@ -370,6 +370,18 @@ type (
 		ID string `json:"id,omitempty"` // 卡片ID
 	}
 
+	LockIterationRequest struct {
+		WorkspaceID *int           `json:"workspace_id,omitempty"` // [必须]项目ID
+		IterationID *int64         `json:"iteration_id,omitempty"` // [必须]迭代ID
+		LockTypes   *Multi[string] `json:"lock_types,omitempty"`   // 锁定对象，多个使用英文逗号分隔
+	}
+
+	UnlockIterationRequest struct {
+		WorkspaceID *int           `json:"workspace_id,omitempty"` // [必须]项目ID
+		IterationID *int64         `json:"iteration_id,omitempty"` // [必须]迭代ID
+		LockTypes   *Multi[string] `json:"lock_types,omitempty"`   // 解锁对象，多个使用英文逗号分隔
+	}
+
 	UpdateIterationRequest struct {
 		ID            *int64        `json:"id,omitempty"`              // [必须] ID
 		WorkspaceID   *int          `json:"workspace_id,omitempty"`    // [必须] 项目 ID
@@ -512,8 +524,15 @@ type IterationService interface {
 		ctx context.Context, request *UpdateIterationCustomDashBoardContentRequest, opts ...RequestOption,
 	) (*UpdateIterationCustomDashBoardContentResult, *Response, error)
 
-	// 锁定迭代
-	// 解锁迭代
+	// LockIteration 锁定迭代
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/lock_iteration.html
+	LockIteration(ctx context.Context, request *LockIterationRequest, opts ...RequestOption) (string, *Response, error)
+
+	// UnlockIteration 解锁迭代
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/unlock_iteration.html
+	UnlockIteration(ctx context.Context, request *UnlockIterationRequest, opts ...RequestOption) (string, *Response, error)
 
 	// GetWorkitemTypes 获取迭代类别列表
 	//
@@ -701,6 +720,40 @@ func (s *iterationService) UpdateIterationCustomDashBoardContent(
 	resp, err := s.client.Do(req, result)
 	if err != nil {
 		return nil, resp, err
+	}
+
+	return result, resp, nil
+}
+
+func (s *iterationService) LockIteration(
+	ctx context.Context, request *LockIterationRequest, opts ...RequestOption,
+) (string, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "iterations/lock_iteration", request, opts)
+	if err != nil {
+		return "", nil, err
+	}
+
+	var result string
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return "", resp, err
+	}
+
+	return result, resp, nil
+}
+
+func (s *iterationService) UnlockIteration(
+	ctx context.Context, request *UnlockIterationRequest, opts ...RequestOption,
+) (string, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "iterations/unlock_iteration", request, opts)
+	if err != nil {
+		return "", nil, err
+	}
+
+	var result string
+	resp, err := s.client.Do(req, &result)
+	if err != nil {
+		return "", resp, err
 	}
 
 	return result, resp, nil

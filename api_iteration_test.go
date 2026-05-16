@@ -223,6 +223,60 @@ func TestIterationService_UpdateIterationCustomDashBoardContent(t *testing.T) {
 	assert.Equal(t, "1010104801000003949", result.ID)
 }
 
+func TestIterationService_LockIteration(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/iterations/lock_iteration", r.URL.Path)
+
+		var req struct {
+			WorkspaceID int    `json:"workspace_id"`
+			IterationID int64  `json:"iteration_id"`
+			LockTypes   string `json:"lock_types"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 10104801, req.WorkspaceID)
+		assert.Equal(t, int64(1010104801000723579), req.IterationID)
+		assert.Equal(t, "__ALL_STORY__,__ALL_BUG__", req.LockTypes)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/lock_iteration.json"))
+	}))
+
+	result, _, err := client.IterationService.LockIteration(ctx, &LockIterationRequest{
+		WorkspaceID: Ptr(10104801),
+		IterationID: Ptr[int64](1010104801000723579),
+		LockTypes:   NewMulti("__ALL_STORY__", "__ALL_BUG__"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "lock 1010104801000723579 successfully", result)
+}
+
+func TestIterationService_UnlockIteration(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/iterations/unlock_iteration", r.URL.Path)
+
+		var req struct {
+			WorkspaceID int    `json:"workspace_id"`
+			IterationID int64  `json:"iteration_id"`
+			LockTypes   string `json:"lock_types"`
+		}
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 10104801, req.WorkspaceID)
+		assert.Equal(t, int64(1010104801000723579), req.IterationID)
+		assert.Equal(t, "__ALL_STORY__,__ALL_BUG__", req.LockTypes)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/unlock_iteration.json"))
+	}))
+
+	result, _, err := client.IterationService.UnlockIteration(ctx, &UnlockIterationRequest{
+		WorkspaceID: Ptr(10104801),
+		IterationID: Ptr[int64](1010104801000723579),
+		LockTypes:   NewMulti("__ALL_STORY__", "__ALL_BUG__"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "unlock 1010104801000723579 successfully", result)
+}
+
 func TestIterationService_GetIterationsCount(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
