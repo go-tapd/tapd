@@ -336,6 +336,40 @@ type (
 		WorkspaceID   string  `json:"workspace_id,omitempty"`  // 项目ID
 	}
 
+	GetIterationCustomDashBoardContentRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		IterationID *int64 `url:"iteration_id,omitempty"` // [必须]迭代ID
+	}
+
+	IterationCustomDashBoardCard struct {
+		ID            string                               `json:"id,omitempty"`             // 卡片ID
+		Template      string                               `json:"template,omitempty"`       // 卡片类型
+		Title         string                               `json:"title,omitempty"`          // 卡片标题
+		ComponentData string                               `json:"component_data,omitempty"` // 组件数据
+		Width         string                               `json:"width,omitempty"`          // 宽度
+		Height        string                               `json:"height,omitempty"`         // 高度
+		CardType      string                               `json:"card_type,omitempty"`      // 卡片内容类型
+		Data          *IterationCustomDashBoardCardContent `json:"data,omitempty"`           // 卡片内容
+	}
+
+	IterationCustomDashBoardCardContent struct {
+		Content         string `json:"content,omitempty"`          // 卡片HTML内容
+		DescriptionType string `json:"description_type,omitempty"` // 描述类型
+		Value           string `json:"value,omitempty"`            // 卡片内容值
+	}
+
+	UpdateIterationCustomDashBoardContentRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]源项目ID
+		IterationID *int64  `json:"iteration_id,omitempty"` // [必须]迭代ID
+		CardID      *int64  `json:"card_id,omitempty"`      // [必须]卡片ID
+		Content     *string `json:"content,omitempty"`      // [必须]卡片内容，支持富文本
+		PlanAppID   *int64  `json:"plan_app_id,omitempty"`  // 计划应用ID，默认为0代表迭代应用
+	}
+
+	UpdateIterationCustomDashBoardContentResult struct {
+		ID string `json:"id,omitempty"` // 卡片ID
+	}
+
 	UpdateIterationRequest struct {
 		ID            *int64        `json:"id,omitempty"`              // [必须] ID
 		WorkspaceID   *int          `json:"workspace_id,omitempty"`    // [必须] 项目 ID
@@ -464,8 +498,20 @@ type IterationService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/get_iteration_changes.html
 	GetIterationChanges(ctx context.Context, request *GetIterationChangesRequest, opts ...RequestOption) ([]*IterationChange, *Response, error)
 
-	// 获取迭代仪表盘自定义卡片内容
-	// 修改迭代仪表盘自定义卡片内容
+	// GetIterationCustomDashBoardContent 获取迭代仪表盘自定义卡片内容
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/get_custom_dash_board_content.html
+	GetIterationCustomDashBoardContent(
+		ctx context.Context, request *GetIterationCustomDashBoardContentRequest, opts ...RequestOption,
+	) ([]*IterationCustomDashBoardCard, *Response, error)
+
+	// UpdateIterationCustomDashBoardContent 修改迭代仪表盘自定义卡片内容
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/iteration/update_custom_dash_board_content.html
+	UpdateIterationCustomDashBoardContent(
+		ctx context.Context, request *UpdateIterationCustomDashBoardContentRequest, opts ...RequestOption,
+	) (*UpdateIterationCustomDashBoardContentResult, *Response, error)
+
 	// 锁定迭代
 	// 解锁迭代
 
@@ -624,6 +670,40 @@ func (s *iterationService) GetIterationChanges(
 	}
 
 	return changes, resp, nil
+}
+
+func (s *iterationService) GetIterationCustomDashBoardContent(
+	ctx context.Context, request *GetIterationCustomDashBoardContentRequest, opts ...RequestOption,
+) ([]*IterationCustomDashBoardCard, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "iterations/get_custom_dash_board_content", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var cards []*IterationCustomDashBoardCard
+	resp, err := s.client.Do(req, &cards)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return cards, resp, nil
+}
+
+func (s *iterationService) UpdateIterationCustomDashBoardContent(
+	ctx context.Context, request *UpdateIterationCustomDashBoardContentRequest, opts ...RequestOption,
+) (*UpdateIterationCustomDashBoardContentResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "iterations/update_custom_dash_board_content", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(UpdateIterationCustomDashBoardContentResult)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return result, resp, nil
 }
 
 func (s *iterationService) GetWorkitemTypes(

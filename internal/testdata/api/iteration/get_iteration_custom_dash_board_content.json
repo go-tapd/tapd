@@ -1,0 +1,20 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "id": "1010104801000003949",
+      "template": "Custom",
+      "title": "自定义aaa",
+      "component_data": "[]",
+      "width": "6",
+      "height": "3",
+      "card_type": "RichContent",
+      "data": {
+        "content": "<p>自定义卡片内容。支持 <strong>HTML</strong>。</p>",
+        "description_type": "1",
+        "value": "<p>自定义卡片内容。支持 <strong>HTML</strong>。</p>"
+      }
+    }
+  ],
+  "info": "success"
+}

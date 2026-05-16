@@ -163,6 +163,66 @@ func TestIterationService_GetIterationChanges(t *testing.T) {
 	assert.Equal(t, "20355782", changes[0].WorkspaceID)
 }
 
+func TestIterationService_GetIterationCustomDashBoardContent(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/iterations/get_custom_dash_board_content", r.URL.Path)
+		assert.Equal(t, "10104801", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1010104801000723579", r.URL.Query().Get("iteration_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/get_iteration_custom_dash_board_content.json"))
+	}))
+
+	cards, _, err := client.IterationService.GetIterationCustomDashBoardContent(
+		ctx,
+		&GetIterationCustomDashBoardContentRequest{
+			WorkspaceID: Ptr(10104801),
+			IterationID: Ptr[int64](1010104801000723579),
+		},
+	)
+	assert.NoError(t, err)
+	require.Len(t, cards, 1)
+	assert.Equal(t, "1010104801000003949", cards[0].ID)
+	assert.Equal(t, "Custom", cards[0].Template)
+	assert.Equal(t, "自定义aaa", cards[0].Title)
+	assert.Equal(t, "RichContent", cards[0].CardType)
+	require.NotNil(t, cards[0].Data)
+	assert.Equal(t, "<p>自定义卡片内容。支持 <strong>HTML</strong>。</p>", cards[0].Data.Content)
+	assert.Equal(t, "1", cards[0].Data.DescriptionType)
+	assert.Equal(t, "<p>自定义卡片内容。支持 <strong>HTML</strong>。</p>", cards[0].Data.Value)
+}
+
+func TestIterationService_UpdateIterationCustomDashBoardContent(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/iterations/update_custom_dash_board_content", r.URL.Path)
+
+		var req UpdateIterationCustomDashBoardContentRequest
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 10104801, *req.WorkspaceID)
+		assert.Equal(t, int64(1010104801000723579), *req.IterationID)
+		assert.Equal(t, int64(1010104801000003949), *req.CardID)
+		assert.Equal(t, "<p>updated</p>", *req.Content)
+		assert.Equal(t, int64(0), *req.PlanAppID)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/iteration/update_iteration_custom_dash_board_content.json"))
+	}))
+
+	result, _, err := client.IterationService.UpdateIterationCustomDashBoardContent(
+		ctx,
+		&UpdateIterationCustomDashBoardContentRequest{
+			WorkspaceID: Ptr(10104801),
+			IterationID: Ptr[int64](1010104801000723579),
+			CardID:      Ptr[int64](1010104801000003949),
+			Content:     Ptr("<p>updated</p>"),
+			PlanAppID:   Ptr[int64](0),
+		},
+	)
+	assert.NoError(t, err)
+	require.NotNil(t, result)
+	assert.Equal(t, "1010104801000003949", result.ID)
+}
+
 func TestIterationService_GetIterationsCount(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
