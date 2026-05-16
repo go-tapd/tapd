@@ -807,6 +807,67 @@ func TestStoryService_UpdateStoryParent(t *testing.T) {
 	assert.Equal(t, "1111112222001060000:1111112222001063941:", story.Path)
 }
 
+func TestStoryService_CreateStoryBugRelation(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/relations", r.URL.Path)
+
+		var req CreateStoryBugRelationRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, "story", *req.SourceType)
+		assert.Equal(t, int64(1111112222001063941), *req.SourceID)
+		assert.Equal(t, "bug", *req.TargetType)
+		assert.Equal(t, int64(1111112222001035927), *req.TargetID)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/create_story_bug_relation.json"))
+	}))
+
+	relation, _, err := client.StoryService.CreateStoryBugRelation(ctx, &CreateStoryBugRelationRequest{
+		WorkspaceID: Ptr(11112222),
+		SourceType:  Ptr("story"),
+		SourceID:    Ptr[int64](1111112222001063941),
+		TargetType:  Ptr("bug"),
+		TargetID:    Ptr[int64](1111112222001035927),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, relation)
+	assert.Equal(t, "22265547", relation.ID)
+	assert.Equal(t, "11112222", relation.WorkspaceID)
+	assert.Equal(t, "story", relation.SourceType)
+	assert.Equal(t, "1111112222001063941", relation.SourceID)
+	assert.Equal(t, "bug", relation.TargetType)
+	assert.Equal(t, "1111112222001035927", relation.TargetID)
+}
+
+func TestStoryService_CreateStoryTestCaseRelation(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/add_story_tcase", r.URL.Path)
+
+		var req struct {
+			WorkspaceID int    `json:"workspace_id"`
+			StoryID     int64  `json:"story_id"`
+			TestCaseID  string `json:"tcase_id"`
+		}
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, int64(1111112222001063941), req.StoryID)
+		assert.Equal(t, "1111112222001077291,1111112222001077292", req.TestCaseID)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/create_story_test_case_relation.json"))
+	}))
+
+	result, _, err := client.StoryService.CreateStoryTestCaseRelation(ctx, &CreateStoryTestCaseRelationRequest{
+		WorkspaceID: Ptr(11112222),
+		StoryID:     Ptr[int64](1111112222001063941),
+		TestCaseID:  NewMulti[int64](1111112222001077291, 1111112222001077292),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, []string{"1111112222001077291", "1111112222001077292"}, result.SuccessID)
+}
+
 func TestStoryService_GetStoryTemplates(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

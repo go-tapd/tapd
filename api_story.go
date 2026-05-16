@@ -1541,6 +1541,35 @@ type (
 		ParentID    *int64 `json:"parent_id,omitempty"`    // [必须]父需求ID
 	}
 
+	CreateStoryBugRelationRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		SourceType  *string `json:"source_type,omitempty"`  // [必须]源对象类型，story 或 bug
+		SourceID    *int64  `json:"source_id,omitempty"`    // [必须]源对象ID
+		TargetType  *string `json:"target_type,omitempty"`  // [必须]目标对象类型，story 或 bug
+		TargetID    *int64  `json:"target_id,omitempty"`    // [必须]目标对象ID
+	}
+
+	StoryBugRelation struct {
+		ID          string `json:"id,omitempty"`           // 主键ID
+		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
+		SourceType  string `json:"source_type,omitempty"`  // 源对象类型
+		SourceID    string `json:"source_id,omitempty"`    // 源对象ID
+		TargetType  string `json:"target_type,omitempty"`  // 目标对象类型
+		TargetID    string `json:"target_id,omitempty"`    // 目标对象ID
+		Created     string `json:"created,omitempty"`      // 创建时间
+		Modified    string `json:"modified,omitempty"`     // 最后修改时间
+	}
+
+	CreateStoryTestCaseRelationRequest struct {
+		WorkspaceID *int          `json:"workspace_id,omitempty"` // [必须]项目ID
+		StoryID     *int64        `json:"story_id,omitempty"`     // [必须]需求ID
+		TestCaseID  *Multi[int64] `json:"tcase_id,omitempty"`     // [必须]测试用例ID，支持多ID，英文逗号分隔，不超过20个
+	}
+
+	CreateStoryTestCaseRelationResult struct {
+		SuccessID []string `json:"success_id,omitempty"` // 成功关联的测试用例ID
+	}
+
 	GetConvertStoryIDsToQueryTokenRequest struct {
 		WorkspaceID *int          `json:"workspace_id,omitempty"` // 项目ID
 		StoryIDs    *Multi[int64] `json:"ids,omitempty"`          // 需求ID
@@ -1720,8 +1749,16 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/update_story_parent.html
 	UpdateStoryParent(ctx context.Context, request *UpdateStoryParentRequest, opts ...RequestOption) (*Story, *Response, error)
 
-	// 创建需求与缺陷关联关系
-	// 创建需求与测试用例关联关系
+	// CreateStoryBugRelation 创建需求与缺陷关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/create_story_bug.html
+	CreateStoryBugRelation(ctx context.Context, request *CreateStoryBugRelationRequest, opts ...RequestOption) (*StoryBugRelation, *Response, error)
+
+	// CreateStoryTestCaseRelation 创建需求与测试用例关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/create_story_tcase.html
+	CreateStoryTestCaseRelation(ctx context.Context, request *CreateStoryTestCaseRelationRequest, opts ...RequestOption) (*CreateStoryTestCaseRelationResult, *Response, error)
+
 	// 获取视图对应的需求列表
 	// 转换需求ID成列表queryToken
 
@@ -2412,6 +2449,42 @@ func (s *storyService) UpdateStoryParent(
 	}
 
 	return response.Story, resp, nil
+}
+
+func (s *storyService) CreateStoryBugRelation(
+	ctx context.Context, request *CreateStoryBugRelationRequest, opts ...RequestOption,
+) (*StoryBugRelation, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "relations", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Relation *StoryBugRelation `json:"Relation"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Relation, resp, nil
+}
+
+func (s *storyService) CreateStoryTestCaseRelation(
+	ctx context.Context, request *CreateStoryTestCaseRelationRequest, opts ...RequestOption,
+) (*CreateStoryTestCaseRelationResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/add_story_tcase", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(CreateStoryTestCaseRelationResult)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return result, resp, nil
 }
 
 func (s *storyService) GetConvertStoryIDsToQueryToken(
