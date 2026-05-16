@@ -1,0 +1,15 @@
+{
+  "status": 1,
+  "data": {
+    "story_count": 1,
+    "tcase_count": 10,
+    "status_counter": {
+      "pass": "5",
+      "no_pass": "0",
+      "block": "0",
+      "unexecuted": 5
+    },
+    "executed_rate": "50%"
+  },
+  "info": "success"
+}

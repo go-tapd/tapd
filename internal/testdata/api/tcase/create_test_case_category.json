@@ -1,0 +1,18 @@
+{
+  "status": 1,
+  "data": {
+    "TcaseCategory": {
+      "id": "1010158231000082523",
+      "workspace_id": "10158231",
+      "name": "用例目录4",
+      "description": "回归测试目录",
+      "parent_id": "0",
+      "modified": "2019-06-26 16:42:50",
+      "created": "2019-06-26 16:42:50",
+      "creator": "tester",
+      "modifier": "tester",
+      "sorting": "4"
+    }
+  },
+  "info": "success"
+}

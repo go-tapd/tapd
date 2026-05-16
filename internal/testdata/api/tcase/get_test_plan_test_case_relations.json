@@ -1,0 +1,30 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "TestPlanStoryTcaseRelation": {
+        "id": "1000000755002248699",
+        "workspace_id": "755",
+        "test_plan_id": "1000000755077233617",
+        "story_id": "0",
+        "tcase_id": "1000000755000026804",
+        "sort": "0",
+        "creator": "v_xuanfang",
+        "created": "0000-00-00 00:00:00"
+      }
+    },
+    {
+      "TestPlanStoryTcaseRelation": {
+        "id": "1000000755002248753",
+        "workspace_id": "755",
+        "test_plan_id": "1000000755077233617",
+        "story_id": "0",
+        "tcase_id": "1000000755075912019",
+        "sort": "0",
+        "creator": "v_xuanfang",
+        "created": "0000-00-00 00:00:00"
+      }
+    }
+  ],
+  "info": "success"
+}

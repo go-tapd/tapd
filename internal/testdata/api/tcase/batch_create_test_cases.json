@@ -1,0 +1,66 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Tcase": {
+        "id": "1069992160077456793",
+        "mid": "1069992160077456793",
+        "steps": null,
+        "workspace_id": "69992160",
+        "category_id": "-1",
+        "version": "0",
+        "created": "2023-07-10 16:30:06",
+        "modifier": "XX1",
+        "modified": "2023-07-10 16:30:06",
+        "creator": "XX1",
+        "status": "normal",
+        "name": "简单用例1",
+        "precondition": null,
+        "expectation": null,
+        "sort": "0",
+        "indexcode": "",
+        "type": "",
+        "priority": "",
+        "is_automated": "0",
+        "automation_type": "",
+        "automation_platform": "",
+        "is_serving": "0",
+        "template_id": "0",
+        "created_from": "",
+        "custom_field_1": null,
+        "custom_field_21": ""
+      }
+    },
+    {
+      "Tcase": {
+        "id": "1069992160077456795",
+        "mid": "1069992160077456795",
+        "steps": null,
+        "workspace_id": "69992160",
+        "category_id": "-1",
+        "version": "0",
+        "created": "2023-07-10 16:30:06",
+        "modifier": "XX2",
+        "modified": "2023-07-10 16:30:06",
+        "creator": "XX2",
+        "status": "normal",
+        "name": "简单用例2",
+        "precondition": null,
+        "expectation": null,
+        "sort": "0",
+        "indexcode": "",
+        "type": "",
+        "priority": "",
+        "is_automated": "0",
+        "automation_type": "",
+        "automation_platform": "",
+        "is_serving": "0",
+        "template_id": "0",
+        "created_from": "",
+        "custom_field_1": null,
+        "custom_field_21": ""
+      }
+    }
+  ],
+  "info": "success"
+}

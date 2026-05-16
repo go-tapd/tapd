@@ -1,0 +1,24 @@
+{
+  "status": 1,
+  "data": {
+    "Tcase": {
+      "id": "1010158231077224799",
+      "steps": "第一二三步",
+      "workspace_id": "10158231",
+      "category_id": "-1",
+      "created": "2019-06-26 16:42:59",
+      "modifier": "api_doc_oauth",
+      "modified": "2019-06-26 16:59:28",
+      "creator": "tapd",
+      "status": "abandon",
+      "name": "测试浏览器兼容性",
+      "precondition": "打开浏览器",
+      "expectation": "无样式错误",
+      "type": "其它",
+      "priority": "高",
+      "custom_field_1": null,
+      "custom_field_21": ""
+    }
+  },
+  "info": "success"
+}

@@ -1,0 +1,34 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "TcaseCategory": {
+        "id": "1010158231075917759",
+        "workspace_id": "10158231",
+        "name": "None Category",
+        "description": "未规划目录",
+        "parent_id": "0",
+        "modified": "2019-06-26 16:42:50",
+        "created": "2019-06-26 16:42:50",
+        "creator": null,
+        "modifier": null,
+        "sorting": "0"
+      }
+    },
+    {
+      "TcaseCategory": {
+        "id": "1010158231000082521",
+        "workspace_id": "10158231",
+        "name": "用例目录3",
+        "description": null,
+        "parent_id": "0",
+        "modified": "2017-06-20 16:48:37",
+        "created": "2017-06-20 16:48:37",
+        "creator": "system",
+        "modifier": "system",
+        "sorting": null
+      }
+    }
+  ],
+  "info": "success"
+}
