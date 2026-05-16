@@ -1524,6 +1524,17 @@ type (
 		BugID       string `json:"bug_id,omitempty"`
 	}
 
+	RemoveStoryBugRelationRequest struct {
+		WorkspaceID *int    `json:"workspace_id,omitempty"` // [必须]项目ID
+		StoryID     *int64  `json:"story_id,omitempty"`     // [必须]需求ID
+		BugID       *int64  `json:"bug_id,omitempty"`       // [必须]缺陷ID
+		CurrentUser *string `json:"current_user,omitempty"` // 操作人
+	}
+
+	RemoveStoryBugRelationResult struct {
+		Success bool `json:"success,omitempty"` // 是否解除成功
+	}
+
 	GetConvertStoryIDsToQueryTokenRequest struct {
 		WorkspaceID *int          `json:"workspace_id,omitempty"` // 项目ID
 		StoryIDs    *Multi[int64] `json:"ids,omitempty"`          // 需求ID
@@ -1693,7 +1704,11 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_related_bugs.html
 	GetStoryRelatedBugs(ctx context.Context, request *GetStoryRelatedBugsRequest, opts ...RequestOption) ([]*StoryRelatedBug, *Response, error)
 
-	// 解除需求缺陷关联关系
+	// RemoveStoryBugRelation 解除需求缺陷关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/remove_story_bug_raletions.html
+	RemoveStoryBugRelation(ctx context.Context, request *RemoveStoryBugRelationRequest, opts ...RequestOption) (*RemoveStoryBugRelationResult, *Response, error)
+
 	// 更新父需求
 	// 创建需求与缺陷关联关系
 	// 创建需求与测试用例关联关系
@@ -2351,6 +2366,23 @@ func (s *storyService) GetStoryRelatedBugs(
 	}
 
 	return bugs, resp, nil
+}
+
+func (s *storyService) RemoveStoryBugRelation(
+	ctx context.Context, request *RemoveStoryBugRelationRequest, opts ...RequestOption,
+) (*RemoveStoryBugRelationResult, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/remove_story_bug_raletions", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	result := new(RemoveStoryBugRelationResult)
+	resp, err := s.client.Do(req, result)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return result, resp, nil
 }
 
 func (s *storyService) GetConvertStoryIDsToQueryToken(

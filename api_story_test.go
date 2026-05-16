@@ -754,6 +754,32 @@ func TestStoryService_GetStoryRelatedBugs(t *testing.T) {
 	assert.Equal(t, "1111112222001035927", relatedBugs[0].BugID)
 }
 
+func TestStoryService_RemoveStoryBugRelation(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/remove_story_bug_raletions", r.URL.Path)
+
+		var req RemoveStoryBugRelationRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, int64(1111112222001063941), *req.StoryID)
+		assert.Equal(t, int64(1111112222001035927), *req.BugID)
+		assert.Equal(t, "xinweihe", *req.CurrentUser)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/remove_story_bug_relation.json"))
+	}))
+
+	result, _, err := client.StoryService.RemoveStoryBugRelation(ctx, &RemoveStoryBugRelationRequest{
+		WorkspaceID: Ptr(11112222),
+		StoryID:     Ptr[int64](1111112222001063941),
+		BugID:       Ptr[int64](1111112222001035927),
+		CurrentUser: Ptr("xinweihe"),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.True(t, result.Success)
+}
+
 func TestStoryService_GetStoryTemplates(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
