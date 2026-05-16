@@ -1535,6 +1535,12 @@ type (
 		Success bool `json:"success,omitempty"` // 是否解除成功
 	}
 
+	UpdateStoryParentRequest struct {
+		WorkspaceID *int   `json:"workspace_id,omitempty"` // [必须]项目ID
+		StoryID     *int64 `json:"story_id,omitempty"`     // [必须]需求ID
+		ParentID    *int64 `json:"parent_id,omitempty"`    // [必须]父需求ID
+	}
+
 	GetConvertStoryIDsToQueryTokenRequest struct {
 		WorkspaceID *int          `json:"workspace_id,omitempty"` // 项目ID
 		StoryIDs    *Multi[int64] `json:"ids,omitempty"`          // 需求ID
@@ -1709,7 +1715,11 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/remove_story_bug_raletions.html
 	RemoveStoryBugRelation(ctx context.Context, request *RemoveStoryBugRelationRequest, opts ...RequestOption) (*RemoveStoryBugRelationResult, *Response, error)
 
-	// 更新父需求
+	// UpdateStoryParent 更新父需求
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/update_story_parent.html
+	UpdateStoryParent(ctx context.Context, request *UpdateStoryParentRequest, opts ...RequestOption) (*Story, *Response, error)
+
 	// 创建需求与缺陷关联关系
 	// 创建需求与测试用例关联关系
 	// 获取视图对应的需求列表
@@ -2383,6 +2393,25 @@ func (s *storyService) RemoveStoryBugRelation(
 	}
 
 	return result, resp, nil
+}
+
+func (s *storyService) UpdateStoryParent(
+	ctx context.Context, request *UpdateStoryParentRequest, opts ...RequestOption,
+) (*Story, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/update_story_parent", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Story *Story `json:"Story"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Story, resp, nil
 }
 
 func (s *storyService) GetConvertStoryIDsToQueryToken(

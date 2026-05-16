@@ -780,6 +780,33 @@ func TestStoryService_RemoveStoryBugRelation(t *testing.T) {
 	assert.True(t, result.Success)
 }
 
+func TestStoryService_UpdateStoryParent(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/stories/update_story_parent", r.URL.Path)
+
+		var req UpdateStoryParentRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Equal(t, int64(1111112222001063941), *req.StoryID)
+		assert.Equal(t, int64(1111112222001060000), *req.ParentID)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/update_story_parent.json"))
+	}))
+
+	story, _, err := client.StoryService.UpdateStoryParent(ctx, &UpdateStoryParentRequest{
+		WorkspaceID: Ptr(11112222),
+		StoryID:     Ptr[int64](1111112222001063941),
+		ParentID:    Ptr[int64](1111112222001060000),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, story)
+	assert.Equal(t, "1111112222001063941", story.ID)
+	assert.Equal(t, "1111112222001060000", story.ParentID)
+	assert.Equal(t, "11112222", story.WorkspaceID)
+	assert.Equal(t, "1111112222001060000:1111112222001063941:", story.Path)
+}
+
 func TestStoryService_GetStoryTemplates(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

@@ -1,0 +1,24 @@
+{
+  "status": 1,
+  "data": {
+    "Story": {
+      "id": "1111112222001063941",
+      "workitem_type_id": "1111112222001000001",
+      "name": "更新父需求示例",
+      "description": null,
+      "workspace_id": "11112222",
+      "creator": "xinweihe",
+      "created": "2025-06-16 16:20:51",
+      "modified": "2025-07-08 15:22:49",
+      "status": "planning",
+      "owner": "",
+      "cc": "",
+      "parent_id": "1111112222001060000",
+      "children_id": "",
+      "ancestor_id": "1111112222001060000",
+      "path": "1111112222001060000:1111112222001063941:",
+      "level": "1"
+    }
+  },
+  "info": "success"
+}
