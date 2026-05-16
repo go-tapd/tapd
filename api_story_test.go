@@ -136,6 +136,23 @@ func TestStoryService_GetSecretStories(t *testing.T) {
 	}, stories)
 }
 
+func TestStoryService_GetSecretStoriesCount(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/secret_stories/count", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_secret_stories_count.json"))
+	}))
+
+	count, _, err := client.StoryService.GetSecretStoriesCount(ctx, &GetSecretStoriesCountRequest{
+		WorkspaceID: Ptr(11112222),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 3, count)
+}
+
 func TestStoryService_GetStoryCategories(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

@@ -877,6 +877,10 @@ type (
 		Order       *Order `url:"order,omitempty"`        // 排序规则，规则：字段名 ASC或者DESC
 	}
 
+	GetSecretStoriesCountRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
 	GetStoryCategoriesRequest struct {
 		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
 		ID          *Multi[int64]  `url:"id,omitempty"`           // ID 支持多ID查询，多个ID用逗号分隔
@@ -1567,7 +1571,10 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_secret_stories.html
 	GetSecretStories(ctx context.Context, request *GetSecretStoriesRequest, opts ...RequestOption) ([]string, *Response, error)
 
-	// 获取保密需求数量
+	// GetSecretStoriesCount 获取保密需求数量
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_secret_stories_count.html
+	GetSecretStoriesCount(ctx context.Context, request *GetSecretStoriesCountRequest, opts ...RequestOption) (int, *Response, error)
 
 	// GetStoryCategories 获取需求分类
 	//
@@ -1847,6 +1854,23 @@ func (s *storyService) GetSecretStories(
 	}
 
 	return response.List, resp, nil
+}
+
+func (s *storyService) GetSecretStoriesCount(
+	ctx context.Context, request *GetSecretStoriesCountRequest, opts ...RequestOption,
+) (int, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "secret_stories/count", request, opts)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	response := new(CountResponse)
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return 0, resp, err
+	}
+
+	return response.Count, resp, nil
 }
 
 func (s *storyService) GetStoryCategories(
