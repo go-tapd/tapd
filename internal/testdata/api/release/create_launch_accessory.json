@@ -1,0 +1,21 @@
+{
+  "status": 1,
+  "data": {
+    "LaunchAccessory": {
+      "id": "1010104801000254035",
+      "form_id": "1010104801079533889",
+      "workspace_id": "10104801",
+      "type": "launch_url",
+      "tag": "",
+      "title": "URL",
+      "content": "https://www.tapd.cn/",
+      "description": null,
+      "content_type": "",
+      "created_by": "tapd",
+      "created": "2022-09-08 16:45:30",
+      "group_id": null,
+      "source": ""
+    }
+  },
+  "info": "success"
+}

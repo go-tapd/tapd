@@ -1,0 +1,41 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "LaunchForm": {
+        "id": "1010104801079697767",
+        "title": null,
+        "name": "202101150008",
+        "creator": "v_xuanfang",
+        "created": "2021-01-15 19:47:37",
+        "workspace_id": "10104801",
+        "status": "LAUNCHFORM_STATUS_INITIAL",
+        "version_type": null,
+        "baseline": null,
+        "release_model": null,
+        "roadmap_version": null,
+        "release_type": "正常发布",
+        "change_type": null,
+        "signed_by": null,
+        "archived_by": null,
+        "cc": null,
+        "change_notifier": null,
+        "signed": null,
+        "archived": null,
+        "signer_result": null,
+        "signer_comment": null,
+        "release_result": null,
+        "release_comment": null,
+        "test_path": null,
+        "created_path": null,
+        "remark": null,
+        "participator": ";v_xuanfang;",
+        "template_id": "1010104801065798331",
+        "iteration_id": null,
+        "release_id": null,
+        "flows": "LAUNCHFORM_STATUS_INITIAL"
+      }
+    }
+  ],
+  "info": "success"
+}
