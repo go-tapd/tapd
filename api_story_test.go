@@ -226,6 +226,35 @@ func TestStoryService_GetStoryTestCaseRelation(t *testing.T) {
 	assert.Equal(t, "0000-00-00 00:00:00", relations[0].Created)
 }
 
+func TestStoryService_GetStoryTimeRelations(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/stories/get_time_relative_stories", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000103", r.URL.Query().Get("story_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_time_relations.json"))
+	}))
+
+	relations, _, err := client.StoryService.GetStoryTimeRelations(ctx, &GetStoryTimeRelationsRequest{
+		WorkspaceID: Ptr(11112222),
+		StoryID:     Ptr[int64](1111112222001000103),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, relations, 2)
+	assert.Equal(t, "1210104801000007813", relations[0].ID)
+	assert.Equal(t, "11112222", relations[0].WorkspaceID)
+	assert.Equal(t, "story", relations[0].WorkitemType)
+	assert.Equal(t, "1111112222001000102", relations[0].WorkitemID)
+	assert.Equal(t, "begin", relations[0].SrcField)
+	assert.Equal(t, "11112222", relations[0].DstWorkspaceID)
+	assert.Equal(t, "story", relations[0].DstWorkitemType)
+	assert.Equal(t, "1111112222001000103", relations[0].DstWorkitemID)
+	assert.Equal(t, "due", relations[0].DstField)
+	assert.Equal(t, "after", relations[0].RelationType)
+	assert.Equal(t, "1210104801000007815", relations[1].ID)
+}
+
 func TestStoryService_GetStoryFieldsLabel(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

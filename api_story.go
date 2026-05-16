@@ -967,6 +967,24 @@ type (
 		Created     string `json:"created,omitempty"`
 	}
 
+	GetStoryTimeRelationsRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]源项目ID
+		StoryID     *int64 `url:"story_id,omitempty"`     // [必须]源需求ID
+	}
+
+	StoryTimeRelation struct {
+		ID              string `json:"id,omitempty"`                // 前后置关系ID
+		WorkspaceID     string `json:"workspace_id,omitempty"`      // 源项目ID
+		WorkitemType    string `json:"workitem_type,omitempty"`     // 业务对象类型，固定为 story
+		WorkitemID      string `json:"workitem_id,omitempty"`       // 源需求ID
+		SrcField        string `json:"src_field,omitempty"`         // 源需求被依赖的字段
+		DstWorkspaceID  string `json:"dst_workspace_id,omitempty"`  // 被依赖的项目ID
+		DstWorkitemType string `json:"dst_workitem_type,omitempty"` // 被依赖的业务对象类型，固定为 story
+		DstWorkitemID   string `json:"dst_workitem_id,omitempty"`   // 被依赖的需求ID
+		DstField        string `json:"dst_field,omitempty"`         // 被依赖的字段
+		RelationType    string `json:"relation_type,omitempty"`     // 依赖类型。before 为前置依赖，after 为后置依赖
+	}
+
 	GetStoryFieldsLabelRequest struct {
 		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目ID
 	}
@@ -1374,7 +1392,11 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_tcase.html
 	GetStoryTestCaseRelation(ctx context.Context, request *GetStoryTestCaseRelationRequest, opts ...RequestOption) ([]*StoryTestCaseRelation, *Response, error)
 
-	// 获取需求前后置关系
+	// GetStoryTimeRelations 获取需求前后置关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_time_relative_stories.html
+	GetStoryTimeRelations(ctx context.Context, request *GetStoryTimeRelationsRequest, opts ...RequestOption) ([]*StoryTimeRelation, *Response, error)
+
 	// 批量新增或修改需求前后置关系
 	// 批量删除需求前后置关系
 	// 获取需求保密信息
@@ -1655,6 +1677,30 @@ func (s *storyService) GetStoryTestCaseRelation(
 	relations := make([]*StoryTestCaseRelation, 0, len(items))
 	for _, item := range items {
 		relations = append(relations, item.StoryTcase)
+	}
+
+	return relations, resp, nil
+}
+
+func (s *storyService) GetStoryTimeRelations(
+	ctx context.Context, request *GetStoryTimeRelationsRequest, opts ...RequestOption,
+) ([]*StoryTimeRelation, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_time_relative_stories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		WorkitemTimeRelation *StoryTimeRelation `json:"WorkitemTimeRelation"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	relations := make([]*StoryTimeRelation, 0, len(items))
+	for _, item := range items {
+		relations = append(relations, item.WorkitemTimeRelation)
 	}
 
 	return relations, resp, nil
