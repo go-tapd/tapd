@@ -21,7 +21,24 @@ func newResponse(httpResp *http.Response) *Response {
 type RawBody struct {
 	Status int             `json:"status"`
 	Data   json.RawMessage `json:"data"`
-	Info   string          `json:"info"`
+	Info   any             `json:"info"`
+}
+
+// InfoString returns info as a string for both string and object-shaped responses.
+func (r *RawBody) InfoString() string {
+	switch info := r.Info.(type) {
+	case string:
+		return info
+	case nil:
+		return ""
+	default:
+		b, err := json.Marshal(info)
+		if err != nil {
+			return fmt.Sprint(info)
+		}
+
+		return string(b)
+	}
 }
 
 // ErrorResponse represents a tapd error response.
@@ -33,7 +50,7 @@ type ErrorResponse struct {
 
 func (e *ErrorResponse) Error() string {
 	if e.rawBody != nil {
-		return fmt.Sprintf("code: %d, info: %s", e.rawBody.Status, e.rawBody.Info)
+		return fmt.Sprintf("code: %d, info: %s", e.rawBody.Status, e.rawBody.InfoString())
 	}
 
 	if e.response != nil {

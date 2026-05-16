@@ -78,6 +78,31 @@ func TestTaskService_GetTasksCount(t *testing.T) {
 	assert.Equal(t, 36, count)
 }
 
+func TestTaskService_GetTaskCustomFieldsSettings(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tasks/custom_fields_settings", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_task_custom_fields_settings.json"))
+	}))
+
+	settings, _, err := client.TaskService.GetTaskCustomFieldsSettings(ctx, &GetTaskCustomFieldsSettingsRequest{
+		WorkspaceID: Ptr(11112222),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, settings, 1)
+	assert.Equal(t, "1111112222001000155", settings[0].ID)
+	assert.Equal(t, "11112222", settings[0].WorkspaceID)
+	assert.Equal(t, "task", settings[0].EntryType)
+	assert.Equal(t, "custom_field_100", settings[0].CustomField)
+	assert.Equal(t, "user_chooser", settings[0].Type)
+	assert.Equal(t, "任务处理人", settings[0].Name)
+	assert.Nil(t, settings[0].Options)
+	assert.Equal(t, "1", settings[0].Enabled)
+	assert.Equal(t, 0, settings[0].IsOut)
+}
+
 func TestTaskService_UpdateTask(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
@@ -165,6 +190,45 @@ func TestTaskService_UpdateTask(t *testing.T) {
 	assert.Equal(t, "plan value", task.CustomPlanField1)
 }
 
+func TestTaskService_BatchUpdateTasks(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/tasks/batch_update_task", r.URL.Path)
+
+		var req BatchUpdateTasksRequest
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, 11112222, *req.WorkspaceID)
+		assert.Len(t, req.Workitems, 2)
+		assert.Equal(t, int64(1111112222001138994), *req.Workitems[0].ID)
+		assert.Equal(t, "first task", *req.Workitems[0].Name)
+		assert.Equal(t, TaskStatusProgressing, *req.Workitems[0].Status)
+		assert.Equal(t, int64(1111112222001138995), *req.Workitems[1].ID)
+		assert.Equal(t, "second task", *req.Workitems[1].Name)
+		assert.Equal(t, "owner", *req.Workitems[1].Owner)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/batch_update_task.json"))
+	}))
+
+	result, _, err := client.TaskService.BatchUpdateTasks(ctx, &BatchUpdateTasksRequest{
+		WorkspaceID: Ptr(11112222),
+		Workitems: []*UpdateTaskRequest{
+			{
+				ID:     Ptr[int64](1111112222001138994),
+				Name:   Ptr("first task"),
+				Status: Ptr(TaskStatusProgressing),
+			},
+			{
+				ID:    Ptr[int64](1111112222001138995),
+				Name:  Ptr("second task"),
+				Owner: Ptr("owner"),
+			},
+		},
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, result)
+	assert.Equal(t, "success", result.Msg)
+}
+
 func TestTaskService_GetTaskChanges(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -217,6 +281,73 @@ func TestTaskService_GetTaskChangesCount(t *testing.T) {
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 189, count)
+}
+
+func TestTaskService_GetRemovedTasks(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tasks/get_removed_tasks", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111111111111,1111111111112", r.URL.Query().Get("id"))
+		assert.Equal(t, "creator", r.URL.Query().Get("creator"))
+		assert.Equal(t, "1", r.URL.Query().Get("is_archived"))
+		assert.Equal(t, "2021-01-01", r.URL.Query().Get("created"))
+		assert.Equal(t, "2021-01-02", r.URL.Query().Get("deleted"))
+		assert.Equal(t, "10", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_removed_tasks.json"))
+	}))
+
+	tasks, _, err := client.TaskService.GetRemovedTasks(ctx, &GetRemovedTasksRequest{
+		WorkspaceID: Ptr(11112222),
+		ID:          NewMulti(1111111111111, 1111111111112),
+		Creator:     Ptr("creator"),
+		IsArchived:  Ptr(1),
+		Created:     Ptr("2021-01-01"),
+		Deleted:     Ptr("2021-01-02"),
+		Limit:       Ptr(10),
+		Page:        Ptr(1),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, tasks, 1)
+	assert.Equal(t, "1111112222001138994", tasks[0].ID)
+	assert.Equal(t, "已删除任务", tasks[0].Name)
+	assert.Equal(t, "张三", tasks[0].Creator)
+	assert.Equal(t, "张三", tasks[0].OperationUser)
+	assert.Equal(t, "2024-08-20 11:28:23", tasks[0].Deleted)
+	assert.Equal(t, "0", tasks[0].IsArchived)
+}
+
+func TestTaskService_GetTasksByViewConfID(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/tasks/get_tasks_by_view_conf_id", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000001", r.URL.Query().Get("view_conf_id"))
+		assert.Equal(t, "testuser", r.URL.Query().Get("current_user"))
+		assert.Equal(t, "20", r.URL.Query().Get("limit"))
+		assert.Equal(t, "1", r.URL.Query().Get("page"))
+		assert.Equal(t, "id,name,workspace_id", r.URL.Query().Get("fields"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/get_tasks_by_view_conf_id.json"))
+	}))
+
+	tasks, _, err := client.TaskService.GetTasksByViewConfID(ctx, &GetTasksByViewConfIDRequest{
+		WorkspaceID: Ptr(11112222),
+		ViewConfID:  Ptr[int64](1111112222001000001),
+		CurrentUser: Ptr("testuser"),
+		Limit:       Ptr(20),
+		Page:        Ptr(1),
+		Fields:      NewMulti("id", "name", "workspace_id"),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, tasks, 1)
+	assert.Equal(t, "1111112222001138994", tasks[0].ID)
+	assert.Equal(t, "视图任务", tasks[0].Name)
+	assert.Equal(t, "11112222", tasks[0].WorkspaceID)
+	assert.Equal(t, TaskStatusOpen, tasks[0].Status)
+	assert.Equal(t, "owner", tasks[0].Owner)
 }
 
 func TestTaskService_GetTaskFieldsInfo(t *testing.T) {

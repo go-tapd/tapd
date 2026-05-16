@@ -282,6 +282,69 @@ type (
 		CustomPlanField10  *string        `json:"custom_plan_field_10,omitempty"`
 	}
 
+	GetTaskCustomFieldsSettingsRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
+	TaskCustomFieldsSetting struct {
+		ID              string  `json:"id,omitempty"`           // 自定义字段配置的ID
+		WorkspaceID     string  `json:"workspace_id,omitempty"` // 所属项目ID
+		AppID           string  `json:"app_id,omitempty"`
+		EntryType       string  `json:"entry_type,omitempty"`   // 所属实体对象
+		CustomField     string  `json:"custom_field,omitempty"` // 自定义字段标识（英文名）
+		Type            string  `json:"type,omitempty"`         // 输入类型
+		Name            string  `json:"name,omitempty"`         // 自定义字段显示名称
+		Options         *string `json:"options,omitempty"`      // 自定义字段可选值
+		ExtraConfig     *string `json:"extra_config,omitempty"` // 额外配置
+		Enabled         string  `json:"enabled,omitempty"`      // 是否启用
+		Freeze          string  `json:"freeze,omitempty"`
+		Sort            *string `json:"sort,omitempty"` // 显示时排序系数
+		Memo            *string `json:"memo,omitempty"`
+		OpenExtensionID string  `json:"open_extension_id,omitempty"`
+		IsOut           int     `json:"is_out,omitempty"`
+		IsUninstall     int     `json:"is_uninstall,omitempty"`
+		AppName         string  `json:"app_name,omitempty"`
+	}
+
+	BatchUpdateTasksRequest struct {
+		WorkspaceID *int                 `json:"workspace_id,omitempty"` // [必须]项目ID
+		Workitems   []*UpdateTaskRequest `json:"workitems,omitempty"`    // [必须]批量更新的任务
+	}
+
+	BatchUpdateTasksResponse struct {
+		Msg string `json:"msg,omitempty"` // 更新结果提示
+	}
+
+	GetRemovedTasksRequest struct {
+		WorkspaceID *int        `url:"workspace_id,omitempty"` // [必须]项目ID
+		ID          *Multi[int] `url:"id,omitempty"`           // 任务ID
+		Creator     *string     `url:"creator,omitempty"`      // 创建人
+		IsArchived  *int        `url:"is_archived,omitempty"`  // 是否为归档。默认取 0，为不返回归档的任务。传 is_archived=1 参数则仅返回归档的任务
+		Created     *string     `url:"created,omitempty"`      // 创建时间
+		Deleted     *string     `url:"deleted,omitempty"`      // 删除时间
+		Limit       *int        `url:"limit,omitempty"`        // 设置返回数量限制，默认为30
+		Page        *int        `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1（第一页）
+	}
+
+	RemovedTask struct {
+		ID            string `json:"id,omitempty"`             // 任务ID
+		Name          string `json:"name,omitempty"`           // 标题
+		Creator       string `json:"creator,omitempty"`        // 创建人
+		Created       string `json:"created,omitempty"`        // 创建时间
+		OperationUser string `json:"operation_user,omitempty"` // 删除人
+		IsArchived    string `json:"is_archived,omitempty"`    // 是否为归档
+		Deleted       string `json:"deleted,omitempty"`        // 删除时间
+	}
+
+	GetTasksByViewConfIDRequest struct {
+		WorkspaceID *int           `url:"workspace_id,omitempty"` // [必须]项目ID
+		ViewConfID  *int64         `url:"view_conf_id,omitempty"` // [必须]视图ID
+		CurrentUser *string        `url:"current_user,omitempty"` // 当前登录用户视图
+		Limit       *int           `url:"limit,omitempty"`        // 设置返回数量限制，默认为30，最大取200
+		Page        *int           `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1（第一页）
+		Fields      *Multi[string] `url:"fields,omitempty"`       // 设置获取的字段，多个字段间以','逗号隔开
+	}
+
 	TaskChange struct {
 		ID             string                  `json:"id,omitempty"`
 		WorkspaceID    string                  `json:"workspace_id,omitempty"`
@@ -545,7 +608,10 @@ type TaskService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_task_changes_count.html
 	GetTaskChangesCount(ctx context.Context, request *GetTaskChangesCountRequest, opts ...RequestOption) (int, *Response, error)
 
-	// 获取任务自定义字段配置
+	// GetTaskCustomFieldsSettings 获取任务自定义字段配置
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_task_custom_fields_settings.html
+	GetTaskCustomFieldsSettings(ctx context.Context, request *GetTaskCustomFieldsSettingsRequest, opts ...RequestOption) ([]*TaskCustomFieldsSetting, *Response, error)
 
 	// GetTasks 获取任务
 	//
@@ -562,8 +628,20 @@ type TaskService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/update_task.html
 	UpdateTask(ctx context.Context, request *UpdateTaskRequest, opts ...RequestOption) (*Task, *Response, error)
 
-	// 获取回收站下的任务
-	// 获取视图对应的任务列表
+	// BatchUpdateTasks 批量更新任务
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/batch_update_task.html
+	BatchUpdateTasks(ctx context.Context, request *BatchUpdateTasksRequest, opts ...RequestOption) (*BatchUpdateTasksResponse, *Response, error)
+
+	// GetRemovedTasks 获取回收站下的任务
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_removed_tasks.html
+	GetRemovedTasks(ctx context.Context, request *GetRemovedTasksRequest, opts ...RequestOption) ([]*RemovedTask, *Response, error)
+
+	// GetTasksByViewConfID 获取视图对应的任务列表
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/task/get_tasks_by_view_conf_id.html
+	GetTasksByViewConfID(ctx context.Context, request *GetTasksByViewConfIDRequest, opts ...RequestOption) ([]*Task, *Response, error)
 
 	// GetTaskFieldsInfo 获取任务字段信息
 	//
@@ -699,6 +777,30 @@ func (s *taskService) GetTaskChangesCount(
 	return response.Count, resp, nil
 }
 
+func (s *taskService) GetTaskCustomFieldsSettings(
+	ctx context.Context, request *GetTaskCustomFieldsSettingsRequest, opts ...RequestOption,
+) ([]*TaskCustomFieldsSetting, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tasks/custom_fields_settings", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	items := make([]struct {
+		CustomFieldConfig *TaskCustomFieldsSetting `json:"CustomFieldConfig,omitempty"`
+	}, 0)
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	settings := make([]*TaskCustomFieldsSetting, 0, len(items))
+	for _, item := range items {
+		settings = append(settings, item.CustomFieldConfig)
+	}
+
+	return settings, resp, nil
+}
+
 func (s *taskService) GetTasks(
 	ctx context.Context, request *GetTasksRequest, opts ...RequestOption,
 ) ([]*Task, *Response, error) {
@@ -757,6 +859,71 @@ func (s *taskService) UpdateTask(
 	}
 
 	return item.Task, resp, nil
+}
+
+func (s *taskService) BatchUpdateTasks(
+	ctx context.Context, request *BatchUpdateTasksRequest, opts ...RequestOption,
+) (*BatchUpdateTasksResponse, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "tasks/batch_update_task", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response BatchUpdateTasksResponse
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &response, resp, nil
+}
+
+func (s *taskService) GetRemovedTasks(
+	ctx context.Context, request *GetRemovedTasksRequest, opts ...RequestOption,
+) ([]*RemovedTask, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tasks/get_removed_tasks", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		RemovedTask *RemovedTask `json:"RemovedTask"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	tasks := make([]*RemovedTask, 0, len(items))
+	for _, item := range items {
+		tasks = append(tasks, item.RemovedTask)
+	}
+
+	return tasks, resp, nil
+}
+
+func (s *taskService) GetTasksByViewConfID(
+	ctx context.Context, request *GetTasksByViewConfIDRequest, opts ...RequestOption,
+) ([]*Task, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "tasks/get_tasks_by_view_conf_id", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		Task *Task `json:"Task"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	tasks := make([]*Task, 0, len(items))
+	for _, item := range items {
+		tasks = append(tasks, item.Task)
+	}
+
+	return tasks, resp, nil
 }
 
 type rawTaskFieldsInfo map[string]struct {
