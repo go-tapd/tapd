@@ -78,6 +78,93 @@ func TestTaskService_GetTasksCount(t *testing.T) {
 	assert.Equal(t, 36, count)
 }
 
+func TestTaskService_UpdateTask(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/tasks", r.URL.Path)
+
+		var req struct {
+			ID                 int64      `json:"id"`
+			WorkspaceID        int        `json:"workspace_id"`
+			CurrentUser        string     `json:"current_user"`
+			Name               string     `json:"name"`
+			Description        string     `json:"description"`
+			Status             TaskStatus `json:"status"`
+			Owner              string     `json:"owner"`
+			Begin              string     `json:"begin"`
+			Due                string     `json:"due"`
+			StoryID            int64      `json:"story_id"`
+			IterationID        int64      `json:"iteration_id"`
+			PriorityLabel      string     `json:"priority_label"`
+			Label              string     `json:"label"`
+			Progress           int        `json:"progress"`
+			Effort             string     `json:"effort"`
+			AutoCompleteEffort int        `json:"auto_complete_effort"`
+			CustomFieldOne     string     `json:"custom_field_one"`
+			CustomPlanField1   string     `json:"custom_plan_field_1"`
+		}
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, int64(1111112222001138994), req.ID)
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, "testuser", req.CurrentUser)
+		assert.Equal(t, "Updated Task", req.Name)
+		assert.Equal(t, "This is an updated task", req.Description)
+		assert.Equal(t, TaskStatusProgressing, req.Status)
+		assert.Equal(t, "owner", req.Owner)
+		assert.Equal(t, "2025-06-27", req.Begin)
+		assert.Equal(t, "2025-06-30", req.Due)
+		assert.Equal(t, int64(1111112222001047639), req.StoryID)
+		assert.Equal(t, int64(1111112222001001779), req.IterationID)
+		assert.Equal(t, "High", req.PriorityLabel)
+		assert.Equal(t, "frontend|urgent", req.Label)
+		assert.Equal(t, 50, req.Progress)
+		assert.Equal(t, "8", req.Effort)
+		assert.Equal(t, 1, req.AutoCompleteEffort)
+		assert.Equal(t, "custom value", req.CustomFieldOne)
+		assert.Equal(t, "plan value", req.CustomPlanField1)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/task/update_task.json"))
+	}))
+
+	task, _, err := client.TaskService.UpdateTask(ctx, &UpdateTaskRequest{
+		ID:                 Ptr[int64](1111112222001138994),
+		WorkspaceID:        Ptr(11112222),
+		CurrentUser:        Ptr("testuser"),
+		Name:               Ptr("Updated Task"),
+		Description:        Ptr("This is an updated task"),
+		Status:             Ptr(TaskStatusProgressing),
+		Owner:              Ptr("owner"),
+		Begin:              Ptr("2025-06-27"),
+		Due:                Ptr("2025-06-30"),
+		StoryID:            Ptr[int64](1111112222001047639),
+		IterationID:        Ptr[int64](1111112222001001779),
+		PriorityLabel:      Ptr(PriorityLabelHigh),
+		Label:              NewEnum("frontend", "urgent"),
+		Progress:           Ptr(50),
+		Effort:             Ptr("8"),
+		AutoCompleteEffort: Ptr(1),
+		CustomFieldOne:     Ptr("custom value"),
+		CustomPlanField1:   Ptr("plan value"),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, task)
+	assert.Equal(t, "1111112222001138994", task.ID)
+	assert.Equal(t, "Updated Task", task.Name)
+	assert.Equal(t, "This is an updated task", task.Description)
+	assert.Equal(t, "11112222", task.WorkspaceID)
+	assert.Equal(t, TaskStatusProgressing, task.Status)
+	assert.Equal(t, "owner", task.Owner)
+	assert.Equal(t, "2025-06-27", task.Begin)
+	assert.Equal(t, "2025-06-30", task.Due)
+	assert.Equal(t, "1111112222001047639", task.StoryID)
+	assert.Equal(t, "1111112222001001779", task.IterationID)
+	assert.Equal(t, "50", task.Progress)
+	assert.Equal(t, "8", task.Effort)
+	assert.Equal(t, PriorityLabelHigh, task.PriorityLabel)
+	assert.Equal(t, "custom value", task.CustomFieldOne)
+	assert.Equal(t, "plan value", task.CustomPlanField1)
+}
+
 func TestTaskService_GetTaskChanges(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
