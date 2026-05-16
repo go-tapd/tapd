@@ -83,6 +83,59 @@ func TestStoryService_CopyStory(t *testing.T) {
 	assert.Equal(t, "xinweihe", story.Creator)
 }
 
+func TestStoryService_GetStoryLinkStories(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/stories/get_link_stories", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1111112222001000103", r.URL.Query().Get("story_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_link_stories.json"))
+	}))
+
+	relations, _, err := client.StoryService.GetStoryLinkStories(ctx, &GetStoryLinkStoriesRequest{
+		WorkspaceID: Ptr(11112222),
+		StoryID:     Ptr[int64](1111112222001000103),
+	})
+	assert.NoError(t, err)
+	assert.Len(t, relations, 2)
+	assert.Equal(t, "derivation", relations[0].Type)
+	assert.Equal(t, "1111112222001000104", relations[0].ID)
+	assert.Equal(t, "1111112222001000103", relations[0].StoryID)
+	assert.Equal(t, "11112222", relations[0].WorkspaceID)
+	assert.Equal(t, "target", relations[0].ActAs)
+	assert.Equal(t, 11112222, relations[0].LinkedWorkspaceID)
+	assert.Equal(t, "copy", relations[1].Type)
+}
+
+func TestStoryService_GetSecretStories(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/secret_stories", r.URL.Path)
+
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "10", r.URL.Query().Get("limit"))
+		assert.Equal(t, "2", r.URL.Query().Get("page"))
+		assert.Equal(t, "created desc", r.URL.Query().Get("order"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_secret_stories.json"))
+	}))
+
+	stories, _, err := client.StoryService.GetSecretStories(ctx, &GetSecretStoriesRequest{
+		WorkspaceID: Ptr(11112222),
+		Limit:       Ptr(10),
+		Page:        Ptr(2),
+		Order:       NewOrder("created", OrderByDesc),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, []string{
+		"1111112222001000103",
+		"1111112222001000104",
+		"1111112222001000105",
+	}, stories)
+}
+
 func TestStoryService_GetStoryCategories(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

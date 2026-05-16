@@ -1,0 +1,26 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "type": "derivation",
+      "id": "1111112222001000104",
+      "story_id": "1111112222001000103",
+      "workspace_id": "11112222",
+      "actas": "target",
+      "created": "2019-08-01 16:32:22",
+      "modified": "2022-03-18 18:54:25",
+      "linked_workspace_id": 11112222
+    },
+    {
+      "type": "copy",
+      "id": "333344440010000001",
+      "story_id": "1111112222001000103",
+      "workspace_id": "11112222",
+      "actas": "target",
+      "created": "2019-08-01 16:33:32",
+      "modified": "2022-03-18 18:54:25",
+      "linked_workspace_id": 33334444
+    }
+  ],
+  "info": "success"
+}

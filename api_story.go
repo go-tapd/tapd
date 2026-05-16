@@ -604,6 +604,22 @@ type (
 		NewStatus         *StoryStatus   `json:"new_status,omitempty"`           // 新需求状态
 	}
 
+	GetStoryLinkStoriesRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		StoryID     *int64 `url:"story_id,omitempty"`     // [必须]需求ID
+	}
+
+	StoryLinkRelation struct {
+		Type              string `json:"type,omitempty"`                // 关系类型
+		ID                string `json:"id,omitempty"`                  // 关联的需求ID
+		StoryID           string `json:"story_id,omitempty"`            // 原需求ID
+		WorkspaceID       string `json:"workspace_id,omitempty"`        // 项目ID
+		ActAs             string `json:"actas,omitempty"`               // 角色
+		Created           string `json:"created,omitempty"`             // 创建时间
+		Modified          string `json:"modified,omitempty"`            // 最后修改时间
+		LinkedWorkspaceID int    `json:"linked_workspace_id,omitempty"` // 关联项目ID
+	}
+
 	GetStoriesCountRequest struct {
 		ID                *Multi[int64]  `url:"id,omitempty"`               // ID	支持多ID查询,多个ID用逗号分隔
 		Name              *string        `url:"name,omitempty"`             // 标题	支持模糊匹配
@@ -852,6 +868,13 @@ type (
 		CustomPlanField8  *string        `url:"custom_plan_field_8,omitempty"`
 		CustomPlanField9  *string        `url:"custom_plan_field_9,omitempty"`
 		CustomPlanField10 *string        `url:"custom_plan_field_10,omitempty"`
+	}
+
+	GetSecretStoriesRequest struct {
+		WorkspaceID *int   `url:"workspace_id,omitempty"` // [必须]项目ID
+		Limit       *int   `url:"limit,omitempty"`        // 设置返回数量限制，默认为30，最大取200
+		Page        *int   `url:"page,omitempty"`         // 返回当前数量限制下第N页的数据，默认为1（第一页）
+		Order       *Order `url:"order,omitempty"`        // 排序规则，规则：字段名 ASC或者DESC
 	}
 
 	GetStoryCategoriesRequest struct {
@@ -1524,7 +1547,10 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/copy_story.html
 	CopyStory(ctx context.Context, request *CopyStoryRequest, opts ...RequestOption) (*Story, *Response, error)
 
-	// 获取需求与其它需求的所有关联关系
+	// GetStoryLinkStories 获取需求与其它需求的所有关联关系
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_link_stories.html
+	GetStoryLinkStories(ctx context.Context, request *GetStoryLinkStoriesRequest, opts ...RequestOption) ([]*StoryLinkRelation, *Response, error)
 
 	// GetStories 获取需求
 	//
@@ -1536,7 +1562,11 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_stories_count.html
 	GetStoriesCount(ctx context.Context, request *GetStoriesCountRequest, opts ...RequestOption) (int, *Response, error)
 
-	// 获取保密需求
+	// GetSecretStories 获取保密需求
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_secret_stories.html
+	GetSecretStories(ctx context.Context, request *GetSecretStoriesRequest, opts ...RequestOption) ([]string, *Response, error)
+
 	// 获取保密需求数量
 
 	// GetStoryCategories 获取需求分类
@@ -1740,6 +1770,23 @@ func (s *storyService) CopyStory(
 	return response.Story, resp, nil
 }
 
+func (s *storyService) GetStoryLinkStories(
+	ctx context.Context, request *GetStoryLinkStoriesRequest, opts ...RequestOption,
+) ([]*StoryLinkRelation, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_link_stories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var relations []*StoryLinkRelation
+	resp, err := s.client.Do(req, &relations)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return relations, resp, nil
+}
+
 func (s *storyService) GetStories(
 	ctx context.Context, request *GetStoriesRequest, opts ...RequestOption,
 ) ([]*Story, *Response, error) {
@@ -1781,6 +1828,25 @@ func (s *storyService) GetStoriesCount(
 	}
 
 	return response.Count, resp, nil
+}
+
+func (s *storyService) GetSecretStories(
+	ctx context.Context, request *GetSecretStoriesRequest, opts ...RequestOption,
+) ([]string, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "secret_stories", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		List []string `json:"list,omitempty"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.List, resp, nil
 }
 
 func (s *storyService) GetStoryCategories(
