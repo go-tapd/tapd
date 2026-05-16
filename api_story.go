@@ -1116,8 +1116,8 @@ type (
 	}
 
 	UpdateStoryRequest struct {
-		ID                *int64         `json:"id"`                           // 必须
-		WorkspaceID       *int           `json:"workspace_id"`                 // 必须
+		ID                *int64         `json:"id,omitempty"`                 // 必须
+		WorkspaceID       *int           `json:"workspace_id,omitempty"`       // 必须
 		Name              *string        `json:"name,omitempty"`               // 标题
 		Priority          *string        `json:"priority,omitempty"`           // 优先级。
 		PriorityLabel     *PriorityLabel `json:"priority_label,omitempty"`     // 优先级。推荐使用这个字段
@@ -1358,6 +1358,21 @@ type (
 		CustomPlanField10 *string        `json:"custom_plan_field_10,omitempty"`
 	}
 
+	BatchUpdateStoriesRequest struct {
+		WorkspaceID *int                  `json:"workspace_id,omitempty"` // [必须]项目ID
+		Workitems   []*UpdateStoryRequest `json:"workitems,omitempty"`    // [必须]批量更新的需求，每次最多50条
+	}
+
+	BatchUpdateStoriesResponse struct {
+		Msg string `json:"msg,omitempty"` // 更新结果提示
+	}
+
+	UpdateStoryWorkitemTypeRequest struct {
+		StoryID        *int64 `json:"story_id,omitempty"`         // [必须]需求ID
+		WorkitemTypeID *int64 `json:"workitem_type_id,omitempty"` // [必须]目标需求类别ID
+		WorkspaceID    *int   `json:"workspace_id,omitempty"`     // [必须]项目ID
+	}
+
 	GetStoryTemplatesRequest struct {
 		WorkspaceID    *int `url:"workspace_id,omitempty"`     // [必须]项目ID
 		WorkitemTypeID *int `url:"workitem_type_id,omitempty"` // 需求类别ID
@@ -1528,7 +1543,16 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/update_story.html
 	UpdateStory(ctx context.Context, request *UpdateStoryRequest, opts ...RequestOption) (*Story, *Response, error)
 
-	// 更新需求的需求类别
+	// BatchUpdateStories 批量更新需求
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/batch_update_story.html
+	BatchUpdateStories(ctx context.Context, request *BatchUpdateStoriesRequest, opts ...RequestOption) (*BatchUpdateStoriesResponse, *Response, error)
+
+	// UpdateStoryWorkitemType 更新需求的需求类别
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/change_workitem_type.html
+	UpdateStoryWorkitemType(ctx context.Context, request *UpdateStoryWorkitemTypeRequest, opts ...RequestOption) (*Story, *Response, error)
+
 	// 获取需求所有字段及候选值
 
 	// GetStoryFieldsLabel 获取需求所有字段的中英文
@@ -1934,6 +1958,40 @@ func (s *storyService) UpdateStory(
 	}
 
 	return response.Story, resp, nil
+}
+
+func (s *storyService) BatchUpdateStories(
+	ctx context.Context, request *BatchUpdateStoriesRequest, opts ...RequestOption,
+) (*BatchUpdateStoriesResponse, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/batch_update_story", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response BatchUpdateStoriesResponse
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &response, resp, nil
+}
+
+func (s *storyService) UpdateStoryWorkitemType(
+	ctx context.Context, request *UpdateStoryWorkitemTypeRequest, opts ...RequestOption,
+) (*Story, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodPost, "stories/change_workitem_type", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var story Story
+	resp, err := s.client.Do(req, &story)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return &story, resp, nil
 }
 
 func (s *storyService) GetStoryFieldsLabel(
