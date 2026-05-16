@@ -1,0 +1,25 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "BoardCard": {
+        "id": "1020355782500624255",
+        "name": "test1 updated",
+        "description": null,
+        "created": "2019-09-17 15:58:43",
+        "modified": "2019-09-17 16:10:43",
+        "workspace_id": "20355782",
+        "owner": null,
+        "due": null,
+        "b_label": "[0]",
+        "b_sort": "3",
+        "b_board_id": "1020355782000010725",
+        "b_column_id": "1020355782000045510",
+        "status": "done",
+        "cc": null,
+        "begin": null
+      }
+    }
+  ],
+  "info": "success"
+}

@@ -1,0 +1,30 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Column": {
+        "id": "1010104801000032321",
+        "name": "已上线",
+        "board_id": "1010104801000007781",
+        "status": "open",
+        "sort": "7",
+        "created": "2018-07-19 16:46:04",
+        "creator": "TAPD",
+        "workspace_id": "10104801"
+      }
+    },
+    {
+      "Column": {
+        "id": "1010104801000032319",
+        "name": "开发中",
+        "board_id": "1010104801000007781",
+        "status": "open",
+        "sort": "6",
+        "created": "2018-07-19 16:46:04",
+        "creator": "TAPD",
+        "workspace_id": "10104801"
+      }
+    }
+  ],
+  "info": "success"
+}
