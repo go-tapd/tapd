@@ -1,0 +1,20 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "CustomFieldConfig": {
+        "id": "11223344",
+        "workspace_id": "69999237",
+        "entry_type": "workspace",
+        "custom_field": "custom_field_1",
+        "type": "select",
+        "name": "项目级别",
+        "options": "A|B|C",
+        "enabled": "1",
+        "sort": "1",
+        "memo": null
+      }
+    }
+  ],
+  "info": "success"
+}

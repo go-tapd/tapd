@@ -1,0 +1,54 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Workspace": {
+        "id": "10104802",
+        "name": "移动端子项目",
+        "pretty_name": "移动端子项目",
+        "category": "project",
+        "status": "normal",
+        "description": "移动端交付子项目",
+        "creator_id": "10001",
+        "created": "2025-01-01 10:00:00",
+        "begin_date": "2025-01-01",
+        "end_date": "2025-03-31",
+        "product_type": "software",
+        "platform_type": "mobile",
+        "is_self_development": "1",
+        "objective": "完成移动端交付",
+        "schedule": "按计划推进",
+        "milestone": "M1",
+        "risk": "无",
+        "closed": "0",
+        "template_id": "1010104801000001001",
+        "new_task": "1",
+        "secrecy": "0",
+        "member_count": 3,
+        "WorkspaceExtends": {
+          "flow_view": "kanban"
+        }
+      }
+    },
+    {
+      "Workspace": {
+        "id": "10104803",
+        "name": "服务端子项目",
+        "pretty_name": "服务端子项目",
+        "category": "project",
+        "status": "normal",
+        "description": "服务端交付子项目",
+        "creator_id": "10002",
+        "created": "2025-01-02 10:00:00",
+        "begin_date": "2025-01-02",
+        "end_date": "2025-03-31",
+        "template_id": "1010104801000001001",
+        "new_task": "1",
+        "secrecy": "0",
+        "member_count": 1,
+        "WorkspaceExtends": {}
+      }
+    }
+  ],
+  "info": "success"
+}

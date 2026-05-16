@@ -79,6 +79,28 @@ func TestWorkspaceService_GetUsersList(t *testing.T) {
 	assert.Equal(t, "2025-04-17", users[0].RealJoinTime)
 }
 
+func TestWorkspaceService_GetSubWorkspaces(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/workspaces/sub_workspaces", r.URL.Path)
+		assert.Equal(t, "20355782", r.URL.Query().Get("workspace_id"))
+		assert.Equal(t, "1010104801000001001", r.URL.Query().Get("template_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/get_sub_workspaces.json"))
+	}))
+
+	workspaces, _, err := client.WorkspaceService.GetSubWorkspaces(ctx, &GetSubWorkspacesRequest{
+		WorkspaceID: Ptr(20355782),
+		TemplateID:  Ptr(1010104801000001001),
+	})
+	require.NoError(t, err)
+	require.Len(t, workspaces, 2)
+	assert.Equal(t, "10104802", workspaces[0].ID)
+	assert.Equal(t, "移动端子项目", workspaces[0].Name)
+	assert.Equal(t, "1010104801000001001", workspaces[0].TemplateID)
+	assert.Equal(t, 3, workspaces[0].MemberCount)
+}
+
 func TestWorkspaceService_AddWorkspaceMember(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
@@ -109,6 +131,31 @@ func TestWorkspaceService_AddWorkspaceMember(t *testing.T) {
 	assert.True(t, result.Success)
 }
 
+func TestWorkspaceService_GetCompanyWorkspaces(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/workspaces/projects", r.URL.Path)
+		assert.Equal(t, "20003271", r.URL.Query().Get("company_id"))
+		assert.Equal(t, "project", r.URL.Query().Get("category"))
+		assert.Equal(t, "1", r.URL.Query().Get("with_extends"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/get_company_workspaces.json"))
+	}))
+
+	workspaces, _, err := client.WorkspaceService.GetCompanyWorkspaces(ctx, &GetCompanyWorkspacesRequest{
+		CompanyID:   Ptr(20003271),
+		Category:    Ptr("project"),
+		WithExtends: Ptr(1),
+	})
+	require.NoError(t, err)
+	require.Len(t, workspaces, 2)
+	assert.Equal(t, "69999237", workspaces[0].ID)
+	assert.Equal(t, "示例项目", workspaces[0].Name)
+	assert.Equal(t, "20003271", workspaces[0].CompanyID)
+	assert.Equal(t, "normal", workspaces[0].Status)
+	require.Contains(t, workspaces[0].WorkspaceExtends, "flow_view")
+}
+
 func TestWorkspaceService_GetWorkspaceRoles(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)
@@ -124,6 +171,54 @@ func TestWorkspaceService_GetWorkspaceRoles(t *testing.T) {
 	require.NoError(t, err)
 	assert.Contains(t, roles, &WorkspaceRole{ID: "1000000000000000002", Name: "管理员"})
 	assert.Contains(t, roles, &WorkspaceRole{ID: "1000000000000000010", Name: "测试人员"})
+}
+
+func TestWorkspaceService_GetUserParticipantWorkspaces(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/workspaces/user_participant_projects", r.URL.Path)
+		assert.Equal(t, "davidning", r.URL.Query().Get("nick"))
+		assert.Equal(t, "20003271", r.URL.Query().Get("company_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/get_user_participant_workspaces.json"))
+	}))
+
+	workspaces, _, err := client.WorkspaceService.GetUserParticipantWorkspaces(ctx, &GetUserParticipantWorkspacesRequest{
+		Nick:      Ptr("davidning"),
+		CompanyID: Ptr(20003271),
+	})
+	require.NoError(t, err)
+	require.Len(t, workspaces, 1)
+	assert.Equal(t, "69999237", workspaces[0].ID)
+	assert.Equal(t, "示例项目", workspaces[0].Name)
+	assert.Equal(t, "project", workspaces[0].Category)
+}
+
+func TestWorkspaceService_GetWorkspaceCustomFieldsSettings(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/workspaces/workspace_custom_field_settings", r.URL.Path)
+		assert.Equal(t, "69999237", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/workspace/get_workspace_custom_fields_settings.json"))
+	}))
+
+	settings, _, err := client.WorkspaceService.GetWorkspaceCustomFieldsSettings(
+		ctx,
+		&GetWorkspaceCustomFieldsSettingsRequest{
+			WorkspaceID: Ptr(69999237),
+		},
+	)
+	require.NoError(t, err)
+	require.Len(t, settings, 1)
+	assert.Equal(t, "11223344", settings[0].ID)
+	assert.Equal(t, "69999237", settings[0].WorkspaceID)
+	assert.Equal(t, "workspace", settings[0].EntryType)
+	assert.Equal(t, "custom_field_1", settings[0].CustomField)
+	assert.Equal(t, "项目级别", settings[0].Name)
+	require.NotNil(t, settings[0].Options)
+	assert.Equal(t, "A|B|C", *settings[0].Options)
+	assert.Equal(t, "1", settings[0].Enabled)
 }
 
 func TestWorkspaceService_UpdateWorkspaceInfo(t *testing.T) {

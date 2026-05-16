@@ -2,6 +2,7 @@ package tapd
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 )
 
@@ -10,29 +11,74 @@ type (
 		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
 	}
 
+	GetSubWorkspacesRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+		TemplateID  *int `url:"template_id,omitempty"`  // [可选]子项目模板ID
+	}
+
+	GetCompanyWorkspacesRequest struct {
+		CompanyID   *int    `url:"company_id,omitempty"`   // [必须]公司ID
+		Category    *string `url:"category,omitempty"`     // [可选]项目类型，project 或 mini_project
+		WithExtends *int    `url:"with_extends,omitempty"` // [可选]是否返回项目扩展信息
+	}
+
+	GetUserParticipantWorkspacesRequest struct {
+		Nick      *string `url:"nick,omitempty"`       // [必须]用户昵称
+		CompanyID *int    `url:"company_id,omitempty"` // [必须]公司ID
+	}
+
+	GetWorkspaceCustomFieldsSettingsRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
 	Workspace struct {
-		ID                string  `json:"id,omitempty"`
-		Name              string  `json:"name,omitempty"`
-		PrettyName        string  `json:"pretty_name,omitempty"`
-		Category          string  `json:"category,omitempty"`
-		Status            string  `json:"status,omitempty"`
-		Description       string  `json:"description,omitempty"`
-		Creator           string  `json:"creator,omitempty"`
-		Created           string  `json:"created,omitempty"`
-		BeginDate         *string `json:"begin_date,omitempty"`
-		EndDate           *string `json:"end_date,omitempty"`
-		Secrecy           string  `json:"secrecy,omitempty"`
-		ExternalOn        string  `json:"external_on,omitempty"`
-		NewTask           string  `json:"new_task,omitempty"`
-		CompanyID         string  `json:"company_id,omitempty"`
-		ProductType       *string `json:"product_type,omitempty"`
-		PlatformType      *string `json:"platform_type,omitempty"`
-		IsSelfDevelopment *string `json:"is_self_development,omitempty"`
-		Objective         string  `json:"objective,omitempty"`
-		Schedule          *string `json:"schedule,omitempty"`
-		Milestone         *string `json:"milestone,omitempty"`
-		Risk              *string `json:"risk,omitempty"`
-		Closed            *string `json:"closed,omitempty"`
+		ID                string         `json:"id,omitempty"`                  // 项目ID
+		Name              string         `json:"name,omitempty"`                // 项目名称
+		PrettyName        string         `json:"pretty_name,omitempty"`         // 项目显示名称
+		Category          string         `json:"category,omitempty"`            // 项目类型
+		Status            string         `json:"status,omitempty"`              // 项目状态
+		Description       string         `json:"description,omitempty"`         // 项目描述
+		Creator           string         `json:"creator,omitempty"`             // 创建人
+		CreatorID         string         `json:"creator_id,omitempty"`          // 创建人ID
+		Created           string         `json:"created,omitempty"`             // 创建时间
+		BeginDate         *string        `json:"begin_date,omitempty"`          // 开始日期
+		EndDate           *string        `json:"end_date,omitempty"`            // 结束日期
+		Secrecy           string         `json:"secrecy,omitempty"`             // 是否保密
+		ExternalOn        string         `json:"external_on,omitempty"`         // 是否开启外部协作
+		NewTask           string         `json:"new_task,omitempty"`            // 是否启用新任务
+		CompanyID         string         `json:"company_id,omitempty"`          // 公司ID
+		ParentID          string         `json:"parent_id,omitempty"`           // 父项目ID
+		TemplateID        string         `json:"template_id,omitempty"`         // 模板ID
+		ProductType       *string        `json:"product_type,omitempty"`        // 产品类型
+		PlatformType      *string        `json:"platform_type,omitempty"`       // 平台类型
+		IsSelfDevelopment *string        `json:"is_self_development,omitempty"` // 是否自研
+		Objective         string         `json:"objective,omitempty"`           // 项目目标
+		Schedule          *string        `json:"schedule,omitempty"`            // 项目计划
+		Milestone         *string        `json:"milestone,omitempty"`           // 里程碑
+		Risk              *string        `json:"risk,omitempty"`                // 风险
+		Closed            *string        `json:"closed,omitempty"`              // 是否关闭
+		MemberCount       int            `json:"member_count,omitempty"`        // 成员数量
+		WorkspaceExtends  map[string]any `json:"WorkspaceExtends,omitempty"`    // 项目扩展信息
+	}
+
+	WorkspaceCustomFieldsSetting struct {
+		ID              string  `json:"id,omitempty"`           // 自定义字段配置的ID
+		WorkspaceID     string  `json:"workspace_id,omitempty"` // 所属项目ID
+		AppID           string  `json:"app_id,omitempty"`       // 应用ID
+		EntryType       string  `json:"entry_type,omitempty"`   // 所属实体对象
+		CustomField     string  `json:"custom_field,omitempty"` // 自定义字段标识
+		Type            string  `json:"type,omitempty"`         // 输入类型
+		Name            string  `json:"name,omitempty"`         // 自定义字段显示名称
+		Options         *string `json:"options,omitempty"`      // 自定义字段可选值
+		ExtraConfig     *string `json:"extra_config,omitempty"` // 额外配置
+		Enabled         string  `json:"enabled,omitempty"`      // 是否启用
+		Freeze          string  `json:"freeze,omitempty"`       // 是否冻结
+		Sort            *string `json:"sort,omitempty"`         // 显示时排序系数
+		Memo            *string `json:"memo,omitempty"`         // 备注
+		OpenExtensionID string  `json:"open_extension_id,omitempty"`
+		IsOut           int     `json:"is_out,omitempty"`
+		IsUninstall     int     `json:"is_uninstall,omitempty"`
+		AppName         string  `json:"app_name,omitempty"`
 	}
 
 	GetUsersRequest struct {
@@ -137,7 +183,13 @@ type (
 )
 
 type WorkspaceService interface {
-	// 获取子项目信息
+	// GetSubWorkspaces 获取子项目信息
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/get_sub_workspaces.html
+	GetSubWorkspaces(
+		ctx context.Context, request *GetSubWorkspacesRequest, opts ...RequestOption,
+	) ([]*Workspace, *Response, error)
+
 	// 获取项目信息
 
 	// GetWorkspaceInfo 获取项目信息
@@ -161,7 +213,12 @@ type WorkspaceService interface {
 		ctx context.Context, request *AddWorkspaceMemberRequest, opts ...RequestOption,
 	) (*AddWorkspaceMemberResponse, *Response, error)
 
-	// 获取公司项目列表
+	// GetCompanyWorkspaces 获取公司项目列表
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/projects.html
+	GetCompanyWorkspaces(
+		ctx context.Context, request *GetCompanyWorkspacesRequest, opts ...RequestOption,
+	) ([]*Workspace, *Response, error)
 
 	// GetWorkspaceRoles 获取用户组ID对照关系
 	//
@@ -170,8 +227,19 @@ type WorkspaceService interface {
 		ctx context.Context, request *GetWorkspaceRolesRequest, opts ...RequestOption,
 	) ([]*WorkspaceRole, *Response, error)
 
-	// 获取用户参与的项目列表
-	// 获取项目自定义字段
+	// GetUserParticipantWorkspaces 获取用户参与的项目列表
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/user_participant_projects.html
+	GetUserParticipantWorkspaces(
+		ctx context.Context, request *GetUserParticipantWorkspacesRequest, opts ...RequestOption,
+	) ([]*Workspace, *Response, error)
+
+	// GetWorkspaceCustomFieldsSettings 获取项目自定义字段
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/workspace/workspace_custom_field_settings.html
+	GetWorkspaceCustomFieldsSettings(
+		ctx context.Context, request *GetWorkspaceCustomFieldsSettingsRequest, opts ...RequestOption,
+	) ([]*WorkspaceCustomFieldsSetting, *Response, error)
 
 	// UpdateWorkspaceInfo 更新项目信息
 	//
@@ -200,6 +268,17 @@ func NewWorkspaceService(client *Client) WorkspaceService {
 	return &workspaceService{
 		client: client,
 	}
+}
+
+func (s *workspaceService) GetSubWorkspaces(
+	ctx context.Context, request *GetSubWorkspacesRequest, opts ...RequestOption,
+) ([]*Workspace, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workspaces/sub_workspaces", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return s.doWorkspaces(req)
 }
 
 func (s *workspaceService) GetWorkspaceInfo(
@@ -245,6 +324,17 @@ func (s *workspaceService) GetUsers(
 	return users, resp, nil
 }
 
+func (s *workspaceService) GetCompanyWorkspaces(
+	ctx context.Context, request *GetCompanyWorkspacesRequest, opts ...RequestOption,
+) ([]*Workspace, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workspaces/projects", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return s.doWorkspaces(req)
+}
+
 func (s *workspaceService) AddWorkspaceMember(
 	ctx context.Context, request *AddWorkspaceMemberRequest, opts ...RequestOption,
 ) (*AddWorkspaceMemberResponse, *Response, error) {
@@ -287,6 +377,41 @@ func (s *workspaceService) GetWorkspaceRoles(
 	return roles, resp, nil
 }
 
+func (s *workspaceService) GetUserParticipantWorkspaces(
+	ctx context.Context, request *GetUserParticipantWorkspacesRequest, opts ...RequestOption,
+) ([]*Workspace, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workspaces/user_participant_projects", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return s.doWorkspaces(req)
+}
+
+func (s *workspaceService) GetWorkspaceCustomFieldsSettings(
+	ctx context.Context, request *GetWorkspaceCustomFieldsSettingsRequest, opts ...RequestOption,
+) ([]*WorkspaceCustomFieldsSetting, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "workspaces/workspace_custom_field_settings", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var items []struct {
+		CustomFieldConfig *WorkspaceCustomFieldsSetting `json:"CustomFieldConfig,omitempty"`
+	}
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	settings := make([]*WorkspaceCustomFieldsSetting, 0, len(items))
+	for _, item := range items {
+		settings = append(settings, item.CustomFieldConfig)
+	}
+
+	return settings, resp, nil
+}
+
 func (s *workspaceService) UpdateWorkspaceInfo(
 	ctx context.Context, request *UpdateWorkspaceInfoRequest, opts ...RequestOption,
 ) (string, *Response, error) {
@@ -319,4 +444,45 @@ func (s *workspaceService) GetMemberActivityLog(
 	}
 
 	return response, resp, nil
+}
+
+type workspaceItems []*Workspace
+
+func (items *workspaceItems) UnmarshalJSON(data []byte) error {
+	var list []struct {
+		Workspace *Workspace `json:"Workspace"`
+	}
+	if err := json.Unmarshal(data, &list); err == nil {
+		*items = make([]*Workspace, 0, len(list))
+		for _, item := range list {
+			*items = append(*items, item.Workspace)
+		}
+
+		return nil
+	}
+
+	var single struct {
+		Workspace *Workspace `json:"Workspace"`
+	}
+	if err := json.Unmarshal(data, &single); err != nil {
+		return err
+	}
+	if single.Workspace == nil {
+		*items = nil
+		return nil
+	}
+
+	*items = []*Workspace{single.Workspace}
+
+	return nil
+}
+
+func (s *workspaceService) doWorkspaces(req *http.Request) ([]*Workspace, *Response, error) {
+	var items workspaceItems
+	resp, err := s.client.Do(req, &items)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return items, resp, nil
 }
