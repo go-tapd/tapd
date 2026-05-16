@@ -220,7 +220,7 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
 - [x] 获取工时花费
 - [x] 获取工时花费的数量
 - [x] 更新工时花费
-- [ ] 删除工时花费
+- [x] 删除工时花费
 
 ### 项目
 

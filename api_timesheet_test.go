@@ -197,3 +197,38 @@ func TestTimesheetService_UpdateTimesheet(t *testing.T) {
 	assert.Equal(t, "1", timesheet.Memo)
 	assert.Equal(t, "0", timesheet.IsDelete)
 }
+
+func TestTimesheetService_DeleteTimesheets(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/timesheets/delete_timesheets", r.URL.Path)
+
+		var req struct {
+			EntityType  EntityType `json:"entity_type"`
+			EntityID    int64      `json:"entity_id"`
+			WorkspaceID int        `json:"workspace_id"`
+			CostIDs     []int64    `json:"cost_ids"`
+		}
+		assert.NoError(t, json.NewDecoder(r.Body).Decode(&req))
+		assert.Equal(t, EntityTypeStory, req.EntityType)
+		assert.Equal(t, int64(1134190502001057318), req.EntityID)
+		assert.Equal(t, 11112222, req.WorkspaceID)
+		assert.Equal(t, []int64{1134190502001044767, 1134190502001044768}, req.CostIDs)
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/timesheet/delete_timesheets.json"))
+	}))
+
+	response, _, err := client.TimesheetService.DeleteTimesheets(ctx, &DeleteTimesheetsRequest{
+		EntityType:  Ptr(EntityTypeStory),
+		EntityID:    Ptr[int64](1134190502001057318),
+		WorkspaceID: Ptr(11112222),
+		CostIDs:     Ptr([]int64{1134190502001044767, 1134190502001044768}),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "删除成功", response.Msg)
+	assert.Equal(t, []string{"1134190502001044767"}, response.Data.Success.CostIDs)
+	assert.Equal(t, "删除成功", response.Data.Success.Msg)
+	assert.Len(t, response.Data.Failed, 1)
+	assert.Equal(t, []string{"1134190502001044768"}, response.Data.Failed[0].CostIDs)
+	assert.Equal(t, "工时花费不存在", response.Data.Failed[0].Msg)
+}
