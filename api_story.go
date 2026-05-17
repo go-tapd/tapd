@@ -2,7 +2,24 @@ package tapd
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
+)
+
+// StoryFieldsInfoHTMLType 需求字段控件类型。
+type StoryFieldsInfoHTMLType string
+
+const (
+	StoryFieldsInfoHTMLTypeInput             StoryFieldsInfoHTMLType = "input"
+	StoryFieldsInfoHTMLTypeSelect            StoryFieldsInfoHTMLType = "select"
+	StoryFieldsInfoHTMLTypeRichEdit          StoryFieldsInfoHTMLType = "rich_edit"
+	StoryFieldsInfoHTMLTypeUserChooser       StoryFieldsInfoHTMLType = "user_chooser"
+	StoryFieldsInfoHTMLTypeSingleUserChooser StoryFieldsInfoHTMLType = "single_user_chooser"
+	StoryFieldsInfoHTMLTypeDatetime          StoryFieldsInfoHTMLType = "datetime"
+	StoryFieldsInfoHTMLTypeDateInput         StoryFieldsInfoHTMLType = "dateinput"
+	StoryFieldsInfoHTMLTypeText              StoryFieldsInfoHTMLType = "text"
+	StoryFieldsInfoHTMLTypeRadio             StoryFieldsInfoHTMLType = "radio"
+	StoryFieldsInfoHTMLTypeFile              StoryFieldsInfoHTMLType = "file"
 )
 
 type StoryStatus string
@@ -1154,9 +1171,56 @@ type (
 		WorkspaceID *int `url:"workspace_id,omitempty"` // 项目ID
 	}
 
+	GetStoryFieldsInfoRequest struct {
+		WorkspaceID *int `url:"workspace_id,omitempty"` // [必须]项目ID
+	}
+
 	StoryFieldLabel struct {
 		EN string `json:"en,omitempty"` // 字段英文名
 		CN string `json:"cn,omitempty"` // 字段中文标签
+	}
+
+	StoryFieldsInfoOption struct {
+		Key   string `json:"key,omitempty"`   // 英文Key
+		Label string `json:"label,omitempty"` // 中文名称
+	}
+
+	StoryFieldsInfoColorOption struct {
+		Value string `json:"value,omitempty"` // 值
+		Label string `json:"label,omitempty"` // 中文名称
+		Color string `json:"color,omitempty"` // 颜色
+	}
+
+	StoryFieldsInfoPureOption struct {
+		ParentID       string `json:"parent_id,omitempty"`        // 父选项ID
+		WorkspaceID    string `json:"workspace_id,omitempty"`     // 项目ID
+		Sort           string `json:"sort,omitempty"`             // 排序
+		WorkitemTypeID string `json:"workitem_type_id,omitempty"` // 需求类别ID
+		PlanAppID      string `json:"plan_app_id,omitempty"`      // 规划应用ID
+		OriginName     string `json:"origin_name,omitempty"`      // 原始名称
+		Value          string `json:"value,omitempty"`            // 值
+		Label          string `json:"label,omitempty"`            // 中文名称
+		Panel          int    `json:"panel,omitempty"`            // 面板
+	}
+
+	StoryFieldsInfoUserOption struct {
+		Value string `json:"value,omitempty"` // 用户值
+		Label string `json:"label,omitempty"` // 用户名称
+	}
+
+	StoryFieldsInfo struct {
+		Name           string                       `json:"name,omitempty"`             // 字段名
+		HTMLType       StoryFieldsInfoHTMLType      `json:"html_type,omitempty"`        // 类型
+		Label          string                       `json:"label,omitempty"`            // 中文名称
+		Memo           string                       `json:"memo,omitempty"`             // 备注
+		Readonly       int                          `json:"readonly,omitempty"`         // 是否只读
+		Options        []StoryFieldsInfoOption      `json:"options,omitempty"`          // 候选值
+		ColorOptions   []StoryFieldsInfoColorOption `json:"color_options,omitempty"`    // 带颜色的候选值
+		PureOptions    []StoryFieldsInfoPureOption  `json:"pure_options,omitempty"`     // 原始候选值
+		UserOptions    []StoryFieldsInfoUserOption  `json:"user_options,omitempty"`     // 用户候选值
+		RawOptions     json.RawMessage              `json:"raw_options,omitempty"`      // 原始 options，保留级联等复杂结构
+		RawPureOptions json.RawMessage              `json:"raw_pure_options,omitempty"` // 原始 pure_options
+		RawUserOptions json.RawMessage              `json:"raw_user_options,omitempty"` // 原始 user_options
 	}
 
 	StoryCustomFieldsSetting struct {
@@ -1720,6 +1784,11 @@ type StoryService interface {
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/change_workitem_type.html
 	UpdateStoryWorkitemType(ctx context.Context, request *UpdateStoryWorkitemTypeRequest, opts ...RequestOption) (*Story, *Response, error)
 
+	// GetStoryFieldsInfo 获取需求所有字段及候选值
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_fields_info.html
+	GetStoryFieldsInfo(ctx context.Context, request *GetStoryFieldsInfoRequest, opts ...RequestOption) ([]*StoryFieldsInfo, *Response, error)
+
 	// GetStorySteps 使用并行工作流的需求，获取其节点信息
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/story/get_story_steps.html
@@ -2281,6 +2350,53 @@ func (s *storyService) UpdateStoryWorkitemType(
 	return &story, resp, nil
 }
 
+type rawStoryFieldsInfo map[string]struct {
+	Name         string                       `json:"name,omitempty"`
+	HTMLType     StoryFieldsInfoHTMLType      `json:"html_type,omitempty"`
+	Label        string                       `json:"label,omitempty"`
+	Memo         string                       `json:"memo,omitempty"`
+	Readonly     int                          `json:"readonly,omitempty"`
+	Options      json.RawMessage              `json:"options,omitempty"`
+	ColorOptions []StoryFieldsInfoColorOption `json:"color_options,omitempty"`
+	PureOptions  json.RawMessage              `json:"pure_options,omitempty"`
+	UserOptions  json.RawMessage              `json:"user_options,omitempty"`
+}
+
+func (s *storyService) GetStoryFieldsInfo(
+	ctx context.Context, request *GetStoryFieldsInfoRequest, opts ...RequestOption,
+) ([]*StoryFieldsInfo, *Response, error) {
+	req, err := s.client.NewRequest(ctx, http.MethodGet, "stories/get_fields_info", request, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var raw rawStoryFieldsInfo
+	resp, err := s.client.Do(req, &raw)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	fields := make([]*StoryFieldsInfo, 0, len(raw))
+	for _, item := range raw {
+		fields = append(fields, &StoryFieldsInfo{
+			Name:           item.Name,
+			HTMLType:       item.HTMLType,
+			Label:          item.Label,
+			Memo:           item.Memo,
+			Readonly:       item.Readonly,
+			Options:        newStoryFieldsInfoOptions(item.Options),
+			ColorOptions:   item.ColorOptions,
+			PureOptions:    newStoryFieldsInfoPureOptions(item.PureOptions),
+			UserOptions:    newStoryFieldsInfoUserOptions(item.UserOptions),
+			RawOptions:     item.Options,
+			RawPureOptions: item.PureOptions,
+			RawUserOptions: item.UserOptions,
+		})
+	}
+
+	return fields, resp, nil
+}
+
 func (s *storyService) GetStorySteps(
 	ctx context.Context, request *GetStoryStepsRequest, opts ...RequestOption,
 ) ([]*StoryStepInfo, *Response, error) {
@@ -2571,4 +2687,51 @@ func (s *storyService) CreateStoryLinkRelation(
 	}
 
 	return result, resp, nil
+}
+
+func newStoryFieldsInfoOptions(raw json.RawMessage) []StoryFieldsInfoOption {
+	if len(raw) == 0 {
+		return nil
+	}
+
+	var items map[string]string
+	if err := json.Unmarshal(raw, &items); err != nil {
+		return nil
+	}
+
+	options := make([]StoryFieldsInfoOption, 0, len(items))
+	for key, label := range items {
+		options = append(options, StoryFieldsInfoOption{
+			Key:   key,
+			Label: label,
+		})
+	}
+
+	return options
+}
+
+func newStoryFieldsInfoPureOptions(raw json.RawMessage) []StoryFieldsInfoPureOption {
+	if len(raw) == 0 {
+		return nil
+	}
+
+	var options []StoryFieldsInfoPureOption
+	if err := json.Unmarshal(raw, &options); err != nil {
+		return nil
+	}
+
+	return options
+}
+
+func newStoryFieldsInfoUserOptions(raw json.RawMessage) []StoryFieldsInfoUserOption {
+	if len(raw) == 0 {
+		return nil
+	}
+
+	var options []StoryFieldsInfoUserOption
+	if err := json.Unmarshal(raw, &options); err != nil {
+		return nil
+	}
+
+	return options
 }

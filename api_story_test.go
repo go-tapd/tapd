@@ -377,6 +377,71 @@ func TestStoryService_GetStoryCustomFieldsSettings(t *testing.T) {
 	assert.Equal(t, "", settings[0].AppName)
 }
 
+func TestStoryService_GetStoryFieldsInfo(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodGet, r.Method)
+		assert.Equal(t, "/stories/get_fields_info", r.URL.Path)
+		assert.Equal(t, "11112222", r.URL.Query().Get("workspace_id"))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/story/get_story_fields_info.json"))
+	}))
+
+	fields, _, err := client.StoryService.GetStoryFieldsInfo(ctx, &GetStoryFieldsInfoRequest{
+		WorkspaceID: Ptr(11112222),
+	})
+	assert.NoError(t, err)
+	assert.NotEmpty(t, fields)
+
+	var foundID, foundStatus, foundIteration, foundOwner, foundCascade bool
+	for _, field := range fields {
+		switch field.Name {
+		case "id":
+			foundID = true
+			assert.Equal(t, "ID", field.Label)
+			assert.Equal(t, StoryFieldsInfoHTMLTypeInput, field.HTMLType)
+			assert.Equal(t, 0, field.Readonly)
+		case "status":
+			foundStatus = true
+			assert.Equal(t, "状态", field.Label)
+			assert.Equal(t, StoryFieldsInfoHTMLTypeSelect, field.HTMLType)
+			assert.Contains(t, field.Options, StoryFieldsInfoOption{
+				Key:   "planning",
+				Label: "规划中",
+			})
+		case "iteration_id":
+			foundIteration = true
+			assert.Equal(t, "迭代", field.Label)
+			assert.Contains(t, field.PureOptions, StoryFieldsInfoPureOption{
+				ParentID:       "0",
+				WorkspaceID:    "11112222",
+				Sort:           "100124600000",
+				WorkitemTypeID: "1111112222001000001",
+				PlanAppID:      "0",
+				Value:          "1111112222001001246",
+				Label:          "迭代2",
+				Panel:          0,
+			})
+		case "owner":
+			foundOwner = true
+			assert.Equal(t, StoryFieldsInfoHTMLTypeSingleUserChooser, field.HTMLType)
+			assert.Contains(t, field.UserOptions, StoryFieldsInfoUserOption{
+				Value: "zhangsan",
+				Label: "张三",
+			})
+		case "custom_field_17":
+			foundCascade = true
+			assert.NotEmpty(t, field.RawOptions)
+			assert.Empty(t, field.Options)
+		}
+	}
+
+	assert.True(t, foundID)
+	assert.True(t, foundStatus)
+	assert.True(t, foundIteration)
+	assert.True(t, foundOwner)
+	assert.True(t, foundCascade)
+}
+
 func TestStoryService_GetStoryTestCaseRelation(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodGet, r.Method)

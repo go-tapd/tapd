@@ -1,0 +1,88 @@
+{
+  "status": 1,
+  "data": {
+    "id": {
+      "name": "id",
+      "options": [],
+      "html_type": "input",
+      "label": "ID",
+      "pure_options": [],
+      "readonly": 0
+    },
+    "status": {
+      "name": "status",
+      "options": {
+        "planning": "规划中",
+        "developing": "实现中",
+        "resolved": "已实现",
+        "rejected": "已拒绝"
+      },
+      "html_type": "select",
+      "label": "状态",
+      "pure_options": [],
+      "readonly": 0
+    },
+    "iteration_id": {
+      "name": "iteration_id",
+      "options": {
+        "1111112222001001246": "迭代2"
+      },
+      "html_type": "select",
+      "label": "迭代",
+      "pure_options": [
+        {
+          "parent_id": "0",
+          "workspace_id": "11112222",
+          "sort": "100124600000",
+          "workitem_type_id": "1111112222001000001",
+          "plan_app_id": "0",
+          "value": "1111112222001001246",
+          "label": "迭代2",
+          "panel": 0
+        }
+      ],
+      "readonly": 0
+    },
+    "owner": {
+      "name": "owner",
+      "options": [],
+      "html_type": "single_user_chooser",
+      "label": "处理人",
+      "pure_options": [],
+      "readonly": 0,
+      "user_options": [
+        {
+          "value": "zhangsan",
+          "label": "张三"
+        }
+      ]
+    },
+    "custom_field_17": {
+      "name": "custom_field_17",
+      "options": [
+        {
+          "name": "a1",
+          "children": [
+            {
+              "name": "a11"
+            },
+            {
+              "name": "a12",
+              "children": [
+                {
+                  "name": "a123"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "html_type": "cascade",
+      "label": "级联字段",
+      "pure_options": [],
+      "readonly": 0,
+      "memo": "复杂候选值保留在 RawOptions"
+    }
+  },
+  "info": "success"
+}
