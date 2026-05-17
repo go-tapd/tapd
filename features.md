@@ -170,9 +170,9 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
 
 ### 源码
 
-- [ ] 保存Commit提交数据
-- [ ] 获取GIT关联提交数据(GitCommit)
-- [ ] 获取指定commit关联的TAPD对象（需求、任务、缺陷）
+- [x] 保存Commit提交数据 —— AI 实现，未人工验证
+- [x] 获取GIT关联提交数据(GitCommit) —— AI 实现，未人工验证
+- [x] 获取指定commit关联的TAPD对象（需求、任务、缺陷） —— AI 实现，未人工验证
 
 ### Wiki
 
