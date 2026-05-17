@@ -1,0 +1,29 @@
+{
+  "status": 1,
+  "data": {
+    "id": "1020375571000321465",
+    "hook_user_name": "terrysxu",
+    "commit_id": "zxxxxx",
+    "user_name": "",
+    "workspace_id": 20375571,
+    "message": "--story=854927829 ASA-c2s",
+    "path": "",
+    "web_url": "",
+    "hook_project_name": "repos/xxx_proj",
+    "commit_time": "2019-07-22 19:11:11 +0800 (Mon, 22 Jul 2019)",
+    "ref": "",
+    "git_env": "CodeGit",
+    "file_commit": "{\"U\":[\"xxx.php\"],\"A\":[\"xxx.js\"],\"M\":[\"xxx.html\"]}",
+    "repo_id": "abcd1234-avcd-1234-avcd-1234abcdefgh",
+    "related": [
+      {
+        "type": "story",
+        "object_id": "1020375571854927829",
+        "commit_id": "1020375571000321465",
+        "workspace_id": 20375571,
+        "code": "SUCCESS"
+      }
+    ]
+  },
+  "info": "success"
+}

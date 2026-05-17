@@ -1,0 +1,33 @@
+{
+  "status": 1,
+  "data": [
+    {
+      "Task": {
+        "id": "1020355782500602947",
+        "name": "666",
+        "description": "",
+        "workspace_id": "20355782",
+        "creator": "v_tingtdong",
+        "created": "2019-10-30 16:26:45",
+        "modified": "2019-10-30 16:26:45",
+        "status": "open",
+        "owner": "",
+        "cc": "",
+        "begin": "",
+        "due": "",
+        "story_id": "1020355782500697089",
+        "iteration_id": "1020355782000390769",
+        "priority": "",
+        "progress": "0",
+        "completed": "",
+        "effort_completed": "0",
+        "exceed": "0",
+        "remain": "0",
+        "effort": "0",
+        "has_attachment": "0",
+        "release_id": "1020355782500697089"
+      }
+    }
+  ],
+  "info": "success"
+}
