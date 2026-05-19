@@ -84,7 +84,7 @@ func TestDispatcher_Dispatch(t *testing.T) {
 			handler(w, req)
 
 			resp := w.Result()
-			defer resp.Body.Close() // nolint:errcheck
+			defer resp.Body.Close() //nolint:errcheck
 
 			assert.Equal(t, http.StatusOK, resp.StatusCode)
 			buf, err := io.ReadAll(resp.Body)
