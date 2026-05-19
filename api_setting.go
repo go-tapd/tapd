@@ -8,7 +8,7 @@ import (
 type (
 	GetWorkspaceSettingRequest struct {
 		WorkspaceID *int    `url:"workspace_id,omitempty"` // 项目ID
-		Type        *string `url:"type,omitempty"`         // nolint:lll // 配置名称（is_enabled_story_category 是否启用需求分类树，workspace_metrology 工时单位）
+		Type        *string `url:"type,omitempty"`         //nolint:lll // 配置名称（is_enabled_story_category 是否启用需求分类树，workspace_metrology 工时单位）
 	}
 
 	GetWorkspaceSettingResponse struct {

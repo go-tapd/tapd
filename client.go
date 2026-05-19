@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"maps"
 	"net/http"
 	"net/url"
 	"strings"
@@ -214,9 +215,7 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, data any, 
 	}
 
 	// Set the request specific headers.
-	for k, v := range reqHeaders {
-		req.Header[k] = v
-	}
+	maps.Copy(req.Header, reqHeaders)
 
 	// Apply request options
 	for _, opt := range opts {
@@ -235,8 +234,8 @@ func (c *Client) Do(req *http.Request, v any) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()              // nolint:errcheck
-	defer io.Copy(io.Discard, resp.Body) // nolint:errcheck
+	defer resp.Body.Close()              //nolint:errcheck
+	defer io.Copy(io.Discard, resp.Body) //nolint:errcheck
 
 	// decode response body
 	var rawBody RawBody

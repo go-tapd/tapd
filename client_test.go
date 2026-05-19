@@ -26,7 +26,7 @@ const (
 
 var ctx = context.Background()
 
-func createServerClient(t *testing.T, handler http.Handler) (*httptest.Server, *Client) {
+func createServerClient(t *testing.T, handler http.Handler) (*httptest.Server, *Client) { //nolint:unparam
 	srv := httptest.NewServer(handler)
 	t.Cleanup(srv.Close)
 
@@ -59,7 +59,7 @@ func TestClient_BasicAuth(t *testing.T) {
 		assert.Equal(t, apiClientID, clientID)
 		assert.Equal(t, apiClientSecret, clientSecret)
 
-		// nolint:errcheck
+		//nolint:errcheck
 		fmt.Fprint(w, successResponse)
 	}))
 	assert.Equal(t, authTypeBasic, client.authType)
@@ -82,7 +82,7 @@ func TestClient_PATAuth(t *testing.T) {
 		assert.NotEmpty(t, authHeader)
 		assert.Equal(t, "Bearer "+apiAccessToken, authHeader)
 
-		// nolint:errcheck
+		//nolint:errcheck
 		fmt.Fprint(w, successResponse)
 	}))
 	t.Cleanup(srv.Close)
@@ -104,7 +104,7 @@ func TestClient_ErrorResponse(t *testing.T) {
 		assert.Equal(t, http.MethodGet, r.Method)
 		assert.Equal(t, "/__/error-response", r.URL.Path)
 
-		// nolint:errcheck
+		//nolint:errcheck
 		fmt.Fprint(w, `{
   "status": 0,
   "data": {},
@@ -134,7 +134,7 @@ func TestClient_NormalRequest(t *testing.T) {
 		assert.Equal(t, apiClientID, clientID)
 		assert.Equal(t, apiClientSecret, clientSecret)
 
-		fmt.Fprint(w, successResponse) // nolint:errcheck
+		fmt.Fprint(w, successResponse) //nolint:errcheck
 	}))
 
 	req, err := client.NewRequest(ctx, http.MethodGet, "__/normal-request", nil, nil)
@@ -164,7 +164,7 @@ func TestClient_WithRequestOption(t *testing.T) {
 		assert.Equal(t, "test-client-id", clientID)
 		assert.Equal(t, "test-client-secret", clientSecret)
 
-		fmt.Fprint(w, successResponse) // nolint:errcheck
+		fmt.Fprint(w, successResponse) //nolint:errcheck
 	}))
 
 	req, err := client.NewRequest(ctx, http.MethodGet, "__/request-option", nil, []RequestOption{
@@ -265,7 +265,7 @@ func TestClient_WithRequestOption_WithAuth(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				tt.wantFunc(t, r)
-				fmt.Fprint(w, successResponse) // nolint:errcheck
+				fmt.Fprint(w, successResponse) //nolint:errcheck
 			}))
 
 			client, err := tt.createClientFunc(srv)

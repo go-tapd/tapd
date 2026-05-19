@@ -135,13 +135,13 @@ type (
 	}
 
 	DeleteTimesheetsResponse struct {
-		Msg  string                 `json:"msg,omitempty"`  // 处理结果消息
-		Data DeleteTimesheetsResult `json:"data,omitempty"` // 删除结果明细
+		Msg  string                 `json:"msg,omitzero"`  // 处理结果消息
+		Data DeleteTimesheetsResult `json:"data,omitzero"` // 删除结果明细
 	}
 
 	DeleteTimesheetsResult struct {
-		Success DeleteTimesheetsResultItem   `json:"success,omitempty"` // 删除成功明细
-		Failed  []DeleteTimesheetsResultItem `json:"failed,omitempty"`  // 删除失败明细
+		Success DeleteTimesheetsResultItem   `json:"success,omitzero"` // 删除成功明细
+		Failed  []DeleteTimesheetsResultItem `json:"failed,omitempty"` // 删除失败明细
 	}
 
 	DeleteTimesheetsResultItem struct {
