@@ -63,9 +63,6 @@ linters:
         - '-ST1020' # https://staticcheck.dev/docs/checks#ST1020
         - '-ST1021' # https://staticcheck.dev/docs/checks#ST1021
         - '-ST1022' # https://staticcheck.dev/docs/checks#ST1022
-  exclusions:
-    paths:
-      - .gocache
 
 formatters:
   enable:
