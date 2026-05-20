@@ -16,6 +16,16 @@ The Go-Tapd-SDK is a Go client library for accessing the [Tapd API](https://www.
 
 If you encounter any issues, you are welcome to [submit an issue](https://github.com/go-tapd/tapd/issues/new).
 
+## 🧰 Command Line Tool
+
+> [!NOTE]
+> 🧰 Prefer terminal or CI usage? Try the sibling project
+> [`go-tapd/cli`](https://github.com/go-tapd/cli), a command line tool built on
+> this SDK.
+>
+> ⚙️ Use the CLI for quick local operations, shell scripts, and automation. See
+> the repository for installation and usage examples.
+
 ## 📥 Installation
 
 ```bash
