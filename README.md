@@ -19,9 +19,12 @@ If you encounter any issues, you are welcome to [submit an issue](https://github
 ## 🧰 Command Line Tool
 
 > [!NOTE]
-> Prefer terminal or CI usage? Try the sibling project
+> 🧰 Prefer terminal or CI usage? Try the sibling project
 > [`go-tapd/cli`](https://github.com/go-tapd/cli), a command line tool built on
-> this SDK. See the repository for installation and usage examples.
+> this SDK.
+>
+> ⚙️ Use the CLI for quick local operations, shell scripts, and automation. See
+> the repository for installation and usage examples.
 
 ## 📥 Installation
 
