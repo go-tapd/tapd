@@ -1,0 +1,15 @@
+{
+  "status": 1,
+  "data": {
+    "Attachment": {
+      "id": "1069995768523406033",
+      "type": "story_custom_field",
+      "entry_id": 1069995768115415038,
+      "filename": "tapd_base64_3031935_1701845640.jpg",
+      "description": "",
+      "content_type": "image/png",
+      "created": "2023-12-05 14:54:01"
+    }
+  },
+  "info": "success"
+}
