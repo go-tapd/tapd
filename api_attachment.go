@@ -34,6 +34,15 @@ type (
 		File        io.Reader `url:"-"`                      // [必须]文件内容
 	}
 
+	UploadImageBase64Request struct {
+		WorkspaceID *int    `url:"workspace_id,omitempty"` // [必须]空间ID
+		Base64Data  *string `url:"base64_data,omitempty"`  // [必须]图片 base64 格式数据
+		Type        *string `url:"type,omitempty"`         // [必须]类型，固定为 story_custom_field
+		CustomField *string `url:"custom_field,omitempty"` // [必须]字段英文名
+		EntryID     *int64  `url:"entry_id,omitempty"`     // [必须]工作项ID
+		Owner       *string `url:"owner,omitempty"`        // [可选]附件创建人
+	}
+
 	GetAttachmentsRequest struct {
 		WorkspaceID *int    `url:"workspace_id,omitempty"`  // [必须]项目ID
 		ID          *int    `url:"id,omitempty"`            // [可选]ID
@@ -90,6 +99,11 @@ type AttachmentService interface {
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/mini_api_reference/attachment/upload_attachment.html
 	UploadAttachment(ctx context.Context, request *UploadAttachmentRequest, opts ...RequestOption) (*Attachment, *Response, error)
+
+	// UploadImageBase64 上传base64图片
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/mini_api_reference/attachment/upload_image_base64.html
+	UploadImageBase64(ctx context.Context, request *UploadImageBase64Request, opts ...RequestOption) (*Attachment, *Response, error)
 
 	// GetAttachments 获取附件
 	//
@@ -181,10 +195,63 @@ func (s *attachmentService) UploadAttachment(
 	return response.Attachment, resp, nil
 }
 
+func (s *attachmentService) UploadImageBase64(
+	ctx context.Context, request *UploadImageBase64Request, opts ...RequestOption,
+) (*Attachment, *Response, error) {
+	if request == nil {
+		return nil, nil, errors.New("tapd: upload image base64 request is nil")
+	}
+
+	req, err := s.client.newMultipartRequest(
+		ctx,
+		"files/upload_image_base64",
+		uploadImageBase64Fields(request),
+		nil,
+		opts,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Attachment *Attachment `json:"Attachment,omitempty"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Attachment, resp, nil
+}
+
 func uploadAttachmentFields(request *UploadAttachmentRequest) map[string]string {
 	fields := make(map[string]string)
 	if request.WorkspaceID != nil {
 		fields["workspace_id"] = strconv.Itoa(*request.WorkspaceID)
+	}
+	if request.Type != nil {
+		fields["type"] = *request.Type
+	}
+	if request.CustomField != nil {
+		fields["custom_field"] = *request.CustomField
+	}
+	if request.EntryID != nil {
+		fields["entry_id"] = strconv.FormatInt(*request.EntryID, 10)
+	}
+	if request.Owner != nil {
+		fields["owner"] = *request.Owner
+	}
+
+	return fields
+}
+
+func uploadImageBase64Fields(request *UploadImageBase64Request) map[string]string {
+	fields := make(map[string]string)
+	if request.WorkspaceID != nil {
+		fields["workspace_id"] = strconv.Itoa(*request.WorkspaceID)
+	}
+	if request.Base64Data != nil {
+		fields["base64_data"] = *request.Base64Data
 	}
 	if request.Type != nil {
 		fields["type"] = *request.Type

@@ -203,10 +203,6 @@ func (c *Client) newMultipartRequest(
 	file *multipartFile,
 	opts []RequestOption,
 ) (*http.Request, error) {
-	if file == nil || file.body == nil {
-		return nil, errors.New("tapd: multipart file body is nil")
-	}
-
 	var body bytes.Buffer
 	writer := multipart.NewWriter(&body)
 
@@ -216,12 +212,18 @@ func (c *Client) newMultipartRequest(
 		}
 	}
 
-	part, err := writer.CreateFormFile(file.fieldName, file.fileName)
-	if err != nil {
-		return nil, err
-	}
-	if _, err := io.Copy(part, file.body); err != nil {
-		return nil, err
+	if file != nil {
+		if file.body == nil {
+			return nil, errors.New("tapd: multipart file body is nil")
+		}
+
+		part, err := writer.CreateFormFile(file.fieldName, file.fileName)
+		if err != nil {
+			return nil, err
+		}
+		if _, err := io.Copy(part, file.body); err != nil {
+			return nil, err
+		}
 	}
 	if err := writer.Close(); err != nil {
 		return nil, err
