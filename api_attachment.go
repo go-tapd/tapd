@@ -113,6 +113,7 @@ type AttachmentService interface {
 	// GetAttachmentDownloadURL 获取单个附件下载链接
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/attachment/get_one_attachment.html
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/mini_api_reference/attachment/get_one_attachment.html
 	GetAttachmentDownloadURL(ctx context.Context, request *GetAttachmentDownloadURLRequest, opts ...RequestOption) (*Attachment, *Response, error)
 
 	// GetImageDownloadURL 获取单个图片下载链接
