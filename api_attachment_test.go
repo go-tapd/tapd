@@ -104,6 +104,9 @@ func TestAttachmentService_GetAttachments(t *testing.T) {
 		assert.Equal(t, "55556666", r.URL.Query().Get("entry_id"))
 		assert.Equal(t, "demo.jpg", r.URL.Query().Get("filename"))
 		assert.Equal(t, "go-tapd", r.URL.Query().Get("owner"))
+		assert.Equal(t, "200", r.URL.Query().Get("limit"))
+		assert.Equal(t, "2", r.URL.Query().Get("page"))
+		assert.Empty(t, r.URL.Query().Get("DownloadURL"))
 
 		_, _ = w.Write(loadData(t, "internal/testdata/api/attachment/get_attachments.json"))
 	}))
@@ -115,6 +118,8 @@ func TestAttachmentService_GetAttachments(t *testing.T) {
 		EntryID:     Ptr(55556666),
 		Filename:    Ptr("demo.jpg"),
 		Owner:       Ptr("go-tapd"),
+		Limit:       Ptr(200),
+		Page:        Ptr(2),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(attachments) > 0)

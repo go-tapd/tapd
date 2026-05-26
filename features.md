@@ -379,7 +379,7 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
 - [x] 附件上传
 - [x] 上传base64图片
 - [x] 获取单个附件下载链接
-- [ ] 获取附件
+- [x] 获取附件
 
 ### 应用集成-工蜂 
 

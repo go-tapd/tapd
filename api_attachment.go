@@ -44,13 +44,15 @@ type (
 	}
 
 	GetAttachmentsRequest struct {
-		WorkspaceID *int    `url:"workspace_id,omitempty"`  // [必须]项目ID
-		ID          *int    `url:"id,omitempty"`            // [可选]ID
-		Type        *string `url:"type,omitempty"`          // [可选]类型
-		EntryID     *int    `url:"entry_id,omitempty"`      // [可选]依赖对象ID
-		Filename    *string `url:"filename,omitempty"`      // [可选]附件名称
-		Owner       *string `url:"owner,omitempty"`         // [可选]上传人
-		DownloadURL string  `json:"download_url,omitempty"` // 下载链接(仅在获取单个附件时返回)
+		WorkspaceID *int    `url:"workspace_id,omitempty"` // [必须]项目ID
+		ID          *int    `url:"id,omitempty"`           // [可选]ID
+		Type        *string `url:"type,omitempty"`         // [可选]类型
+		EntryID     *int    `url:"entry_id,omitempty"`     // [可选]依赖对象ID
+		Filename    *string `url:"filename,omitempty"`     // [可选]附件名称
+		Owner       *string `url:"owner,omitempty"`        // [可选]上传人
+		Limit       *int    `url:"limit,omitempty"`        // [可选]每页数量，最大 200
+		Page        *int    `url:"page,omitempty"`         // [可选]页码
+		DownloadURL string  `url:"-" json:"download_url,omitempty"`
 	}
 
 	GetAttachmentDownloadURLRequest struct {
@@ -108,6 +110,7 @@ type AttachmentService interface {
 	// GetAttachments 获取附件
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/attachment/get_attachments.html
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/mini_api_reference/attachment/get_attachments.html
 	GetAttachments(ctx context.Context, request *GetAttachmentsRequest, opts ...RequestOption) ([]*Attachment, *Response, error)
 
 	// GetAttachmentDownloadURL 获取单个附件下载链接
