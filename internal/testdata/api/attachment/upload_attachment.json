@@ -1,0 +1,17 @@
+{
+  "status": 1,
+  "data": {
+    "Attachment": {
+      "id": "1069993260503455439",
+      "type": "story_custom_field",
+      "entry_id": 1069993260856110917,
+      "filename": "orangetest.jpg",
+      "description": "",
+      "content_type": "image/jpeg",
+      "created": "2023-07-07 21:36:08",
+      "workspace_id": 69993260,
+      "owner": "go-tapd"
+    }
+  },
+  "info": "success"
+}

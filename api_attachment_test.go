@@ -1,11 +1,59 @@
 package tapd
 
 import (
+	"io"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestAttachmentService_UploadAttachment(t *testing.T) {
+	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		assert.Equal(t, "/files/upload_attachment", r.URL.Path)
+		assert.Contains(t, r.Header.Get("Content-Type"), "multipart/form-data; boundary=")
+
+		err := r.ParseMultipartForm(1024)
+		assert.NoError(t, err)
+		assert.Equal(t, "11112222", r.FormValue("workspace_id"))
+		assert.Equal(t, "story_custom_field", r.FormValue("type"))
+		assert.Equal(t, "custom_field_one", r.FormValue("custom_field"))
+		assert.Equal(t, "1069993260856110917", r.FormValue("entry_id"))
+		assert.Equal(t, "go-tapd", r.FormValue("owner"))
+
+		file, header, err := r.FormFile("file")
+		assert.NoError(t, err)
+		defer file.Close() //nolint:errcheck
+		assert.Equal(t, "orangetest.jpg", header.Filename)
+
+		content, err := io.ReadAll(file)
+		assert.NoError(t, err)
+		assert.Equal(t, "demo image content", string(content))
+
+		_, _ = w.Write(loadData(t, "internal/testdata/api/attachment/upload_attachment.json"))
+	}))
+
+	attachment, _, err := client.AttachmentService.UploadAttachment(ctx, &UploadAttachmentRequest{
+		WorkspaceID: Ptr(11112222),
+		Type:        Ptr("story_custom_field"),
+		CustomField: Ptr("custom_field_one"),
+		EntryID:     Ptr[int64](1069993260856110917),
+		Owner:       Ptr("go-tapd"),
+		Filename:    Ptr("orangetest.jpg"),
+		File:        strings.NewReader("demo image content"),
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, "1069993260503455439", attachment.ID)
+	assert.Equal(t, "story_custom_field", attachment.Type)
+	assert.Equal(t, "1069993260856110917", attachment.EntryID)
+	assert.Equal(t, "orangetest.jpg", attachment.Filename)
+	assert.Equal(t, "image/jpeg", attachment.ContentType)
+	assert.Equal(t, "2023-07-07 21:36:08", attachment.Created)
+	assert.Equal(t, "69993260", attachment.WorkspaceID)
+	assert.Equal(t, "go-tapd", attachment.Owner)
+}
 
 func TestAttachmentService_GetAttachments(t *testing.T) {
 	_, client := createServerClient(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

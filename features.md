@@ -376,7 +376,7 @@ API 文档：https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/
 
 ### 附件
 
-- [ ] 附件上传
+- [x] 附件上传
 - [ ] 上传base64图片
 - [ ] 获取单个附件下载链接
 - [ ] 获取附件

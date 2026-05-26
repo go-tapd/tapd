@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"maps"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strings"
@@ -157,23 +158,14 @@ func (c *Client) setBaseURL(urlStr string) error {
 }
 
 func (c *Client) NewRequest(ctx context.Context, method, path string, data any, opts []RequestOption) (*http.Request, error) { //nolint:lll
-	u := *c.baseURL
-	unescaped, err := url.PathUnescape(path)
+	u, err := c.newRequestURL(path)
 	if err != nil {
 		return nil, err
 	}
 
-	// Set the encoded path data
-	u.RawPath = c.baseURL.Path + path
-	u.Path = c.baseURL.Path + unescaped
-
 	// Create a request specific headers map.
 	reqHeaders := make(http.Header)
 	reqHeaders.Set("Accept", "application/json")
-
-	if c.userAgent != "" {
-		reqHeaders.Set("User-Agent", c.userAgent)
-	}
 
 	var body io.Reader
 	switch {
@@ -194,6 +186,87 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, data any, 
 		}
 		u.RawQuery = q.Encode()
 	}
+
+	return c.newRequest(ctx, method, u, body, reqHeaders, opts)
+}
+
+type multipartFile struct {
+	fieldName string
+	fileName  string
+	body      io.Reader
+}
+
+func (c *Client) newMultipartRequest(
+	ctx context.Context,
+	path string,
+	fields map[string]string,
+	file *multipartFile,
+	opts []RequestOption,
+) (*http.Request, error) {
+	if file == nil || file.body == nil {
+		return nil, errors.New("tapd: multipart file body is nil")
+	}
+
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+
+	for name, value := range fields {
+		if err := writer.WriteField(name, value); err != nil {
+			return nil, err
+		}
+	}
+
+	part, err := writer.CreateFormFile(file.fieldName, file.fileName)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := io.Copy(part, file.body); err != nil {
+		return nil, err
+	}
+	if err := writer.Close(); err != nil {
+		return nil, err
+	}
+
+	u, err := c.newRequestURL(path)
+	if err != nil {
+		return nil, err
+	}
+
+	reqHeaders := make(http.Header)
+	reqHeaders.Set("Accept", "application/json")
+	reqHeaders.Set("Content-Type", writer.FormDataContentType())
+
+	return c.newRequest(ctx, http.MethodPost, u, &body, reqHeaders, opts)
+}
+
+func (c *Client) newRequestURL(path string) (*url.URL, error) {
+	u := *c.baseURL
+	unescaped, err := url.PathUnescape(path)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set the encoded path data
+	u.RawPath = c.baseURL.Path + path
+	u.Path = c.baseURL.Path + unescaped
+
+	return &u, nil
+}
+
+func (c *Client) newRequest(
+	ctx context.Context,
+	method string,
+	u *url.URL,
+	body io.Reader,
+	headers http.Header,
+	opts []RequestOption,
+) (*http.Request, error) {
+	reqHeaders := make(http.Header)
+
+	if c.userAgent != "" {
+		reqHeaders.Set("User-Agent", c.userAgent)
+	}
+	maps.Copy(reqHeaders, headers)
 
 	req, err := http.NewRequestWithContext(ctx, method, u.String(), body)
 	if err != nil {

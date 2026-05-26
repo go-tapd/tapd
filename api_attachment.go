@@ -2,7 +2,11 @@ package tapd
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
+	"strconv"
 )
 
 type (
@@ -18,6 +22,16 @@ type (
 		WorkspaceID string `json:"workspace_id,omitempty"` // 项目ID
 		Owner       string `json:"owner,omitempty"`        // 上传人
 		DownloadURL string `json:"download_url,omitempty"` // 下载链接(仅在获取单个附件时返回)
+	}
+
+	UploadAttachmentRequest struct {
+		WorkspaceID *int      `url:"workspace_id,omitempty"` // [必须]空间ID
+		Type        *string   `url:"type,omitempty"`         // [必须]类型，固定为 story_custom_field
+		CustomField *string   `url:"custom_field,omitempty"` // [必须]字段英文名
+		EntryID     *int64    `url:"entry_id,omitempty"`     // [必须]工作项ID
+		Owner       *string   `url:"owner,omitempty"`        // [可选]附件创建人
+		Filename    *string   `url:"-"`                      // [必须]上传文件名
+		File        io.Reader `url:"-"`                      // [必须]文件内容
 	}
 
 	GetAttachmentsRequest struct {
@@ -72,6 +86,11 @@ type (
 //
 // https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/attachment/
 type AttachmentService interface {
+	// UploadAttachment 附件上传
+	//
+	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/mini_api_reference/attachment/upload_attachment.html
+	UploadAttachment(ctx context.Context, request *UploadAttachmentRequest, opts ...RequestOption) (*Attachment, *Response, error)
+
 	// GetAttachments 获取附件
 	//
 	// https://open.tapd.cn/document/api-doc/API%E6%96%87%E6%A1%A3/api_reference/attachment/get_attachments.html
@@ -103,6 +122,84 @@ func NewAttachmentService(client *Client) AttachmentService {
 	return &attachmentService{
 		client: client,
 	}
+}
+
+func (a *Attachment) UnmarshalJSON(data []byte) error {
+	type attachment Attachment
+	var raw struct {
+		*attachment
+		ID          json.RawMessage `json:"id,omitempty"`
+		EntryID     json.RawMessage `json:"entry_id,omitempty"`
+		WorkspaceID json.RawMessage `json:"workspace_id,omitempty"`
+	}
+	raw.attachment = (*attachment)(a)
+
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	a.ID = stringifyJSONRaw(raw.ID)
+	a.EntryID = stringifyJSONRaw(raw.EntryID)
+	a.WorkspaceID = stringifyJSONRaw(raw.WorkspaceID)
+
+	return nil
+}
+
+func (s *attachmentService) UploadAttachment(
+	ctx context.Context, request *UploadAttachmentRequest, opts ...RequestOption,
+) (*Attachment, *Response, error) {
+	if request == nil {
+		return nil, nil, errors.New("tapd: upload attachment request is nil")
+	}
+	if request.Filename == nil || *request.Filename == "" {
+		return nil, nil, errors.New("tapd: upload attachment filename is empty")
+	}
+
+	req, err := s.client.newMultipartRequest(
+		ctx,
+		"files/upload_attachment",
+		uploadAttachmentFields(request),
+		&multipartFile{
+			fieldName: "file",
+			fileName:  *request.Filename,
+			body:      request.File,
+		},
+		opts,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var response struct {
+		Attachment *Attachment `json:"Attachment,omitempty"`
+	}
+	resp, err := s.client.Do(req, &response)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return response.Attachment, resp, nil
+}
+
+func uploadAttachmentFields(request *UploadAttachmentRequest) map[string]string {
+	fields := make(map[string]string)
+	if request.WorkspaceID != nil {
+		fields["workspace_id"] = strconv.Itoa(*request.WorkspaceID)
+	}
+	if request.Type != nil {
+		fields["type"] = *request.Type
+	}
+	if request.CustomField != nil {
+		fields["custom_field"] = *request.CustomField
+	}
+	if request.EntryID != nil {
+		fields["entry_id"] = strconv.FormatInt(*request.EntryID, 10)
+	}
+	if request.Owner != nil {
+		fields["owner"] = *request.Owner
+	}
+
+	return fields
 }
 
 func (s *attachmentService) GetAttachments(
