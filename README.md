@@ -4,7 +4,6 @@
 [![Package Version](https://badgen.net/github/release/go-tapd/tapd/stable)](https://github.com/go-tapd/tapd/releases)
 [![GoDoc](https://pkg.go.dev/badge/github.com/go-tapd/tapd)](https://pkg.go.dev/github.com/go-tapd/tapd)
 [![codecov](https://codecov.io/gh/go-tapd/tapd/graph/badge.svg?token=QPTHZ5L9GT)](https://codecov.io/gh/go-tapd/tapd)
-[![Go Report Card](https://goreportcard.com/badge/github.com/go-tapd/tapd)](https://goreportcard.com/report/github.com/go-tapd/tapd)
 [![lint](https://github.com/go-tapd/tapd/actions/workflows/lint.yml/badge.svg)](https://github.com/go-tapd/tapd/actions/workflows/lint.yml)
 [![tests](https://github.com/go-tapd/tapd/actions/workflows/test.yml/badge.svg)](https://github.com/go-tapd/tapd/actions/workflows/test.yml)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
