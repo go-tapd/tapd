@@ -19,8 +19,8 @@ func TestWorkflowService_GetAllLastSteps(t *testing.T) {
 	}))
 
 	steps, _, err := client.WorkflowService.GetAllLastSteps(ctx, &GetAllLastStepsRequest{
-		WorkspaceID: Ptr(11112222),
-		System:      Ptr("story"),
+		WorkspaceID: new(11112222),
+		System:      new("story"),
 	})
 	assert.NoError(t, err)
 	require.Len(t, steps, 2)

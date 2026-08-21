@@ -22,7 +22,7 @@ func TestWorkspaceService_GetUsers(t *testing.T) {
 	}))
 
 	users, _, err := client.WorkspaceService.GetUsers(ctx, &GetUsersRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		User:        NewMulti("张三", "李四"),
 		Fields:      NewMulti("id", "name"),
 	})
@@ -66,7 +66,7 @@ func TestWorkspaceService_GetUsersList(t *testing.T) {
 	}))
 
 	users, _, err := client.WorkspaceService.GetUsers(ctx, &GetUsersRequest{
-		WorkspaceID: Ptr(20003271),
+		WorkspaceID: new(20003271),
 		Fields:      NewMulti("user", "user_id", "role_id", "name", "email", "real_join_time"),
 	})
 	require.NoError(t, err)
@@ -90,8 +90,8 @@ func TestWorkspaceService_GetSubWorkspaces(t *testing.T) {
 	}))
 
 	workspaces, _, err := client.WorkspaceService.GetSubWorkspaces(ctx, &GetSubWorkspacesRequest{
-		WorkspaceID: Ptr(20355782),
-		TemplateID:  Ptr(1010104801000001001),
+		WorkspaceID: new(20355782),
+		TemplateID:  new(1010104801000001001),
 	})
 	require.NoError(t, err)
 	require.Len(t, workspaces, 2)
@@ -122,9 +122,9 @@ func TestWorkspaceService_AddWorkspaceMember(t *testing.T) {
 	}))
 
 	result, _, err := client.WorkspaceService.AddWorkspaceMember(ctx, &AddWorkspaceMemberRequest{
-		WorkspaceID: Ptr(10104801),
-		Nick:        Ptr("davidning"),
-		CompanyID:   Ptr(20003271),
+		WorkspaceID: new(10104801),
+		Nick:        new("davidning"),
+		CompanyID:   new(20003271),
 		RoleIDs:     NewMulti[int64](1000000000000000010, 1000000000000000015),
 	})
 	require.NoError(t, err)
@@ -143,9 +143,9 @@ func TestWorkspaceService_GetCompanyWorkspaces(t *testing.T) {
 	}))
 
 	workspaces, _, err := client.WorkspaceService.GetCompanyWorkspaces(ctx, &GetCompanyWorkspacesRequest{
-		CompanyID:   Ptr(20003271),
-		Category:    Ptr("project"),
-		WithExtends: Ptr(1),
+		CompanyID:   new(20003271),
+		Category:    new("project"),
+		WithExtends: new(1),
 	})
 	require.NoError(t, err)
 	require.Len(t, workspaces, 2)
@@ -166,7 +166,7 @@ func TestWorkspaceService_GetWorkspaceRoles(t *testing.T) {
 	}))
 
 	roles, _, err := client.WorkspaceService.GetWorkspaceRoles(ctx, &GetWorkspaceRolesRequest{
-		WorkspaceID: Ptr(10104801),
+		WorkspaceID: new(10104801),
 	})
 	require.NoError(t, err)
 	assert.Contains(t, roles, &WorkspaceRole{ID: "1000000000000000002", Name: "管理员"})
@@ -184,8 +184,8 @@ func TestWorkspaceService_GetUserParticipantWorkspaces(t *testing.T) {
 	}))
 
 	workspaces, _, err := client.WorkspaceService.GetUserParticipantWorkspaces(ctx, &GetUserParticipantWorkspacesRequest{
-		Nick:      Ptr("davidning"),
-		CompanyID: Ptr(20003271),
+		Nick:      new("davidning"),
+		CompanyID: new(20003271),
 	})
 	require.NoError(t, err)
 	require.Len(t, workspaces, 1)
@@ -206,7 +206,7 @@ func TestWorkspaceService_GetWorkspaceCustomFieldsSettings(t *testing.T) {
 	settings, _, err := client.WorkspaceService.GetWorkspaceCustomFieldsSettings(
 		ctx,
 		&GetWorkspaceCustomFieldsSettingsRequest{
-			WorkspaceID: Ptr(69999237),
+			WorkspaceID: new(69999237),
 		},
 	)
 	require.NoError(t, err)
@@ -236,9 +236,9 @@ func TestWorkspaceService_UpdateWorkspaceInfo(t *testing.T) {
 	}))
 
 	result, _, err := client.WorkspaceService.UpdateWorkspaceInfo(ctx, &UpdateWorkspaceInfoRequest{
-		WorkspaceID: Ptr(69999237),
-		Field:       Ptr("end_date"),
-		Value:       Ptr("2025-03-03"),
+		WorkspaceID: new(69999237),
+		Field:       new("end_date"),
+		Value:       new("2025-03-03"),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, "update workspace success", result)
@@ -257,9 +257,9 @@ func TestWorkspaceService_GetWorkspaceDocuments(t *testing.T) {
 	}))
 
 	documents, _, err := client.WorkspaceService.GetWorkspaceDocuments(ctx, &GetWorkspaceDocumentsRequest{
-		WorkspaceID: Ptr(20003271),
-		Limit:       Ptr(20),
-		Page:        Ptr(2),
+		WorkspaceID: new(20003271),
+		Limit:       new(20),
+		Page:        new(2),
 		Fields:      NewMulti("id", "name", "type"),
 	})
 	require.NoError(t, err)
@@ -287,8 +287,8 @@ func TestWorkspaceService_SetCustomWorkCalendar(t *testing.T) {
 	}))
 
 	result, _, err := client.WorkspaceService.SetCustomWorkCalendar(ctx, &SetCustomWorkCalendarRequest{
-		WorkspaceID: Ptr(48464494),
-		Year:        Ptr("2025"),
+		WorkspaceID: new(48464494),
+		Year:        new("2025"),
 		Weekdays:    &[]int{1, 2, 3, 4, 5},
 		Holidays:    &[]string{"2025-01-01"},
 		Workdays:    &[]string{"2025-01-04"},
@@ -311,8 +311,8 @@ func TestWorkspaceService_EnableWorkCalendar(t *testing.T) {
 	}))
 
 	result, _, err := client.WorkspaceService.EnableWorkCalendar(ctx, &EnableWorkCalendarRequest{
-		WorkspaceID: Ptr(48464494),
-		Type:        Ptr(WorkCalendarTypeSystem),
+		WorkspaceID: new(48464494),
+		Type:        new(WorkCalendarTypeSystem),
 	})
 	require.NoError(t, err)
 	assert.True(t, result.Success)
@@ -329,8 +329,8 @@ func TestWorkspaceService_GetCustomWorkCalendar(t *testing.T) {
 	}))
 
 	calendar, _, err := client.WorkspaceService.GetCustomWorkCalendar(ctx, &GetCustomWorkCalendarRequest{
-		WorkspaceID: Ptr(48464494),
-		Year:        Ptr("2025"),
+		WorkspaceID: new(48464494),
+		Year:        new("2025"),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, []string{"1", "2", "3", "4", "5", "6", "7"}, calendar.Weekdays)
@@ -348,7 +348,7 @@ func TestWorkspaceService_GetWorkCalendarSettings(t *testing.T) {
 	}))
 
 	settings, _, err := client.WorkspaceService.GetWorkCalendarSettings(ctx, &GetWorkCalendarSettingsRequest{
-		WorkspaceID: Ptr(48464494),
+		WorkspaceID: new(48464494),
 	})
 	require.NoError(t, err)
 	require.Len(t, settings, 2)
@@ -371,9 +371,9 @@ func TestWorkspaceService_GetWorkItemsLongIDByShortIDs(t *testing.T) {
 	}))
 
 	result, _, err := client.WorkspaceService.GetWorkItemsLongIDByShortIDs(ctx, &GetWorkItemsLongIDByShortIDsRequest{
-		ShortIDs:    Ptr("1000276;1000277;1000104"),
-		WorkspaceID: Ptr(48464494),
-		EntityType:  Ptr(EntityTypeStory),
+		ShortIDs:    new("1000276;1000277;1000104"),
+		WorkspaceID: new(48464494),
+		EntityType:  new(EntityTypeStory),
 	})
 	require.NoError(t, err)
 	require.Len(t, result.ValidIDMap, 2)
@@ -394,7 +394,7 @@ func TestWorkspaceService_GetWorkspaceInfo(t *testing.T) {
 	}))
 
 	workspace, _, err := client.WorkspaceService.GetWorkspaceInfo(ctx, &GetWorkspaceInfoRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, "1112222", workspace.ID)

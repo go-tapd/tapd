@@ -30,15 +30,15 @@ func TestTestService_CreateTestCase(t *testing.T) {
 	}))
 
 	testCase, _, err := client.TestService.CreateTestCase(ctx, &CreateTestCaseRequest{
-		WorkspaceID:  Ptr(10158231),
-		Name:         Ptr("测试浏览器兼容性"),
-		Steps:        Ptr("第一二三步"),
-		Precondition: Ptr("打开浏览器"),
-		Expectation:  Ptr("无样式错误"),
-		Type:         Ptr("其它"),
-		Priority:     Ptr("高"),
-		Creator:      Ptr("tapd"),
-		Status:       Ptr(TestCaseStatusUpdating),
+		WorkspaceID:  new(10158231),
+		Name:         new("测试浏览器兼容性"),
+		Steps:        new("第一二三步"),
+		Precondition: new("打开浏览器"),
+		Expectation:  new("无样式错误"),
+		Type:         new("其它"),
+		Priority:     new("高"),
+		Creator:      new("tapd"),
+		Status:       new(TestCaseStatusUpdating),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, testCase)
@@ -79,14 +79,14 @@ func TestTestService_BatchCreateTestCases(t *testing.T) {
 
 	testCases, _, err := client.TestService.BatchCreateTestCases(ctx, &BatchCreateTestCasesRequest{
 		{
-			WorkspaceID: Ptr(69992160),
-			Name:        Ptr("简单用例1"),
-			Creator:     Ptr("XX1"),
+			WorkspaceID: new(69992160),
+			Name:        new("简单用例1"),
+			Creator:     new("XX1"),
 		},
 		{
-			WorkspaceID: Ptr(69992160),
-			Name:        Ptr("简单用例2"),
-			Creator:     Ptr("XX2"),
+			WorkspaceID: new(69992160),
+			Name:        new("简单用例2"),
+			Creator:     new("XX2"),
 		},
 	})
 	assert.NoError(t, err)
@@ -119,11 +119,11 @@ func TestTestService_CreateTestCaseCategory(t *testing.T) {
 	}))
 
 	category, _, err := client.TestService.CreateTestCaseCategory(ctx, &CreateTestCaseCategoryRequest{
-		WorkspaceID: Ptr(10158231),
-		Name:        Ptr("用例目录4"),
-		Description: Ptr("回归测试目录"),
-		ParentID:    Ptr[int64](0),
-		Creator:     Ptr("tester"),
+		WorkspaceID: new(10158231),
+		Name:        new("用例目录4"),
+		Description: new("回归测试目录"),
+		ParentID:    new(int64(0)),
+		Creator:     new("tester"),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, category)
@@ -159,16 +159,16 @@ func TestTestService_CreateTestPlan(t *testing.T) {
 	}))
 
 	plan, _, err := client.TestService.CreateTestPlan(ctx, &CreateTestPlanRequest{
-		WorkspaceID: Ptr(10158231),
-		Name:        Ptr("test_plan_12"),
-		Description: Ptr("这不是一个测试"),
-		Creator:     Ptr("dev"),
-		Owner:       Ptr("owner"),
-		StartDate:   Ptr("2026-05-01"),
-		EndDate:     Ptr("2026-05-31"),
-		IterationID: Ptr[int64](1010158231000012345),
-		Version:     Ptr("123456"),
-		Status:      Ptr("open"),
+		WorkspaceID: new(10158231),
+		Name:        new("test_plan_12"),
+		Description: new("这不是一个测试"),
+		Creator:     new("dev"),
+		Owner:       new("owner"),
+		StartDate:   new("2026-05-01"),
+		EndDate:     new("2026-05-31"),
+		IterationID: new(int64(1010158231000012345)),
+		Version:     new("123456"),
+		Status:      new("open"),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, plan)
@@ -205,11 +205,11 @@ func TestTestService_AssignTestCase(t *testing.T) {
 	}))
 
 	ok, _, err := client.TestService.AssignTestCase(ctx, &AssignTestCaseRequest{
-		TestPlanID:  Ptr[int64](1010158231077224799),
+		TestPlanID:  new(int64(1010158231077224799)),
 		TestCaseID:  NewMulti[int64](1020357849077231381, 1020357849077231382),
-		WorkspaceID: Ptr(10158231),
-		Executor:    Ptr("peter"),
-		Assignee:    Ptr("tester"),
+		WorkspaceID: new(10158231),
+		Executor:    new("peter"),
+		Assignee:    new("tester"),
 	})
 	assert.NoError(t, err)
 	assert.True(t, ok)
@@ -236,10 +236,10 @@ func TestTestService_CreateTestPlanStoryRelation(t *testing.T) {
 	}))
 
 	ok, _, err := client.TestService.CreateTestPlanStoryRelation(ctx, &CreateTestPlanStoryRelationRequest{
-		PlanID:      Ptr[int64](1010158231077224799),
-		WorkspaceID: Ptr(10158231),
+		PlanID:      new(int64(1010158231077224799)),
+		WorkspaceID: new(10158231),
 		StoryIDs:    NewMulti[int64](123123123, 123123124),
-		Creator:     Ptr("peter"),
+		Creator:     new("peter"),
 	})
 	assert.NoError(t, err)
 	assert.True(t, ok)
@@ -266,10 +266,10 @@ func TestTestService_CreateTestPlanTestCaseRelation(t *testing.T) {
 	}))
 
 	ok, _, err := client.TestService.CreateTestPlanTestCaseRelation(ctx, &CreateTestPlanTestCaseRelationRequest{
-		TestPlanID:  Ptr[int64](1010158231077224799),
-		WorkspaceID: Ptr(10158231),
+		TestPlanID:  new(int64(1010158231077224799)),
+		WorkspaceID: new(10158231),
 		TestCaseIDs: NewMulti[int64](1020357849077231603, 1020357849077231393),
-		Creator:     Ptr("peter"),
+		Creator:     new("peter"),
 	})
 	assert.NoError(t, err)
 	assert.True(t, ok)
@@ -296,10 +296,10 @@ func TestTestService_DeleteTestPlanStoryRelation(t *testing.T) {
 	}))
 
 	ok, _, err := client.TestService.DeleteTestPlanStoryRelation(ctx, &DeleteTestPlanStoryRelationRequest{
-		PlanID:      Ptr[int64](1010158231077224799),
-		WorkspaceID: Ptr(10158231),
+		PlanID:      new(int64(1010158231077224799)),
+		WorkspaceID: new(10158231),
 		StoryIDs:    NewMulti[int64](123123123, 123123124),
-		Creator:     Ptr("peter"),
+		Creator:     new("peter"),
 	})
 	assert.NoError(t, err)
 	assert.True(t, ok)
@@ -321,10 +321,10 @@ func TestTestService_DeleteTestCaseStoryRelation(t *testing.T) {
 	}))
 
 	ok, _, err := client.TestService.DeleteTestCaseStoryRelation(ctx, &DeleteTestCaseStoryRelationRequest{
-		WorkspaceID: Ptr(10158231),
-		StoryID:     Ptr[int64](1020357849500705291),
-		TestCaseID:  Ptr[int64](1020357849077231363),
-		TestPlanID:  Ptr[int64](1020357849000015397),
+		WorkspaceID: new(10158231),
+		StoryID:     new(int64(1020357849500705291)),
+		TestCaseID:  new(int64(1020357849077231363)),
+		TestPlanID:  new(int64(1020357849000015397)),
 	})
 	assert.NoError(t, err)
 	assert.True(t, ok)
@@ -355,12 +355,12 @@ func TestTestService_ExecuteTestCase(t *testing.T) {
 	}))
 
 	ok, _, err := client.TestService.ExecuteTestCase(ctx, &ExecuteTestCaseRequest{
-		TestPlanID:   Ptr[int64](1010158231077224799),
+		TestPlanID:   new(int64(1010158231077224799)),
 		TestCaseID:   NewMulti[int64](1020357849077231381, 1020357849077231382),
-		WorkspaceID:  Ptr(10158231),
-		ResultStatus: Ptr(TestCaseResultStatusPass),
-		LastExecutor: Ptr("peter"),
-		ResultRemark: Ptr("执行通过"),
+		WorkspaceID:  new(10158231),
+		ResultStatus: new(TestCaseResultStatusPass),
+		LastExecutor: new("peter"),
+		ResultRemark: new("执行通过"),
 	})
 	assert.NoError(t, err)
 	assert.True(t, ok)
@@ -377,7 +377,7 @@ func TestTestService_GetTestCaseRelatedStories(t *testing.T) {
 	}))
 
 	relations, _, err := client.TestService.GetTestCaseRelatedStories(ctx, &GetTestCaseRelatedStoriesRequest{
-		WorkspaceID: Ptr(20358306),
+		WorkspaceID: new(20358306),
 		TestCaseIDs: NewMulti[int64](1020358306077237055, 1020358306077237053),
 	})
 	assert.NoError(t, err)
@@ -403,10 +403,10 @@ func TestTestService_GetTestCaseCategories(t *testing.T) {
 	}))
 
 	categories, _, err := client.TestService.GetTestCaseCategories(ctx, &GetTestCaseCategoriesRequest{
-		WorkspaceID: Ptr(10158231),
-		Name:        Ptr("用例目录"),
-		Limit:       Ptr(30),
-		Page:        Ptr(1),
+		WorkspaceID: new(10158231),
+		Name:        new("用例目录"),
+		Limit:       new(30),
+		Page:        new(1),
 		Fields:      NewMulti("id", "name", "parent_id"),
 	})
 	assert.NoError(t, err)
@@ -435,8 +435,8 @@ func TestTestService_GetTestCaseCategoriesCount(t *testing.T) {
 	}))
 
 	count, _, err := client.TestService.GetTestCaseCategoriesCount(ctx, &GetTestCaseCategoriesCountRequest{
-		WorkspaceID: Ptr(10158231),
-		Name:        Ptr("用例目录"),
+		WorkspaceID: new(10158231),
+		Name:        new("用例目录"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 4, count)
@@ -454,7 +454,7 @@ func TestTestService_GetTestCaseCustomFieldsSettings(t *testing.T) {
 	settings, _, err := client.TestService.GetTestCaseCustomFieldsSettings(
 		ctx,
 		&GetTestCaseCustomFieldsSettingsRequest{
-			WorkspaceID: Ptr(755),
+			WorkspaceID: new(755),
 		},
 	)
 	assert.NoError(t, err)
@@ -478,7 +478,7 @@ func TestTestService_GetTestCaseFieldsInfo(t *testing.T) {
 	}))
 
 	fields, _, err := client.TestService.GetTestCaseFieldsInfo(ctx, &GetTestCaseFieldsInfoRequest{
-		WorkspaceID: Ptr(10104801),
+		WorkspaceID: new(10104801),
 	})
 	assert.NoError(t, err)
 	require.Len(t, fields, 3)
@@ -512,9 +512,9 @@ func TestTestService_GetTestCaseResults(t *testing.T) {
 	}))
 
 	results, _, err := client.TestService.GetTestCaseResults(ctx, &GetTestCaseResultsRequest{
-		TestPlanID:  Ptr[int64](1010158231077224799),
-		TestCaseID:  Ptr[int64](1020357849077231381),
-		WorkspaceID: Ptr(10158231),
+		TestPlanID:  new(int64(1010158231077224799)),
+		TestCaseID:  new(int64(1020357849077231381)),
+		WorkspaceID: new(10158231),
 	})
 	assert.NoError(t, err)
 	require.Len(t, results, 2)
@@ -546,11 +546,11 @@ func TestTestService_GetTestCases(t *testing.T) {
 	}))
 
 	testCases, _, err := client.TestService.GetTestCases(ctx, &GetTestCasesRequest{
-		WorkspaceID: Ptr(10158231),
-		Name:        Ptr("测试浏览器"),
+		WorkspaceID: new(10158231),
+		Name:        new("测试浏览器"),
 		Status:      NewEnum(TestCaseStatusNormal),
-		Limit:       Ptr(20),
-		Page:        Ptr(1),
+		Limit:       new(20),
+		Page:        new(1),
 		Fields:      NewMulti("id", "name", "status"),
 	})
 	assert.NoError(t, err)
@@ -572,8 +572,8 @@ func TestTestService_GetTestCasesCount(t *testing.T) {
 	}))
 
 	count, _, err := client.TestService.GetTestCasesCount(ctx, &GetTestCasesCountRequest{
-		WorkspaceID: Ptr(10158231),
-		TestPlanID:  Ptr[int64](1020357849000015397),
+		WorkspaceID: new(10158231),
+		TestPlanID:  new(int64(1020357849000015397)),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 10, count)
@@ -590,8 +590,8 @@ func TestTestService_GetTestPlanRelatedBugs(t *testing.T) {
 	}))
 
 	relations, _, err := client.TestService.GetTestPlanRelatedBugs(ctx, &GetTestPlanRelatedBugsRequest{
-		ID:          Ptr[int64](1010158231077224799),
-		WorkspaceID: Ptr(10158231),
+		ID:          new(int64(1010158231077224799)),
+		WorkspaceID: new(10158231),
 	})
 	assert.NoError(t, err)
 	require.Len(t, relations, 1)
@@ -628,10 +628,10 @@ func TestTestService_GetIterationTestPlans(t *testing.T) {
 	}))
 
 	plans, _, err := client.TestService.GetIterationTestPlans(ctx, &GetIterationTestPlansRequest{
-		WorkspaceID: Ptr(51650666),
-		IterationID: Ptr[int64](1151650666001000111),
-		Limit:       Ptr(30),
-		Page:        Ptr(1),
+		WorkspaceID: new(51650666),
+		IterationID: new(int64(1151650666001000111)),
+		Limit:       new(30),
+		Page:        new(1),
 	})
 	assert.NoError(t, err)
 	require.Len(t, plans, 2)
@@ -652,9 +652,9 @@ func TestTestService_GetTestPlanResult(t *testing.T) {
 	}))
 
 	testCases, _, err := client.TestService.GetTestPlanResult(ctx, &GetTestPlanResultRequest{
-		WorkspaceID:   Ptr(10158231),
-		ID:            Ptr[int64](1010158231000005241),
-		IncludeRepeat: Ptr(1),
+		WorkspaceID:   new(10158231),
+		ID:            new(int64(1010158231000005241)),
+		IncludeRepeat: new(1),
 	})
 	assert.NoError(t, err)
 	require.Len(t, testCases, 2)
@@ -679,8 +679,8 @@ func TestTestService_GetTestPlanProgress(t *testing.T) {
 	}))
 
 	progress, _, err := client.TestService.GetTestPlanProgress(ctx, &GetTestPlanProgressRequest{
-		ID:          Ptr[int64](1010158231077224799),
-		WorkspaceID: Ptr(10158231),
+		ID:          new(int64(1010158231077224799)),
+		WorkspaceID: new(10158231),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, progress)
@@ -704,10 +704,10 @@ func TestTestService_GetTestPlanTestCaseRelations(t *testing.T) {
 	}))
 
 	relations, _, err := client.TestService.GetTestPlanTestCaseRelations(ctx, &GetTestPlanTestCaseRelationsRequest{
-		WorkspaceID: Ptr(755),
-		TestPlanID:  Ptr[int64](1000000755077233617),
-		Limit:       Ptr(30),
-		Page:        Ptr(1),
+		WorkspaceID: new(755),
+		TestPlanID:  new(int64(1000000755077233617)),
+		Limit:       new(30),
+		Page:        new(1),
 	})
 	assert.NoError(t, err)
 	require.Len(t, relations, 2)
@@ -732,11 +732,11 @@ func TestTestService_GetTestPlans(t *testing.T) {
 	}))
 
 	plans, _, err := client.TestService.GetTestPlans(ctx, &GetTestPlansRequest{
-		WorkspaceID: Ptr(10158231),
-		Name:        Ptr("test_plan"),
-		Status:      Ptr("open"),
-		Limit:       Ptr(20),
-		Page:        Ptr(1),
+		WorkspaceID: new(10158231),
+		Name:        new("test_plan"),
+		Status:      new("open"),
+		Limit:       new(20),
+		Page:        new(1),
 		Fields:      NewMulti("id", "name", "status"),
 	})
 	assert.NoError(t, err)
@@ -759,8 +759,8 @@ func TestTestService_GetTestPlansCount(t *testing.T) {
 	}))
 
 	count, _, err := client.TestService.GetTestPlansCount(ctx, &GetTestPlansCountRequest{
-		WorkspaceID: Ptr(10104801),
-		Status:      Ptr("open"),
+		WorkspaceID: new(10104801),
+		Status:      new("open"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 4, count)
@@ -787,9 +787,9 @@ func TestTestService_RemoveTestCaseFromTestPlan(t *testing.T) {
 	}))
 
 	ok, _, err := client.TestService.RemoveTestCaseFromTestPlan(ctx, &RemoveTestCaseFromTestPlanRequest{
-		TestPlanID:  Ptr[int64](1010158231077224799),
-		WorkspaceID: Ptr(10158231),
-		StoryID:     Ptr[int64](1020357849500705291),
+		TestPlanID:  new(int64(1010158231077224799)),
+		WorkspaceID: new(10158231),
+		StoryID:     new(int64(1020357849500705291)),
 		TestCaseID:  NewMulti[int64](1020357849077231363, 1020357849077231364),
 	})
 	assert.NoError(t, err)
@@ -811,9 +811,9 @@ func TestTestService_UpdateTestCase(t *testing.T) {
 	}))
 
 	testCase, _, err := client.TestService.UpdateTestCase(ctx, &UpdateTestCaseRequest{
-		ID:          Ptr[int64](1010158231077224799),
-		WorkspaceID: Ptr(10158231),
-		Status:      Ptr(TestCaseStatusAbandon),
+		ID:          new(int64(1010158231077224799)),
+		WorkspaceID: new(10158231),
+		Status:      new(TestCaseStatusAbandon),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, testCase)
@@ -838,10 +838,10 @@ func TestTestService_UpdateTestPlan(t *testing.T) {
 	}))
 
 	plan, _, err := client.TestService.UpdateTestPlan(ctx, &UpdateTestPlanRequest{
-		ID:          Ptr[int64](1000000755000016443),
-		WorkspaceID: Ptr(10158231),
-		Name:        Ptr("test"),
-		Modifier:    Ptr("tapd"),
+		ID:          new(int64(1000000755000016443)),
+		WorkspaceID: new(10158231),
+		Name:        new("test"),
+		Modifier:    new("tapd"),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, plan)
@@ -860,7 +860,7 @@ func TestTestService_GetTestPlanFieldsInfo(t *testing.T) {
 	}))
 
 	fields, _, err := client.TestService.GetTestPlanFieldsInfo(ctx, &GetTestPlanFieldsInfoRequest{
-		WorkspaceID: Ptr(10104801),
+		WorkspaceID: new(10104801),
 	})
 	assert.NoError(t, err)
 	require.Len(t, fields, 4)
@@ -895,8 +895,8 @@ func TestTestService_GetTestPlanRelatedStories(t *testing.T) {
 	}))
 
 	storyIDs, _, err := client.TestService.GetTestPlanRelatedStories(ctx, &GetTestPlanRelatedStoriesRequest{
-		WorkspaceID: Ptr(10104801),
-		TestPlanID:  Ptr[int64](1010104801077236545),
+		WorkspaceID: new(10104801),
+		TestPlanID:  new(int64(1010104801077236545)),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, []string{

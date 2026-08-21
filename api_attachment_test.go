@@ -36,12 +36,12 @@ func TestAttachmentService_UploadAttachment(t *testing.T) {
 	}))
 
 	attachment, _, err := client.AttachmentService.UploadAttachment(ctx, &UploadAttachmentRequest{
-		WorkspaceID: Ptr(11112222),
-		Type:        Ptr("story_custom_field"),
-		CustomField: Ptr("custom_field_one"),
-		EntryID:     Ptr[int64](1069993260856110917),
-		Owner:       Ptr("go-tapd"),
-		Filename:    Ptr("orangetest.jpg"),
+		WorkspaceID: new(11112222),
+		Type:        new("story_custom_field"),
+		CustomField: new("custom_field_one"),
+		EntryID:     new(int64(1069993260856110917)),
+		Owner:       new("go-tapd"),
+		Filename:    new("orangetest.jpg"),
 		File:        strings.NewReader("demo image content"),
 	})
 	assert.NoError(t, err)
@@ -77,12 +77,12 @@ func TestAttachmentService_UploadImageBase64(t *testing.T) {
 	}))
 
 	attachment, _, err := client.AttachmentService.UploadImageBase64(ctx, &UploadImageBase64Request{
-		WorkspaceID: Ptr(69995768),
-		Type:        Ptr("story_custom_field"),
-		CustomField: Ptr("custom_field_one"),
-		EntryID:     Ptr[int64](1069995768115415038),
-		Owner:       Ptr("go-tapd"),
-		Base64Data:  Ptr("base64-image-data"),
+		WorkspaceID: new(69995768),
+		Type:        new("story_custom_field"),
+		CustomField: new("custom_field_one"),
+		EntryID:     new(int64(1069995768115415038)),
+		Owner:       new("go-tapd"),
+		Base64Data:  new("base64-image-data"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1069995768523406033", attachment.ID)
@@ -112,14 +112,14 @@ func TestAttachmentService_GetAttachments(t *testing.T) {
 	}))
 
 	attachments, _, err := client.AttachmentService.GetAttachments(ctx, &GetAttachmentsRequest{
-		WorkspaceID: Ptr(11112222),
-		ID:          Ptr(33334444),
-		Type:        Ptr("bug"),
-		EntryID:     Ptr(55556666),
-		Filename:    Ptr("demo.jpg"),
-		Owner:       Ptr("go-tapd"),
-		Limit:       Ptr(200),
-		Page:        Ptr(2),
+		WorkspaceID: new(11112222),
+		ID:          new(33334444),
+		Type:        new("bug"),
+		EntryID:     new(55556666),
+		Filename:    new("demo.jpg"),
+		Owner:       new("go-tapd"),
+		Limit:       new(200),
+		Page:        new(2),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(attachments) > 0)
@@ -147,8 +147,8 @@ func TestAttachmentService_GetAttachmentDownloadURL(t *testing.T) {
 	}))
 
 	attachment, _, err := client.AttachmentService.GetAttachmentDownloadURL(ctx, &GetAttachmentDownloadURLRequest{
-		WorkspaceID: Ptr(11112222),
-		ID:          Ptr(33334444),
+		WorkspaceID: new(11112222),
+		ID:          new(33334444),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1111112222001002462", attachment.ID)
@@ -175,8 +175,8 @@ func TestAttachmentService_GetImageDownloadURL(t *testing.T) {
 	}))
 
 	attachment, _, err := client.AttachmentService.GetImageDownloadURL(ctx, &GetImageDownloadURLRequest{
-		WorkspaceID: Ptr(11112222),
-		ImagePath:   Ptr("/demo/demo.jpg"),
+		WorkspaceID: new(11112222),
+		ImagePath:   new("/demo/demo.jpg"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "tfl_image", attachment.Type)
@@ -198,8 +198,8 @@ func TestAttachmentService_GetDocumentDownloadURL(t *testing.T) {
 	}))
 
 	attachment, _, err := client.AttachmentService.GetDocumentDownloadURL(ctx, &GetDocumentDownloadURLRequest{
-		WorkspaceID: Ptr(11112222),
-		ID:          Ptr(33334444),
+		WorkspaceID: new(11112222),
+		ID:          new(33334444),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1134190502001000725", attachment.ID)

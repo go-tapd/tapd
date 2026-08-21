@@ -27,13 +27,13 @@ func TestWikiService_CreateWiki(t *testing.T) {
 	}))
 
 	wiki, _, err := client.WikiService.CreateWiki(ctx, &CreateWikiRequest{
-		Name:                Ptr("test111"),
-		MarkdownDescription: Ptr("## markdown"),
-		Description:         Ptr("xxxxxxx"),
-		Creator:             Ptr("v_xuanfang"),
-		Note:                Ptr("note"),
-		WorkspaceID:         Ptr(10104801),
-		ParentWikiID:        Ptr("0"),
+		Name:                new("test111"),
+		MarkdownDescription: new("## markdown"),
+		Description:         new("xxxxxxx"),
+		Creator:             new("v_xuanfang"),
+		Note:                new("note"),
+		WorkspaceID:         new(10104801),
+		ParentWikiID:        new("0"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1210104801000043897", wiki.ID)
@@ -73,17 +73,17 @@ func TestWikiService_GetWikis(t *testing.T) {
 	}))
 
 	wikis, _, err := client.WikiService.GetWikis(ctx, &GetWikisRequest{
-		ID:          Ptr[int64](1210104801000043827),
-		Name:        Ptr("test"),
-		Modifier:    Ptr("dev"),
-		Creator:     Ptr("dev"),
-		Note:        Ptr("note"),
-		ViewCount:   Ptr("4"),
-		Created:     Ptr("2020-08-25"),
-		Modified:    Ptr("2020-08-26"),
-		WorkspaceID: Ptr(10104801),
-		Limit:       Ptr(10),
-		Page:        Ptr(2),
+		ID:          new(int64(1210104801000043827)),
+		Name:        new("test"),
+		Modifier:    new("dev"),
+		Creator:     new("dev"),
+		Note:        new("note"),
+		ViewCount:   new("4"),
+		Created:     new("2020-08-25"),
+		Modified:    new("2020-08-26"),
+		WorkspaceID: new(10104801),
+		Limit:       new(10),
+		Page:        new(2),
 		Order:       NewOrder("created", OrderByDesc),
 		Fields:      NewMulti("id", "name", "workspace_id"),
 	})
@@ -120,14 +120,14 @@ func TestWikiService_GetWikisCount(t *testing.T) {
 	}))
 
 	count, _, err := client.WikiService.GetWikisCount(ctx, &GetWikisCountRequest{
-		Name:        Ptr("test"),
-		Modifier:    Ptr("dev"),
-		Creator:     Ptr("dev"),
-		Note:        Ptr("note"),
-		ViewCount:   Ptr("4"),
-		Created:     Ptr("2020-08-25"),
-		Modified:    Ptr("2020-08-26"),
-		WorkspaceID: Ptr(10104801),
+		Name:        new("test"),
+		Modifier:    new("dev"),
+		Creator:     new("dev"),
+		Note:        new("note"),
+		ViewCount:   new("4"),
+		Created:     new("2020-08-25"),
+		Modified:    new("2020-08-26"),
+		WorkspaceID: new(10104801),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 23, count)
@@ -152,13 +152,13 @@ func TestWikiService_UpdateWiki(t *testing.T) {
 	}))
 
 	wiki, _, err := client.WikiService.UpdateWiki(ctx, &UpdateWikiRequest{
-		ID:                  Ptr[int64](1210104801000043897),
-		Name:                Ptr("test111"),
-		MarkdownDescription: Ptr("## updated"),
-		Description:         Ptr("内容被更新"),
-		Note:                Ptr("note updated"),
-		WorkspaceID:         Ptr(10104801),
-		ParentWikiID:        Ptr("0"),
+		ID:                  new(int64(1210104801000043897)),
+		Name:                new("test111"),
+		MarkdownDescription: new("## updated"),
+		Description:         new("内容被更新"),
+		Note:                new("note updated"),
+		WorkspaceID:         new(10104801),
+		ParentWikiID:        new("0"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1210104801000043897", wiki.ID)
@@ -185,9 +185,9 @@ func TestWikiService_GetWikiDrawioData(t *testing.T) {
 	}))
 
 	data, _, err := client.WikiService.GetWikiDrawioData(ctx, &GetWikiDrawioDataRequest{
-		ID:          Ptr[int64](1100000000000001102),
-		WorkspaceID: Ptr(10104801),
-		Token:       Ptr("token"),
+		ID:          new(int64(1100000000000001102)),
+		WorkspaceID: new(10104801),
+		Token:       new("token"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1100000000000001102", data.ID)
@@ -212,13 +212,13 @@ func TestWikiService_GetWikiFollowers(t *testing.T) {
 	}))
 
 	followers, _, err := client.WikiService.GetWikiFollowers(ctx, &GetWikiFollowersRequest{
-		ID:          Ptr[int64](1210104801000000001),
-		WorkspaceID: Ptr(10104801),
-		Created:     Ptr("2021-01-07"),
-		WikiID:      Ptr[int64](1220358527000044697),
-		User:        Ptr("huanjinxie"),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		ID:          new(int64(1210104801000000001)),
+		WorkspaceID: new(10104801),
+		Created:     new("2021-01-07"),
+		WikiID:      new(int64(1220358527000044697)),
+		User:        new("huanjinxie"),
+		Limit:       new(10),
+		Page:        new(1),
 		Order:       NewOrder("created", OrderByDesc),
 		Fields:      NewMulti("id", "wiki_id", "user"),
 	})
@@ -245,11 +245,11 @@ func TestWikiService_GetWikiFollowersCount(t *testing.T) {
 	}))
 
 	count, _, err := client.WikiService.GetWikiFollowersCount(ctx, &GetWikiFollowersCountRequest{
-		ID:          Ptr[int64](1210104801000000001),
-		WorkspaceID: Ptr(10104801),
-		Created:     Ptr("2021-01-07"),
-		WikiID:      Ptr[int64](1220358527000044697),
-		User:        Ptr("huanjinxie"),
+		ID:          new(int64(1210104801000000001)),
+		WorkspaceID: new(10104801),
+		Created:     new("2021-01-07"),
+		WikiID:      new(int64(1220358527000044697)),
+		User:        new("huanjinxie"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 23, count)
@@ -272,12 +272,12 @@ func TestWikiService_GetWikiEntityPermissions(t *testing.T) {
 	}))
 
 	permissions, _, err := client.WikiService.GetWikiEntityPermissions(ctx, &GetWikiEntityPermissionsRequest{
-		WorkspaceID: Ptr(10104801),
-		WikiID:      Ptr[int64](1210104801001897607),
-		TargetType:  Ptr("nick"),
-		TargetID:    Ptr("jmyan"),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		WorkspaceID: new(10104801),
+		WikiID:      new(int64(1210104801001897607)),
+		TargetType:  new("nick"),
+		TargetID:    new("jmyan"),
+		Limit:       new(10),
+		Page:        new(1),
 		Order:       NewOrder("id", OrderByAsc),
 		Fields:      NewMulti("id", "wiki_id", "target_id"),
 	})
@@ -308,13 +308,13 @@ func TestWikiService_GetWikiTags(t *testing.T) {
 	}))
 
 	tags, _, err := client.WikiService.GetWikiTags(ctx, &GetWikiTagsRequest{
-		WorkspaceID: Ptr(10104801),
-		WikiID:      Ptr[int64](1220358527000044697),
-		Tag:         Ptr("home"),
-		Creator:     Ptr("huanjinxie"),
-		Created:     Ptr("2021-01-07"),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		WorkspaceID: new(10104801),
+		WikiID:      new(int64(1220358527000044697)),
+		Tag:         new("home"),
+		Creator:     new("huanjinxie"),
+		Created:     new("2021-01-07"),
+		Limit:       new(10),
+		Page:        new(1),
 		Order:       NewOrder("created", OrderByDesc),
 	})
 	assert.NoError(t, err)
@@ -339,11 +339,11 @@ func TestWikiService_GetWikiTagsCount(t *testing.T) {
 	}))
 
 	count, _, err := client.WikiService.GetWikiTagsCount(ctx, &GetWikiTagsCountRequest{
-		WorkspaceID: Ptr(10104801),
-		WikiID:      Ptr[int64](1220358527000044697),
-		Tag:         Ptr("home"),
-		Creator:     Ptr("huanjinxie"),
-		Created:     Ptr("2021-01-07"),
+		WorkspaceID: new(10104801),
+		WikiID:      new(int64(1220358527000044697)),
+		Tag:         new("home"),
+		Creator:     new("huanjinxie"),
+		Created:     new("2021-01-07"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 2, count)
@@ -366,14 +366,14 @@ func TestWikiService_GetWikiAttachmentsCount(t *testing.T) {
 	}))
 
 	count, _, err := client.WikiService.GetWikiAttachmentsCount(ctx, &GetWikiAttachmentsCountRequest{
-		ID:          Ptr[int64](1210104801000028203),
-		Filename:    Ptr("README.md"),
-		Size:        Ptr(1024),
-		Owner:       Ptr("anyechen"),
-		WorkspaceID: Ptr(10104801),
-		Created:     Ptr("2021-04-08"),
-		Modified:    Ptr("2021-04-09"),
-		WikiID:      Ptr[int64](1210104801000017645),
+		ID:          new(int64(1210104801000028203)),
+		Filename:    new("README.md"),
+		Size:        new(1024),
+		Owner:       new("anyechen"),
+		WorkspaceID: new(10104801),
+		Created:     new("2021-04-08"),
+		Modified:    new("2021-04-09"),
+		WikiID:      new(int64(1210104801000017645)),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 23, count)

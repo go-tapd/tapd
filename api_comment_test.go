@@ -46,14 +46,14 @@ func TestCommentService_CreateComment(t *testing.T) {
 	}))
 
 	comment, _, err := client.CommentService.CreateComment(ctx, &CreateCommentRequest{
-		Title:       Ptr("title"),
-		Description: Ptr("description"),
-		Author:      Ptr("author"),
-		EntryType:   Ptr(CommentEntryTypeStories),
-		EntryID:     Ptr[int64](123),
-		ReplyID:     Ptr[int64](0),
-		RootID:      Ptr[int64](111),
-		WorkspaceID: Ptr(111),
+		Title:       new("title"),
+		Description: new("description"),
+		Author:      new("author"),
+		EntryType:   new(CommentEntryTypeStories),
+		EntryID:     new(int64(123)),
+		ReplyID:     new(int64(0)),
+		RootID:      new(int64(111)),
+		WorkspaceID: new(111),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, comment)
@@ -95,18 +95,18 @@ func TestCommentService_GetComments(t *testing.T) {
 
 	comments, _, err := client.CommentService.GetComments(ctx, &GetCommentsRequest{
 		ID:          NewMulti[int64](111, 222),
-		Title:       Ptr("title"),
-		Description: Ptr("description"),
-		Author:      Ptr("author"),
-		EntryType:   Ptr(CommentEntryTypeStories),
-		EntryID:     Ptr[int64](123),
-		Created:     Ptr("created"),
-		Modified:    Ptr("modified"),
-		WorkspaceID: Ptr(111),
-		RootID:      Ptr[int64](222),
-		ReplyID:     Ptr[int64](333),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		Title:       new("title"),
+		Description: new("description"),
+		Author:      new("author"),
+		EntryType:   new(CommentEntryTypeStories),
+		EntryID:     new(int64(123)),
+		Created:     new("created"),
+		Modified:    new("modified"),
+		WorkspaceID: new(111),
+		RootID:      new(int64(222)),
+		ReplyID:     new(int64(333)),
+		Limit:       new(10),
+		Page:        new(1),
 		Order:       NewOrder("id", OrderByDesc),
 		Fields:      NewMulti("id", "title"),
 	})
@@ -147,16 +147,16 @@ func TestCommentService_GetCommentsCount(t *testing.T) {
 
 	count, _, err := client.CommentService.GetCommentsCount(ctx, &GetCommentsCountRequest{
 		ID:          NewMulti[int64](111, 222),
-		Title:       Ptr("test title"),
-		Description: Ptr("test description"),
-		Author:      Ptr("test author"),
-		EntryType:   Ptr(CommentEntryTypeStories),
-		EntryID:     Ptr[int64](123),
-		Created:     Ptr("2024-08-28"),
-		Modified:    Ptr("2024-08-28"),
-		WorkspaceID: Ptr(111),
-		RootID:      Ptr[int64](222),
-		ReplyID:     Ptr[int64](333),
+		Title:       new("test title"),
+		Description: new("test description"),
+		Author:      new("test author"),
+		EntryType:   new(CommentEntryTypeStories),
+		EntryID:     new(int64(123)),
+		Created:     new("2024-08-28"),
+		Modified:    new("2024-08-28"),
+		WorkspaceID: new(111),
+		RootID:      new(int64(222)),
+		ReplyID:     new(int64(333)),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, count)
@@ -184,10 +184,10 @@ func TestCommentService_UpdateComment(t *testing.T) {
 	}))
 
 	comment, _, err := client.CommentService.UpdateComment(ctx, &UpdateCommentRequest{
-		WorkspaceID:   Ptr(111),
-		ID:            Ptr[int64](111),
-		Description:   Ptr("test description 2"),
-		ChangeCreator: Ptr("test creator"),
+		WorkspaceID:   new(111),
+		ID:            new(int64(111)),
+		Description:   new("test description 2"),
+		ChangeCreator: new("test creator"),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, comment)

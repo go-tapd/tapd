@@ -59,7 +59,7 @@ func main() {
 
 	// example: get labels
 	labels, _, err := client.LabelService.GetLabels(context.Background(), &tapd.GetLabelsRequest{
-		WorkspaceID: tapd.Ptr(123456),
+		WorkspaceID: new(123456),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -89,7 +89,7 @@ func main() {
 
 	// example: get stories
 	stories, _, err := client.StoryService.GetStories(context.Background(), &tapd.GetStoriesRequest{
-		WorkspaceID: tapd.Ptr(123456),
+		WorkspaceID: new(123456),
 	})
 	if err != nil {
 		log.Fatal(err)

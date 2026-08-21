@@ -24,10 +24,10 @@ func TestStoryService_CreateStoryCategory(t *testing.T) {
 	}))
 
 	category, _, err := client.StoryService.CreateStoryCategory(ctx, &CreateStoryCategoryRequest{
-		WorkspaceID: Ptr(11112222),
-		Name:        Ptr("产品需求"),
-		Description: Ptr("产品需求描述"),
-		ParentID:    Ptr[int64](0),
+		WorkspaceID: new(11112222),
+		Name:        new("产品需求"),
+		Description: new("产品需求描述"),
+		ParentID:    new(int64(0)),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, category)
@@ -66,13 +66,13 @@ func TestStoryService_CopyStory(t *testing.T) {
 	}))
 
 	story, _, err := client.StoryService.CopyStory(ctx, &CopyStoryRequest{
-		WorkspaceID:       Ptr(11112222),
-		SrcStoryID:        Ptr[int64](1111112222001000103),
-		DstWorkspaceID:    Ptr(33334444),
+		WorkspaceID:       new(11112222),
+		SrcStoryID:        new(int64(1111112222001000103)),
+		DstWorkspaceID:    new(33334444),
 		SyncFields:        NewMulti("name", "description", "owner"),
-		DstWorkitemTypeID: Ptr[int64](10001),
-		NewCreator:        Ptr("xinweihe"),
-		NewStatus:         Ptr(StoryStatusPlanning),
+		DstWorkitemTypeID: new(int64(10001)),
+		NewCreator:        new("xinweihe"),
+		NewStatus:         new(StoryStatusPlanning),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, story)
@@ -95,8 +95,8 @@ func TestStoryService_GetStoryLinkStories(t *testing.T) {
 	}))
 
 	relations, _, err := client.StoryService.GetStoryLinkStories(ctx, &GetStoryLinkStoriesRequest{
-		WorkspaceID: Ptr(11112222),
-		StoryID:     Ptr[int64](1111112222001000103),
+		WorkspaceID: new(11112222),
+		StoryID:     new(int64(1111112222001000103)),
 	})
 	assert.NoError(t, err)
 	assert.Len(t, relations, 2)
@@ -123,9 +123,9 @@ func TestStoryService_GetSecretStories(t *testing.T) {
 	}))
 
 	stories, _, err := client.StoryService.GetSecretStories(ctx, &GetSecretStoriesRequest{
-		WorkspaceID: Ptr(11112222),
-		Limit:       Ptr(10),
-		Page:        Ptr(2),
+		WorkspaceID: new(11112222),
+		Limit:       new(10),
+		Page:        new(2),
 		Order:       NewOrder("created", OrderByDesc),
 	})
 	assert.NoError(t, err)
@@ -147,7 +147,7 @@ func TestStoryService_GetSecretStoriesCount(t *testing.T) {
 	}))
 
 	count, _, err := client.StoryService.GetSecretStoriesCount(ctx, &GetSecretStoriesCountRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 3, count)
@@ -174,15 +174,15 @@ func TestStoryService_GetStoryCategories(t *testing.T) {
 	}))
 
 	categories, _, err := client.StoryService.GetStoryCategories(ctx, &GetStoryCategoriesRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		ID:          NewMulti[int64](1111111111111, 1111111111112),
-		Name:        Ptr("test name"),
-		Description: Ptr("test description"),
-		ParentID:    Ptr(1111111111111),
-		Created:     Ptr("2021-01-01"),
-		Modified:    Ptr("2021-01-02"),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		Name:        new("test name"),
+		Description: new("test description"),
+		ParentID:    new(1111111111111),
+		Created:     new("2021-01-01"),
+		Modified:    new("2021-01-02"),
+		Limit:       new(10),
+		Page:        new(1),
 		Order:       NewOrder("id", OrderByAsc),
 		Fields:      NewMulti("id", "name"),
 	})
@@ -216,11 +216,11 @@ func TestStoryService_UpdateStoryCategory(t *testing.T) {
 	}))
 
 	category, _, err := client.StoryService.UpdateStoryCategory(ctx, &UpdateStoryCategoryRequest{
-		WorkspaceID: Ptr(11112222),
-		ID:          Ptr[int64](1111112222001000056),
-		Name:        Ptr("产品需求"),
-		Description: Ptr("产品需求描述"),
-		ParentID:    Ptr[int64](0),
+		WorkspaceID: new(11112222),
+		ID:          new(int64(1111112222001000056)),
+		Name:        new("产品需求"),
+		Description: new("产品需求描述"),
+		ParentID:    new(int64(0)),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, category)
@@ -249,13 +249,13 @@ func TestStoryService_GetStoryCategoriesCount(t *testing.T) {
 	}))
 
 	count, _, err := client.StoryService.GetStoryCategoriesCount(ctx, &GetStoryCategoriesCountRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		ID:          NewMulti[int64](1111111111111, 1111111111112),
-		Name:        Ptr("test name"),
-		Description: Ptr("test description"),
-		ParentID:    Ptr(1111111111111),
-		Created:     Ptr("2021-01-01"),
-		Modified:    Ptr("2021-01-02"),
+		Name:        new("test name"),
+		Description: new("test description"),
+		ParentID:    new(1111111111111),
+		Created:     new("2021-01-01"),
+		Modified:    new("2021-01-02"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 30, count)
@@ -273,7 +273,7 @@ func TestStoryService_GetStoriesCountByCategories(t *testing.T) {
 	}))
 
 	counts, _, err := client.StoryService.GetStoriesCountByCategories(ctx, &GetStoriesCountByCategoriesRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		CategoryID:  NewMulti[int64](1111112222001000103, 1111112222001000108),
 	})
 	assert.NoError(t, err)
@@ -297,7 +297,7 @@ func TestStoryService_GetStoryChanges(t *testing.T) {
 
 	storyChanges, _, err := client.StoryService.GetStoryChanges(ctx, &GetStoryChangesRequest{
 		StoryID:     NewMulti[int64](1111112222001000103, 1111112222001000108),
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(storyChanges) > 0)
@@ -336,8 +336,8 @@ func TestStoryService_GetStoryChangesCount(t *testing.T) {
 
 	count, _, err := client.StoryService.GetStoryChangesCount(ctx, &GetStoryChangesCountRequest{
 		StoryID:     NewMulti[int64](1111112222001000103, 1111112222001000108),
-		WorkspaceID: Ptr(11112222),
-		Creator:     Ptr("TAPD"),
+		WorkspaceID: new(11112222),
+		Creator:     new("TAPD"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 23, count)
@@ -354,7 +354,7 @@ func TestStoryService_GetStoryCustomFieldsSettings(t *testing.T) {
 	}))
 
 	settings, _, err := client.StoryService.GetStoryCustomFieldsSettings(ctx, &GetStoryCustomFieldsSettingsRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(settings) > 0)
@@ -387,7 +387,7 @@ func TestStoryService_GetStoryFieldsInfo(t *testing.T) {
 	}))
 
 	fields, _, err := client.StoryService.GetStoryFieldsInfo(ctx, &GetStoryFieldsInfoRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.NotEmpty(t, fields)
@@ -454,8 +454,8 @@ func TestStoryService_GetStoryTestCaseRelation(t *testing.T) {
 	}))
 
 	relations, _, err := client.StoryService.GetStoryTestCaseRelation(ctx, &GetStoryTestCaseRelationRequest{
-		WorkspaceID: Ptr(11112222),
-		StoryID:     Ptr[int64](33334444),
+		WorkspaceID: new(11112222),
+		StoryID:     new(int64(33334444)),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(relations) > 0)
@@ -480,8 +480,8 @@ func TestStoryService_GetStoryTimeRelations(t *testing.T) {
 	}))
 
 	relations, _, err := client.StoryService.GetStoryTimeRelations(ctx, &GetStoryTimeRelationsRequest{
-		WorkspaceID: Ptr(11112222),
-		StoryID:     Ptr[int64](1111112222001000103),
+		WorkspaceID: new(11112222),
+		StoryID:     new(int64(1111112222001000103)),
 	})
 	assert.NoError(t, err)
 	assert.Len(t, relations, 2)
@@ -517,14 +517,14 @@ func TestStoryService_SaveStoryTimeRelations(t *testing.T) {
 	}))
 
 	result, _, err := client.StoryService.SaveStoryTimeRelations(ctx, &SaveStoryTimeRelationsRequest{
-		WorkspaceID: Ptr(11112222),
-		CurrentUser: Ptr("testuser"),
+		WorkspaceID: new(11112222),
+		CurrentUser: new("testuser"),
 		Relations: []*SaveStoryTimeRelation{
 			{
-				WorkitemID:    Ptr[int64](1111112222001000102),
-				DstWorkitemID: Ptr[int64](1111112222001000103),
-				SrcField:      Ptr("begin"),
-				DstField:      Ptr("due"),
+				WorkitemID:    new(int64(1111112222001000102)),
+				DstWorkitemID: new(int64(1111112222001000103)),
+				SrcField:      new("begin"),
+				DstField:      new("due"),
 			},
 		},
 	})
@@ -551,15 +551,15 @@ func TestStoryService_DeleteStoryTimeRelations(t *testing.T) {
 	}))
 
 	result, _, err := client.StoryService.DeleteStoryTimeRelations(ctx, &DeleteStoryTimeRelationsRequest{
-		WorkspaceID: Ptr(11112222),
-		CurrentUser: Ptr("testuser"),
+		WorkspaceID: new(11112222),
+		CurrentUser: new("testuser"),
 		Relations: []*DeleteStoryTimeRelation{
 			{
-				WorkitemID:    Ptr[int64](1111112222001000102),
-				DstWorkitemID: Ptr[int64](1111112222001000103),
+				WorkitemID:    new(int64(1111112222001000102)),
+				DstWorkitemID: new(int64(1111112222001000103)),
 			},
 		},
-		RelationIDs: Ptr([]int64{1210104801000007813}),
+		RelationIDs: new([]int64{1210104801000007813}),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
@@ -577,8 +577,8 @@ func TestStoryService_GetStorySecretInfo(t *testing.T) {
 	}))
 
 	info, _, err := client.StoryService.GetStorySecretInfo(ctx, &GetStorySecretInfoRequest{
-		WorkspaceID: Ptr(11112222),
-		StoryID:     Ptr[int64](1111112222001000103),
+		WorkspaceID: new(11112222),
+		StoryID:     new(int64(1111112222001000103)),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, info)
@@ -616,13 +616,13 @@ func TestStoryService_BatchUpdateStorySecretInfo(t *testing.T) {
 	}))
 
 	result, _, err := client.StoryService.BatchUpdateStorySecretInfo(ctx, &BatchUpdateStorySecretInfoRequest{
-		WorkspaceID:          Ptr(11112222),
+		WorkspaceID:          new(11112222),
 		StoryIDList:          NewEnum[int64](1111112222001000103, 1111112222001000104),
-		SecretScope:          Ptr("secret"),
-		AllowList:            Ptr("xinweihe;1000000000000000002"),
-		AddParticipantFields: Ptr("false"),
-		OperationType:        Ptr(0),
-		CurrentUser:          Ptr("xinweihe"),
+		SecretScope:          new("secret"),
+		AllowList:            new("xinweihe;1000000000000000002"),
+		AddParticipantFields: new("false"),
+		OperationType:        new(0),
+		CurrentUser:          new("xinweihe"),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
@@ -650,15 +650,15 @@ func TestStoryService_GetStoryWorkitemTypes(t *testing.T) {
 	}))
 
 	workitemTypes, _, err := client.StoryService.GetStoryWorkitemTypes(ctx, &GetStoryWorkitemTypesRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		ID:          NewMulti[int64](1111112222001000103, 1111112222001000104),
-		Name:        Ptr("需求"),
-		EntityType:  Ptr("story"),
-		EnglishName: Ptr("custom_story"),
-		WorkflowID:  Ptr[int64](1210104801000000001),
-		Status:      Ptr(1),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		Name:        new("需求"),
+		EntityType:  new("story"),
+		EnglishName: new("custom_story"),
+		WorkflowID:  new(int64(1210104801000000001)),
+		Status:      new(1),
+		Limit:       new(10),
+		Page:        new(1),
 		Order:       NewOrder("created", OrderByDesc),
 		Fields:      NewMulti("id", "name", "workflow_id"),
 	})
@@ -693,17 +693,17 @@ func TestStoryService_BatchUpdateStories(t *testing.T) {
 	}))
 
 	result, _, err := client.StoryService.BatchUpdateStories(ctx, &BatchUpdateStoriesRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		Workitems: []*UpdateStoryRequest{
 			{
-				ID:     Ptr[int64](1111112222001000103),
-				Name:   Ptr("first story"),
-				Status: Ptr("planning"),
+				ID:     new(int64(1111112222001000103)),
+				Name:   new("first story"),
+				Status: new("planning"),
 			},
 			{
-				ID:    Ptr[int64](1111112222001000104),
-				Name:  Ptr("second story"),
-				Owner: Ptr("owner"),
+				ID:    new(int64(1111112222001000104)),
+				Name:  new("second story"),
+				Owner: new("owner"),
 			},
 		},
 	})
@@ -727,9 +727,9 @@ func TestStoryService_UpdateStoryWorkitemType(t *testing.T) {
 	}))
 
 	story, _, err := client.StoryService.UpdateStoryWorkitemType(ctx, &UpdateStoryWorkitemTypeRequest{
-		StoryID:        Ptr[int64](1111112222001000103),
-		WorkitemTypeID: Ptr[int64](1111112222001000104),
-		WorkspaceID:    Ptr(11112222),
+		StoryID:        new(int64(1111112222001000103)),
+		WorkitemTypeID: new(int64(1111112222001000104)),
+		WorkspaceID:    new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, story)
@@ -750,8 +750,8 @@ func TestStoryService_GetStorySteps(t *testing.T) {
 	}))
 
 	steps, _, err := client.StoryService.GetStorySteps(ctx, &GetStoryStepsRequest{
-		WorkspaceID: Ptr(11112222),
-		StoryID:     Ptr[int64](1111112222001000103),
+		WorkspaceID: new(11112222),
+		StoryID:     new(int64(1111112222001000103)),
 	})
 	assert.NoError(t, err)
 	assert.Len(t, steps, 2)
@@ -779,7 +779,7 @@ func TestStoryService_GetStoryFieldsLabel(t *testing.T) {
 	}))
 
 	labels, _, err := client.StoryService.GetStoryFieldsLabel(ctx, &GetStoryFieldsLabelRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(labels) > 0)
@@ -809,7 +809,7 @@ func TestStoryService_GetStoryRelatedBugs(t *testing.T) {
 	}))
 
 	relatedBugs, _, err := client.StoryService.GetStoryRelatedBugs(ctx, &GetStoryRelatedBugsRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		StoryID:     NewMulti[int64](33334444, 55556666),
 	})
 	assert.NoError(t, err)
@@ -835,10 +835,10 @@ func TestStoryService_RemoveStoryBugRelation(t *testing.T) {
 	}))
 
 	result, _, err := client.StoryService.RemoveStoryBugRelation(ctx, &RemoveStoryBugRelationRequest{
-		WorkspaceID: Ptr(11112222),
-		StoryID:     Ptr[int64](1111112222001063941),
-		BugID:       Ptr[int64](1111112222001035927),
-		CurrentUser: Ptr("xinweihe"),
+		WorkspaceID: new(11112222),
+		StoryID:     new(int64(1111112222001063941)),
+		BugID:       new(int64(1111112222001035927)),
+		CurrentUser: new("xinweihe"),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
@@ -860,9 +860,9 @@ func TestStoryService_UpdateStoryParent(t *testing.T) {
 	}))
 
 	story, _, err := client.StoryService.UpdateStoryParent(ctx, &UpdateStoryParentRequest{
-		WorkspaceID: Ptr(11112222),
-		StoryID:     Ptr[int64](1111112222001063941),
-		ParentID:    Ptr[int64](1111112222001060000),
+		WorkspaceID: new(11112222),
+		StoryID:     new(int64(1111112222001063941)),
+		ParentID:    new(int64(1111112222001060000)),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, story)
@@ -889,11 +889,11 @@ func TestStoryService_CreateStoryBugRelation(t *testing.T) {
 	}))
 
 	relation, _, err := client.StoryService.CreateStoryBugRelation(ctx, &CreateStoryBugRelationRequest{
-		WorkspaceID: Ptr(11112222),
-		SourceType:  Ptr("story"),
-		SourceID:    Ptr[int64](1111112222001063941),
-		TargetType:  Ptr("bug"),
-		TargetID:    Ptr[int64](1111112222001035927),
+		WorkspaceID: new(11112222),
+		SourceType:  new("story"),
+		SourceID:    new(int64(1111112222001063941)),
+		TargetType:  new("bug"),
+		TargetID:    new(int64(1111112222001035927)),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, relation)
@@ -924,8 +924,8 @@ func TestStoryService_CreateStoryTestCaseRelation(t *testing.T) {
 	}))
 
 	result, _, err := client.StoryService.CreateStoryTestCaseRelation(ctx, &CreateStoryTestCaseRelationRequest{
-		WorkspaceID: Ptr(11112222),
-		StoryID:     Ptr[int64](1111112222001063941),
+		WorkspaceID: new(11112222),
+		StoryID:     new(int64(1111112222001063941)),
 		TestCaseID:  NewMulti[int64](1111112222001077291, 1111112222001077292),
 	})
 	assert.NoError(t, err)
@@ -950,13 +950,13 @@ func TestStoryService_GetStoriesByViewConfID(t *testing.T) {
 	}))
 
 	stories, _, err := client.StoryService.GetStoriesByViewConfID(ctx, &GetStoriesByViewConfIDRequest{
-		ViewConfID:  Ptr[int64](1111112222001000001),
-		CurrentUser: Ptr("xinweihe"),
+		ViewConfID:  new(int64(1111112222001000001)),
+		CurrentUser: new("xinweihe"),
 		GetStoriesRequest: GetStoriesRequest{
-			WorkspaceID: Ptr(11112222),
+			WorkspaceID: new(11112222),
 			Status:      NewEnum(StoryStatusPlanning),
-			Limit:       Ptr(20),
-			Page:        Ptr(1),
+			Limit:       new(20),
+			Page:        new(1),
 			Fields:      NewMulti("id", "name", "status"),
 		},
 	})
@@ -983,9 +983,9 @@ func TestStoryService_CreateStoryLinkRelation(t *testing.T) {
 	}))
 
 	result, _, err := client.StoryService.CreateStoryLinkRelation(ctx, &CreateStoryLinkRelationRequest{
-		WorkspaceID:   Ptr(11112222),
-		SourceStoryID: Ptr[int64](1111112222001063941),
-		TargetStoryID: Ptr[int64](1111112222001063942),
+		WorkspaceID:   new(11112222),
+		SourceStoryID: new(int64(1111112222001063941)),
+		TargetStoryID: new(int64(1111112222001063942)),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, result)
@@ -1004,8 +1004,8 @@ func TestStoryService_GetStoryTemplates(t *testing.T) {
 	}))
 
 	templates, _, err := client.StoryService.GetStoryTemplates(ctx, &GetStoryTemplatesRequest{
-		WorkspaceID:    Ptr(11112222),
-		WorkitemTypeID: Ptr(1),
+		WorkspaceID:    new(11112222),
+		WorkitemTypeID: new(1),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(templates) > 0)
@@ -1030,8 +1030,8 @@ func TestStoryService_GetStoryTemplateFields(t *testing.T) {
 	}))
 
 	fields, _, err := client.StoryService.GetStoryTemplateFields(ctx, &GetStoryTemplateFieldsRequest{
-		WorkspaceID: Ptr(11112222),
-		TemplateID:  Ptr(int64(1111111111111)),
+		WorkspaceID: new(11112222),
+		TemplateID:  new(int64(1111111111111)),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(fields) > 0)
@@ -1064,14 +1064,14 @@ func TestStoryService_GetRemovedStories(t *testing.T) {
 	}))
 
 	stories, _, err := client.StoryService.GetRemovedStories(ctx, &GetRemovedStoriesRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		ID:          NewMulti(1111111111111, 1111111111112),
-		Creator:     Ptr("creator"),
-		IsArchived:  Ptr(1),
-		Created:     Ptr("2021-01-01"),
-		Deleted:     Ptr("2021-01-02"),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		Creator:     new("creator"),
+		IsArchived:  new(1),
+		Created:     new("2021-01-01"),
+		Deleted:     new("2021-01-02"),
+		Limit:       new(10),
+		Page:        new(1),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(stories) > 0)
@@ -1101,7 +1101,7 @@ func TestStoryService_GetConvertStoryIDsToQueryToken(t *testing.T) {
 	}))
 
 	response, _, err := client.StoryService.GetConvertStoryIDsToQueryToken(ctx, &GetConvertStoryIDsToQueryTokenRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		StoryIDs:    NewMulti[int64](33334444, 55556666),
 	})
 	assert.NoError(t, err)
