@@ -35,11 +35,11 @@ func TestIterationService_CreateIteration(t *testing.T) {
 	}))
 
 	iteration, _, err := client.IterationService.CreateIteration(ctx, &CreateIterationRequest{
-		WorkspaceID: Ptr(111),
-		Name:        Ptr("测试迭代1"),
-		StartDate:   Ptr("2025-01-01"),
-		EndDate:     Ptr("2025-01-31"),
-		Creator:     Ptr("creator name"),
+		WorkspaceID: new(111),
+		Name:        new("测试迭代1"),
+		StartDate:   new("2025-01-01"),
+		EndDate:     new("2025-01-31"),
+		Creator:     new("creator name"),
 		Label:       NewEnum("label1", "label2"),
 	})
 	assert.NoError(t, err)
@@ -74,7 +74,7 @@ func TestIterationService_GetIterationCustomFieldsSettings(t *testing.T) {
 	settings, _, err := client.IterationService.GetIterationCustomFieldsSettings(
 		ctx,
 		&GetIterationCustomFieldsSettingsRequest{
-			WorkspaceID: Ptr(111),
+			WorkspaceID: new(111),
 		},
 	)
 	assert.NoError(t, err)
@@ -101,7 +101,7 @@ func TestIterationService_GetIterations(t *testing.T) {
 	}))
 
 	iterations, _, err := client.IterationService.GetIterations(ctx, &GetIterationsRequest{
-		WorkspaceID: Ptr(111),
+		WorkspaceID: new(111),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, iterations)
@@ -141,12 +141,12 @@ func TestIterationService_GetIterationChanges(t *testing.T) {
 	}))
 
 	changes, _, err := client.IterationService.GetIterationChanges(ctx, &GetIterationChangesRequest{
-		WorkspaceID: Ptr(111),
-		IterationID: Ptr[int64](11111222001002235),
-		Field:       Ptr("name"),
-		Author:      Ptr("v_xinyucao"),
-		Limit:       Ptr(20),
-		Page:        Ptr(1),
+		WorkspaceID: new(111),
+		IterationID: new(int64(11111222001002235)),
+		Field:       new("name"),
+		Author:      new("v_xinyucao"),
+		Limit:       new(20),
+		Page:        new(1),
 		Fields:      NewMulti("id", "iteration_id", "field"),
 	})
 	assert.NoError(t, err)
@@ -176,8 +176,8 @@ func TestIterationService_GetIterationCustomDashBoardContent(t *testing.T) {
 	cards, _, err := client.IterationService.GetIterationCustomDashBoardContent(
 		ctx,
 		&GetIterationCustomDashBoardContentRequest{
-			WorkspaceID: Ptr(10104801),
-			IterationID: Ptr[int64](1010104801000723579),
+			WorkspaceID: new(10104801),
+			IterationID: new(int64(1010104801000723579)),
 		},
 	)
 	assert.NoError(t, err)
@@ -211,11 +211,11 @@ func TestIterationService_UpdateIterationCustomDashBoardContent(t *testing.T) {
 	result, _, err := client.IterationService.UpdateIterationCustomDashBoardContent(
 		ctx,
 		&UpdateIterationCustomDashBoardContentRequest{
-			WorkspaceID: Ptr(10104801),
-			IterationID: Ptr[int64](1010104801000723579),
-			CardID:      Ptr[int64](1010104801000003949),
-			Content:     Ptr("<p>updated</p>"),
-			PlanAppID:   Ptr[int64](0),
+			WorkspaceID: new(10104801),
+			IterationID: new(int64(1010104801000723579)),
+			CardID:      new(int64(1010104801000003949)),
+			Content:     new("<p>updated</p>"),
+			PlanAppID:   new(int64(0)),
 		},
 	)
 	assert.NoError(t, err)
@@ -242,8 +242,8 @@ func TestIterationService_LockIteration(t *testing.T) {
 	}))
 
 	result, _, err := client.IterationService.LockIteration(ctx, &LockIterationRequest{
-		WorkspaceID: Ptr(10104801),
-		IterationID: Ptr[int64](1010104801000723579),
+		WorkspaceID: new(10104801),
+		IterationID: new(int64(1010104801000723579)),
 		LockTypes:   NewMulti("__ALL_STORY__", "__ALL_BUG__"),
 	})
 	assert.NoError(t, err)
@@ -269,8 +269,8 @@ func TestIterationService_UnlockIteration(t *testing.T) {
 	}))
 
 	result, _, err := client.IterationService.UnlockIteration(ctx, &UnlockIterationRequest{
-		WorkspaceID: Ptr(10104801),
-		IterationID: Ptr[int64](1010104801000723579),
+		WorkspaceID: new(10104801),
+		IterationID: new(int64(1010104801000723579)),
 		LockTypes:   NewMulti("__ALL_STORY__", "__ALL_BUG__"),
 	})
 	assert.NoError(t, err)
@@ -287,7 +287,7 @@ func TestIterationService_GetIterationsCount(t *testing.T) {
 	}))
 
 	count, _, err := client.IterationService.GetIterationsCount(ctx, &GetIterationsCountRequest{
-		WorkspaceID: Ptr(111),
+		WorkspaceID: new(111),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 106, count)
@@ -319,13 +319,13 @@ func TestIterationService_UpdateIteration(t *testing.T) {
 	}))
 
 	iteration, _, err := client.IterationService.UpdateIteration(ctx, &UpdateIterationRequest{
-		WorkspaceID: Ptr(111),
-		ID:          Ptr(int64(11111222001002235)),
-		CurrentUser: Ptr("current user"),
-		Name:        Ptr("测试迭代1"),
-		StartDate:   Ptr("2025-01-01"),
-		EndDate:     Ptr("2025-01-31"),
-		Creator:     Ptr("creator name"),
+		WorkspaceID: new(111),
+		ID:          new(int64(11111222001002235)),
+		CurrentUser: new("current user"),
+		Name:        new("测试迭代1"),
+		StartDate:   new("2025-01-01"),
+		EndDate:     new("2025-01-31"),
+		Creator:     new("creator name"),
 		Label:       NewEnum("label1", "label2"),
 	})
 	assert.NoError(t, err)
@@ -358,7 +358,7 @@ func TestIterationService_GetWorkitemTypes(t *testing.T) {
 	}))
 
 	workitemTypes, _, err := client.IterationService.GetWorkitemTypes(ctx, &GetWorkitemTypesRequest{
-		WorkspaceID: Ptr(111),
+		WorkspaceID: new(111),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, workitemTypes)
@@ -385,7 +385,7 @@ func TestIterationService_GetTemplateList(t *testing.T) {
 	}))
 
 	templates, _, err := client.IterationService.GetTemplateList(ctx, &GetTemplateListRequest{
-		WorkspaceID: Ptr(111),
+		WorkspaceID: new(111),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, templates)
@@ -413,8 +413,8 @@ func TestIterationService_GetIterationTemplateFields(t *testing.T) {
 	}))
 
 	fields, _, err := client.IterationService.GetIterationTemplateFields(ctx, &GetIterationTemplateFieldsRequest{
-		WorkspaceID: Ptr(20375553),
-		TemplateID:  Ptr[int64](1020375553000077579),
+		WorkspaceID: new(20375553),
+		TemplateID:  new(int64(1020375553000077579)),
 	})
 	assert.NoError(t, err)
 	require.Len(t, fields, 2)
@@ -443,8 +443,8 @@ func TestIterationService_GetIterationDefaultTemplateFields(t *testing.T) {
 	fields, _, err := client.IterationService.GetIterationDefaultTemplateFields(
 		ctx,
 		&GetIterationDefaultTemplateFieldsRequest{
-			WorkspaceID:    Ptr(20375553),
-			WorkitemTypeID: Ptr[int64](1020375553000070695),
+			WorkspaceID:    new(20375553),
+			WorkitemTypeID: new(int64(1020375553000070695)),
 		},
 	)
 	assert.NoError(t, err)

@@ -24,13 +24,13 @@ func TestReportService_GetReports(t *testing.T) {
 	}))
 
 	reports, _, err := client.ReportService.GetReports(ctx, &GetReportsRequest{
-		WorkspaceID: Ptr(11112222),
-		ID:          Ptr(1000000000000000002),
-		Title:       Ptr("title"),
-		Author:      Ptr("author"),
-		Created:     Ptr("created"),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		WorkspaceID: new(11112222),
+		ID:          new(1000000000000000002),
+		Title:       new("title"),
+		Author:      new("author"),
+		Created:     new("created"),
+		Limit:       new(10),
+		Page:        new(1),
 		Fields:      NewMulti("id", "title"),
 	})
 	assert.NoError(t, err)

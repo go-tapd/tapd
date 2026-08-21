@@ -283,7 +283,7 @@ func TestStoryService_GetStoryFieldsLabel(t *testing.T) {
 
     // 6. 调用方法
     labels, _, err := client.StoryService.GetStoryFieldsLabel(ctx, &GetStoryFieldsLabelRequest{
-        WorkspaceID: Ptr(11112222),
+        WorkspaceID: new(11112222),
     })
 
     // 7. 验证返回结果
@@ -324,7 +324,7 @@ go test . -run TestStoryService_GetStoryFieldsLabel -v
 func TestStoryService_Prod_GetStoryFieldsLabel(t *testing.T) {
     // 1. 调用真实 API
     labels, _, err := createClient(t).StoryService.GetStoryFieldsLabel(ctx, &tapd.GetStoryFieldsLabelRequest{
-        WorkspaceID: tapd.Ptr(workspace8591ID),
+        WorkspaceID: new(workspace8591ID),
     })
 
     // 2. 验证响应
@@ -549,7 +549,7 @@ func TestStoryService_GetStoryFieldsLabel(t *testing.T) {
     }))
 
     labels, _, err := client.StoryService.GetStoryFieldsLabel(ctx, &GetStoryFieldsLabelRequest{
-        WorkspaceID: Ptr(11112222),
+        WorkspaceID: new(11112222),
     })
     assert.NoError(t, err)
     assert.True(t, len(labels) > 0)
@@ -570,7 +570,7 @@ func TestStoryService_GetStoryFieldsLabel(t *testing.T) {
 ```go
 func TestStoryService_Prod_GetStoryFieldsLabel(t *testing.T) {
     labels, _, err := createClient(t).StoryService.GetStoryFieldsLabel(ctx, &tapd.GetStoryFieldsLabelRequest{
-        WorkspaceID: tapd.Ptr(workspace8591ID),
+        WorkspaceID: new(workspace8591ID),
     })
     assert.NoError(t, err)
     assert.NotEmpty(t, labels)

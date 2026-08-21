@@ -29,14 +29,14 @@ func TestSourceService_AddCodeCommitInfo(t *testing.T) {
 	}))
 
 	info, _, err := client.SourceService.AddCodeCommitInfo(ctx, &AddCodeCommitInfoRequest{
-		WorkspaceID: Ptr(20375571),
-		CommitID:    Ptr("zxxxxx"),
-		Author:      Ptr("terrysxu"),
-		Message:     Ptr("--story=854927829 ASA-c2s"),
+		WorkspaceID: new(20375571),
+		CommitID:    new("zxxxxx"),
+		Author:      new("terrysxu"),
+		Message:     new("--story=854927829 ASA-c2s"),
 		Files:       &[]string{"U xxx.php", "A xxx.js", "M xxx.html"},
-		Repo:        Ptr("repos/xxx_proj"),
-		RepoID:      Ptr("abcd1234-avcd-1234-avcd-1234abcdefgh"),
-		CommitTime:  Ptr("2019-07-22 19:11:11"),
+		Repo:        new("repos/xxx_proj"),
+		RepoID:      new("abcd1234-avcd-1234-avcd-1234abcdefgh"),
+		CommitTime:  new("2019-07-22 19:11:11"),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, "1020375571000321465", info.ID)
@@ -62,12 +62,12 @@ func TestSourceService_GetCodeCommitInfos(t *testing.T) {
 	}))
 
 	infos, _, err := client.SourceService.GetCodeCommitInfos(ctx, &GetCodeCommitInfosRequest{
-		WorkspaceID: Ptr(20358374),
-		Type:        Ptr(EntityTypeStory),
-		ObjectID:    Ptr[int64](1020358374854843133),
-		RelatedType: Ptr(CodeCommitRelatedTypeSourceCode),
-		Limit:       Ptr(50),
-		Page:        Ptr(2),
+		WorkspaceID: new(20358374),
+		Type:        new(EntityTypeStory),
+		ObjectID:    new(int64(1020358374854843133)),
+		RelatedType: new(CodeCommitRelatedTypeSourceCode),
+		Limit:       new(50),
+		Page:        new(2),
 	})
 	require.NoError(t, err)
 	require.Len(t, infos, 1)
@@ -91,13 +91,13 @@ func TestSourceService_GetCommitObjects(t *testing.T) {
 	}))
 
 	objects, _, err := client.SourceService.GetCommitObjects(ctx, &GetCommitObjectsRequest{
-		WorkspaceID: Ptr(20355782),
+		WorkspaceID: new(20355782),
 		CommitID: NewMulti(
 			"7b0645c6a467a502fe1d3b678fea8bdf2890aa8d",
 			"047e5764c392bef48fd0e4176c147c7c30a9f32a",
 		),
-		EntityType: Ptr(EntityTypeTask),
-		SCMType:    Ptr("gitlab"),
+		EntityType: new(EntityTypeTask),
+		SCMType:    new("gitlab"),
 		Fields:     NewMulti("id", "name", "status"),
 	})
 	require.NoError(t, err)

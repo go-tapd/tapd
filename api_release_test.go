@@ -26,12 +26,12 @@ func TestReleaseService_CreateRelease(t *testing.T) {
 	}))
 
 	release, _, err := client.ReleaseService.CreateRelease(ctx, &CreateReleaseRequest{
-		WorkspaceID: Ptr(10104801),
-		Name:        Ptr("test2"),
-		Description: Ptr("发布计划描述"),
-		StartDate:   Ptr("2020-10-20"),
-		EndDate:     Ptr("2020-11-20"),
-		Creator:     Ptr("dev"),
+		WorkspaceID: new(10104801),
+		Name:        new("test2"),
+		Description: new("发布计划描述"),
+		StartDate:   new("2020-10-20"),
+		EndDate:     new("2020-11-20"),
+		Creator:     new("dev"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1010104801100003081", release.ID)
@@ -70,17 +70,17 @@ func TestReleaseService_GetReleases(t *testing.T) {
 
 	releases, _, err := client.ReleaseService.GetReleases(ctx, &GetReleasesRequest{
 		ID:          NewMulti[int64](1010158231100000905, 1010158231100000906),
-		WorkspaceID: Ptr(10158231),
-		Name:        Ptr("发布计划"),
-		Description: Ptr("敏捷研发"),
-		StartDate:   Ptr("2017-06-12"),
-		EndDate:     Ptr("2017-07-07"),
-		Creator:     Ptr("anyechen"),
-		Created:     Ptr("2017-06-20"),
-		Modified:    Ptr("2017-06-21"),
-		Status:      Ptr("open"),
-		Limit:       Ptr(10),
-		Page:        Ptr(2),
+		WorkspaceID: new(10158231),
+		Name:        new("发布计划"),
+		Description: new("敏捷研发"),
+		StartDate:   new("2017-06-12"),
+		EndDate:     new("2017-07-07"),
+		Creator:     new("anyechen"),
+		Created:     new("2017-06-20"),
+		Modified:    new("2017-06-21"),
+		Status:      new("open"),
+		Limit:       new(10),
+		Page:        new(2),
 		Order:       NewOrder("created", OrderByDesc),
 		Fields:      NewMulti("id", "name", "workspace_id"),
 	})
@@ -118,15 +118,15 @@ func TestReleaseService_GetReleasesCount(t *testing.T) {
 
 	count, _, err := client.ReleaseService.GetReleasesCount(ctx, &GetReleasesCountRequest{
 		ID:          NewMulti[int64](1010158231100000905, 1010158231100000906),
-		WorkspaceID: Ptr(10158231),
-		Name:        Ptr("发布计划"),
-		Description: Ptr("敏捷研发"),
-		StartDate:   Ptr("2017-06-12"),
-		EndDate:     Ptr("2017-07-07"),
-		Creator:     Ptr("anyechen"),
-		Created:     Ptr("2017-06-20"),
-		Modified:    Ptr("2017-06-21"),
-		Status:      Ptr("open"),
+		WorkspaceID: new(10158231),
+		Name:        new("发布计划"),
+		Description: new("敏捷研发"),
+		StartDate:   new("2017-06-12"),
+		EndDate:     new("2017-07-07"),
+		Creator:     new("anyechen"),
+		Created:     new("2017-06-20"),
+		Modified:    new("2017-06-21"),
+		Status:      new("open"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 1, count)
@@ -151,13 +151,13 @@ func TestReleaseService_UpdateRelease(t *testing.T) {
 	}))
 
 	release, _, err := client.ReleaseService.UpdateRelease(ctx, &UpdateReleaseRequest{
-		WorkspaceID: Ptr(10104801),
-		ID:          Ptr[int64](1010104801100003081),
-		Name:        Ptr("test2"),
-		Description: Ptr("内容被更新"),
-		StartDate:   Ptr("2020-10-20"),
-		EndDate:     Ptr("2020-11-20"),
-		Status:      Ptr("open"),
+		WorkspaceID: new(10104801),
+		ID:          new(int64(1010104801100003081)),
+		Name:        new("test2"),
+		Description: new("内容被更新"),
+		StartDate:   new("2020-10-20"),
+		EndDate:     new("2020-11-20"),
+		Status:      new("open"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1010104801100003081", release.ID)
@@ -182,11 +182,11 @@ func TestReleaseService_GetLaunchAccessories(t *testing.T) {
 	}))
 
 	accessories, _, err := client.ReleaseService.GetLaunchAccessories(ctx, &GetLaunchAccessoriesRequest{
-		WorkspaceID: Ptr(10104801),
-		FormID:      Ptr[int64](1010104801000402051),
-		ID:          Ptr[int64](1010104801000253485),
-		CreatedBy:   Ptr("v_xuanfang"),
-		Created:     Ptr("2020-06-11"),
+		WorkspaceID: new(10104801),
+		FormID:      new(int64(1010104801000402051)),
+		ID:          new(int64(1010104801000253485)),
+		CreatedBy:   new("v_xuanfang"),
+		Created:     new("2020-06-11"),
 	})
 	assert.NoError(t, err)
 	assert.Len(t, accessories, 2)
@@ -229,24 +229,24 @@ func TestReleaseService_GetLaunchForms(t *testing.T) {
 	}))
 
 	forms, _, err := client.ReleaseService.GetLaunchForms(ctx, &GetLaunchFormsRequest{
-		WorkspaceID:    Ptr(10104801),
-		ID:             Ptr[int64](1010104801079697767),
-		Creator:        Ptr("v_xuanfang"),
-		Created:        Ptr("2021-01-15"),
-		Title:          Ptr("发布评审"),
-		Status:         Ptr("LAUNCHFORM_STATUS_INITIAL"),
-		VersionType:    Ptr("version"),
-		Baseline:       Ptr("baseline"),
-		ReleaseModel:   Ptr("module"),
-		RoadmapVersion: Ptr("roadmap"),
-		ReleaseType:    Ptr("正常发布"),
-		ChangeType:     Ptr("normal"),
-		SignedBy:       Ptr("signer"),
-		ArchivedBy:     Ptr("archiver"),
-		CC:             Ptr("cc"),
-		ChangeNotifier: Ptr("notifier"),
-		Limit:          Ptr(10),
-		Page:           Ptr(1),
+		WorkspaceID:    new(10104801),
+		ID:             new(int64(1010104801079697767)),
+		Creator:        new("v_xuanfang"),
+		Created:        new("2021-01-15"),
+		Title:          new("发布评审"),
+		Status:         new("LAUNCHFORM_STATUS_INITIAL"),
+		VersionType:    new("version"),
+		Baseline:       new("baseline"),
+		ReleaseModel:   new("module"),
+		RoadmapVersion: new("roadmap"),
+		ReleaseType:    new("正常发布"),
+		ChangeType:     new("normal"),
+		SignedBy:       new("signer"),
+		ArchivedBy:     new("archiver"),
+		CC:             new("cc"),
+		ChangeNotifier: new("notifier"),
+		Limit:          new(10),
+		Page:           new(1),
 		Fields:         NewMulti("id", "title", "workspace_id"),
 	})
 	assert.NoError(t, err)
@@ -287,18 +287,18 @@ func TestReleaseService_CreateLaunchForm(t *testing.T) {
 	}))
 
 	form, _, err := client.ReleaseService.CreateLaunchForm(ctx, &CreateLaunchFormRequest{
-		WorkspaceID:    Ptr(10104801),
-		Creator:        Ptr("tapd_api"),
-		TemplateID:     Ptr("1010104801065798331"),
-		Title:          Ptr("发布评审"),
-		VersionType:    Ptr("version"),
-		Baseline:       Ptr("baseline"),
-		ReleaseModel:   Ptr("module"),
-		RoadmapVersion: Ptr("roadmap"),
-		ReleaseType:    Ptr("正常发布"),
-		SignedBy:       Ptr("signer"),
-		ArchivedBy:     Ptr("archiver"),
-		CC:             Ptr("cc"),
+		WorkspaceID:    new(10104801),
+		Creator:        new("tapd_api"),
+		TemplateID:     new("1010104801065798331"),
+		Title:          new("发布评审"),
+		VersionType:    new("version"),
+		Baseline:       new("baseline"),
+		ReleaseModel:   new("module"),
+		RoadmapVersion: new("roadmap"),
+		ReleaseType:    new("正常发布"),
+		SignedBy:       new("signer"),
+		ArchivedBy:     new("archiver"),
+		CC:             new("cc"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1010104801079724013", form.ID)
@@ -328,10 +328,10 @@ func TestReleaseService_CreateLaunchAccessory(t *testing.T) {
 	}))
 
 	accessory, _, err := client.ReleaseService.CreateLaunchAccessory(ctx, &CreateLaunchAccessoryRequest{
-		WorkspaceID: Ptr(10104801),
-		FormID:      Ptr[int64](1010104801079533889),
-		Type:        Ptr("launch_url"),
-		Content:     Ptr("https://www.tapd.cn/"),
+		WorkspaceID: new(10104801),
+		FormID:      new(int64(1010104801079533889)),
+		Type:        new("launch_url"),
+		Content:     new("https://www.tapd.cn/"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1010104801000254035", accessory.ID)
@@ -372,24 +372,24 @@ func TestReleaseService_GetLaunchFormsCount(t *testing.T) {
 	}))
 
 	count, _, err := client.ReleaseService.GetLaunchFormsCount(ctx, &GetLaunchFormsCountRequest{
-		WorkspaceID:    Ptr(10104801),
-		ID:             Ptr[int64](1010104801079697767),
-		Creator:        Ptr("v_xuanfang"),
-		Created:        Ptr("2021-01-15"),
-		Title:          Ptr("发布评审"),
-		Status:         Ptr("LAUNCHFORM_STATUS_INITIAL"),
-		VersionType:    Ptr("version"),
-		Baseline:       Ptr("baseline"),
-		ReleaseModel:   Ptr("module"),
-		RoadmapVersion: Ptr("roadmap"),
-		ReleaseType:    Ptr("正常发布"),
-		ChangeType:     Ptr("normal"),
-		SignedBy:       Ptr("signer"),
-		ArchivedBy:     Ptr("archiver"),
-		CC:             Ptr("cc"),
-		ChangeNotifier: Ptr("notifier"),
-		Limit:          Ptr(10),
-		Page:           Ptr(1),
+		WorkspaceID:    new(10104801),
+		ID:             new(int64(1010104801079697767)),
+		Creator:        new("v_xuanfang"),
+		Created:        new("2021-01-15"),
+		Title:          new("发布评审"),
+		Status:         new("LAUNCHFORM_STATUS_INITIAL"),
+		VersionType:    new("version"),
+		Baseline:       new("baseline"),
+		ReleaseModel:   new("module"),
+		RoadmapVersion: new("roadmap"),
+		ReleaseType:    new("正常发布"),
+		ChangeType:     new("normal"),
+		SignedBy:       new("signer"),
+		ArchivedBy:     new("archiver"),
+		CC:             new("cc"),
+		ChangeNotifier: new("notifier"),
+		Limit:          new(10),
+		Page:           new(1),
 		Fields:         NewMulti("id", "title"),
 	})
 	assert.NoError(t, err)
@@ -408,7 +408,7 @@ func TestReleaseService_GetLaunchFormCustomFieldsSettings(t *testing.T) {
 	settings, _, err := client.ReleaseService.GetLaunchFormCustomFieldsSettings(
 		ctx,
 		&GetLaunchFormCustomFieldsSettingsRequest{
-			WorkspaceID: Ptr(20003271),
+			WorkspaceID: new(20003271),
 		},
 	)
 	assert.NoError(t, err)
@@ -435,7 +435,7 @@ func TestReleaseService_GetLaunchFormTemplates(t *testing.T) {
 	}))
 
 	templates, _, err := client.ReleaseService.GetLaunchFormTemplates(ctx, &GetLaunchFormTemplatesRequest{
-		WorkspaceID: Ptr(20042301),
+		WorkspaceID: new(20042301),
 	})
 	assert.NoError(t, err)
 	assert.Len(t, templates, 3)
@@ -456,8 +456,8 @@ func TestReleaseService_GetLaunchFormActivityLogs(t *testing.T) {
 	}))
 
 	logs, _, err := client.ReleaseService.GetLaunchFormActivityLogs(ctx, &GetLaunchFormActivityLogsRequest{
-		WorkspaceID: Ptr(10104801),
-		FormID:      Ptr[int64](1010104801079777231),
+		WorkspaceID: new(10104801),
+		FormID:      new(int64(1010104801079777231)),
 	})
 	assert.NoError(t, err)
 	assert.Len(t, logs, 2)

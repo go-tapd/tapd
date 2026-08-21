@@ -25,10 +25,10 @@ func TestTaskService_CreateTask(t *testing.T) {
 	}))
 
 	task, _, err := client.TaskService.CreateTask(ctx, &CreateTaskRequest{
-		WorkspaceID: Ptr(11112222),
-		Name:        Ptr("Test Task"),
-		Description: Ptr("This is a test task"),
-		Creator:     Ptr("testuser"),
+		WorkspaceID: new(11112222),
+		Name:        new("Test Task"),
+		Description: new("This is a test task"),
+		Creator:     new("testuser"),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, task)
@@ -52,7 +52,7 @@ func TestTaskService_GetTasks(t *testing.T) {
 	}))
 
 	tasks, _, err := client.TaskService.GetTasks(ctx, &GetTasksRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		Status:      NewEnum(TaskStatusOpen, TaskStatusDone),
 		Fields:      NewMulti("id", "workspace_id"),
 	})
@@ -71,7 +71,7 @@ func TestTaskService_GetTasksCount(t *testing.T) {
 	}))
 
 	count, _, err := client.TaskService.GetTasksCount(ctx, &GetTasksCountRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		Status:      NewEnum(TaskStatusOpen, TaskStatusDone),
 	})
 	assert.NoError(t, err)
@@ -88,7 +88,7 @@ func TestTaskService_GetTaskCustomFieldsSettings(t *testing.T) {
 	}))
 
 	settings, _, err := client.TaskService.GetTaskCustomFieldsSettings(ctx, &GetTaskCustomFieldsSettingsRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.Len(t, settings, 1)
@@ -152,24 +152,24 @@ func TestTaskService_UpdateTask(t *testing.T) {
 	}))
 
 	task, _, err := client.TaskService.UpdateTask(ctx, &UpdateTaskRequest{
-		ID:                 Ptr[int64](1111112222001138994),
-		WorkspaceID:        Ptr(11112222),
-		CurrentUser:        Ptr("testuser"),
-		Name:               Ptr("Updated Task"),
-		Description:        Ptr("This is an updated task"),
-		Status:             Ptr(TaskStatusProgressing),
-		Owner:              Ptr("owner"),
-		Begin:              Ptr("2025-06-27"),
-		Due:                Ptr("2025-06-30"),
-		StoryID:            Ptr[int64](1111112222001047639),
-		IterationID:        Ptr[int64](1111112222001001779),
-		PriorityLabel:      Ptr(PriorityLabelHigh),
+		ID:                 new(int64(1111112222001138994)),
+		WorkspaceID:        new(11112222),
+		CurrentUser:        new("testuser"),
+		Name:               new("Updated Task"),
+		Description:        new("This is an updated task"),
+		Status:             new(TaskStatusProgressing),
+		Owner:              new("owner"),
+		Begin:              new("2025-06-27"),
+		Due:                new("2025-06-30"),
+		StoryID:            new(int64(1111112222001047639)),
+		IterationID:        new(int64(1111112222001001779)),
+		PriorityLabel:      new(PriorityLabelHigh),
 		Label:              NewEnum("frontend", "urgent"),
-		Progress:           Ptr(50),
-		Effort:             Ptr("8"),
-		AutoCompleteEffort: Ptr(1),
-		CustomFieldOne:     Ptr("custom value"),
-		CustomPlanField1:   Ptr("plan value"),
+		Progress:           new(50),
+		Effort:             new("8"),
+		AutoCompleteEffort: new(1),
+		CustomFieldOne:     new("custom value"),
+		CustomPlanField1:   new("plan value"),
 	})
 	assert.NoError(t, err)
 	assert.NotNil(t, task)
@@ -210,17 +210,17 @@ func TestTaskService_BatchUpdateTasks(t *testing.T) {
 	}))
 
 	result, _, err := client.TaskService.BatchUpdateTasks(ctx, &BatchUpdateTasksRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		Workitems: []*UpdateTaskRequest{
 			{
-				ID:     Ptr[int64](1111112222001138994),
-				Name:   Ptr("first task"),
-				Status: Ptr(TaskStatusProgressing),
+				ID:     new(int64(1111112222001138994)),
+				Name:   new("first task"),
+				Status: new(TaskStatusProgressing),
 			},
 			{
-				ID:    Ptr[int64](1111112222001138995),
-				Name:  Ptr("second task"),
-				Owner: Ptr("owner"),
+				ID:    new(int64(1111112222001138995)),
+				Name:  new("second task"),
+				Owner: new("owner"),
 			},
 		},
 	})
@@ -239,7 +239,7 @@ func TestTaskService_GetTaskChanges(t *testing.T) {
 	}))
 
 	changes, _, err := client.TaskService.GetTaskChanges(t.Context(), &GetTaskChangesRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(changes) > 0)
@@ -277,7 +277,7 @@ func TestTaskService_GetTaskChangesCount(t *testing.T) {
 	}))
 
 	count, _, err := client.TaskService.GetTaskChangesCount(t.Context(), &GetTaskChangesCountRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 189, count)
@@ -300,14 +300,14 @@ func TestTaskService_GetRemovedTasks(t *testing.T) {
 	}))
 
 	tasks, _, err := client.TaskService.GetRemovedTasks(ctx, &GetRemovedTasksRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		ID:          NewMulti(1111111111111, 1111111111112),
-		Creator:     Ptr("creator"),
-		IsArchived:  Ptr(1),
-		Created:     Ptr("2021-01-01"),
-		Deleted:     Ptr("2021-01-02"),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		Creator:     new("creator"),
+		IsArchived:  new(1),
+		Created:     new("2021-01-01"),
+		Deleted:     new("2021-01-02"),
+		Limit:       new(10),
+		Page:        new(1),
 	})
 	assert.NoError(t, err)
 	assert.Len(t, tasks, 1)
@@ -329,7 +329,7 @@ func TestTaskService_GetTaskFieldsInfo(t *testing.T) {
 	}))
 
 	fields, _, err := client.TaskService.GetTaskFieldsInfo(ctx, &GetTaskFieldsInfoRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(fields) > 0)

@@ -38,14 +38,14 @@ func TestTimesheetService_CreateTimesheet(t *testing.T) {
 	}))
 
 	timesheet, _, err := client.TimesheetService.CreateTimesheet(ctx, &CreateTimesheetRequest{
-		EntityType:  Ptr(EntityTypeStory),
-		EntityID:    Ptr[int64](11223344),
-		Timespent:   Ptr("2"),
-		Timeremain:  Ptr("0"),
-		Spentdate:   Ptr("2024-08-22"),
-		Owner:       Ptr("1"),
-		WorkspaceID: Ptr(11112222),
-		Memo:        Ptr("1"),
+		EntityType:  new(EntityTypeStory),
+		EntityID:    new(int64(11223344)),
+		Timespent:   new("2"),
+		Timeremain:  new("0"),
+		Spentdate:   new("2024-08-22"),
+		Owner:       new("1"),
+		WorkspaceID: new(11112222),
+		Memo:        new("1"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1134190502001044767", timesheet.ID)
@@ -86,19 +86,19 @@ func TestTimesheetService_GetTimesheets(t *testing.T) {
 	}))
 
 	timesheets, _, err := client.TimesheetService.GetTimesheets(ctx, &GetTimesheetsRequest{
-		WorkspaceID:                 Ptr(11112222),
-		EntityType:                  Ptr(EntityTypeStory),
-		EntityID:                    Ptr[int64](111111222222),
-		Timespent:                   Ptr("2"),
-		Spentdate:                   Ptr("2024-08-22"),
-		Modified:                    Ptr("2024-08-22"),
-		Owner:                       Ptr("1"),
-		IncludeParentStoryTimesheet: Ptr(1),
-		Created:                     Ptr("2024-08-22"),
-		Memo:                        Ptr("1"),
-		IsDelete:                    Ptr(0),
-		Limit:                       Ptr(10),
-		Page:                        Ptr(1),
+		WorkspaceID:                 new(11112222),
+		EntityType:                  new(EntityTypeStory),
+		EntityID:                    new(int64(111111222222)),
+		Timespent:                   new("2"),
+		Spentdate:                   new("2024-08-22"),
+		Modified:                    new("2024-08-22"),
+		Owner:                       new("1"),
+		IncludeParentStoryTimesheet: new(1),
+		Created:                     new("2024-08-22"),
+		Memo:                        new("1"),
+		IsDelete:                    new(0),
+		Limit:                       new(10),
+		Page:                        new(1),
 		Order:                       NewOrder("id", OrderByDesc),
 		Fields:                      NewMulti("id", "workspace_id"),
 	})
@@ -139,17 +139,17 @@ func TestTimesheetService_GetTimesheetsCount(t *testing.T) {
 	}))
 
 	count, _, err := client.TimesheetService.GetTimesheetsCount(ctx, &GetTimesheetsCountRequest{
-		WorkspaceID:                 Ptr(11112222),
-		EntityType:                  Ptr(EntityTypeStory),
-		EntityID:                    Ptr[int64](111111222222),
-		Timespent:                   Ptr("2"),
-		Spentdate:                   Ptr("2024-08-22"),
-		Modified:                    Ptr("2024-08-22"),
-		Owner:                       Ptr("1"),
-		IncludeParentStoryTimesheet: Ptr(1),
-		Created:                     Ptr("2024-08-22"),
-		Memo:                        Ptr("1"),
-		IsDelete:                    Ptr(0),
+		WorkspaceID:                 new(11112222),
+		EntityType:                  new(EntityTypeStory),
+		EntityID:                    new(int64(111111222222)),
+		Timespent:                   new("2"),
+		Spentdate:                   new("2024-08-22"),
+		Modified:                    new("2024-08-22"),
+		Owner:                       new("1"),
+		IncludeParentStoryTimesheet: new(1),
+		Created:                     new("2024-08-22"),
+		Memo:                        new("1"),
+		IsDelete:                    new(0),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 6, count)
@@ -178,11 +178,11 @@ func TestTimesheetService_UpdateTimesheet(t *testing.T) {
 	}))
 
 	timesheet, _, err := client.TimesheetService.UpdateTimesheet(ctx, &UpdateTimesheetRequest{
-		ID:          Ptr[int64](1134190502001044767),
-		Timespent:   Ptr("2"),
-		Timeremain:  Ptr("0"),
-		WorkspaceID: Ptr(11112222),
-		Memo:        Ptr("1"),
+		ID:          new(int64(1134190502001044767)),
+		Timespent:   new("2"),
+		Timeremain:  new("0"),
+		WorkspaceID: new(11112222),
+		Memo:        new("1"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1134190502001044767", timesheet.ID)
@@ -219,10 +219,10 @@ func TestTimesheetService_DeleteTimesheets(t *testing.T) {
 	}))
 
 	response, _, err := client.TimesheetService.DeleteTimesheets(ctx, &DeleteTimesheetsRequest{
-		EntityType:  Ptr(EntityTypeStory),
-		EntityID:    Ptr[int64](1134190502001057318),
-		WorkspaceID: Ptr(11112222),
-		CostIDs:     Ptr([]int64{1134190502001044767, 1134190502001044768}),
+		EntityType:  new(EntityTypeStory),
+		EntityID:    new(int64(1134190502001057318)),
+		WorkspaceID: new(11112222),
+		CostIDs:     new([]int64{1134190502001044767, 1134190502001044768}),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "删除成功", response.Msg)

@@ -23,12 +23,12 @@ func TestMeasureService_LifeTimes(t *testing.T) {
 	}))
 
 	lifeTimes, _, err := client.MeasureService.LifeTimes(ctx, &LifeTimesRequest{
-		EntityID:    Ptr(11112222),
-		EntityType:  Ptr(EntityTypeStory),
-		WorkspaceID: Ptr(11112222),
-		Created:     Ptr("2024-08-26"),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		EntityID:    new(11112222),
+		EntityType:  new(EntityTypeStory),
+		WorkspaceID: new(11112222),
+		Created:     new("2024-08-26"),
+		Limit:       new(10),
+		Page:        new(1),
 		Fields:      NewMulti("id", "workspace_id"),
 	})
 	assert.NoError(t, err)

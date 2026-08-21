@@ -1,6 +1,6 @@
 # 🚀 Go-Tapd-SDK
 
-![Supported Go Versions](https://img.shields.io/badge/Go-%3E%3D1.25-blue)
+![Supported Go Versions](https://img.shields.io/badge/Go-%3E%3D1.26-blue)
 [![Package Version](https://badgen.net/github/release/go-tapd/tapd/stable)](https://github.com/go-tapd/tapd/releases)
 [![GoDoc](https://pkg.go.dev/badge/github.com/go-tapd/tapd)](https://pkg.go.dev/github.com/go-tapd/tapd)
 [![codecov](https://codecov.io/gh/go-tapd/tapd/graph/badge.svg?token=QPTHZ5L9GT)](https://codecov.io/gh/go-tapd/tapd)
@@ -59,7 +59,7 @@ func main() {
 
 	// example: get labels
 	labels, _, err := client.LabelService.GetLabels(context.Background(), &tapd.GetLabelsRequest{
-		WorkspaceID: tapd.Ptr(123456),
+		WorkspaceID: new(123456),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -89,7 +89,7 @@ func main() {
 
 	// example: get stories
 	stories, _, err := client.StoryService.GetStories(context.Background(), &tapd.GetStoriesRequest{
-		WorkspaceID: tapd.Ptr(123456),
+		WorkspaceID: new(123456),
 	})
 	if err != nil {
 		log.Fatal(err)

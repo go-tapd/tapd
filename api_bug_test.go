@@ -49,12 +49,12 @@ func TestBugService_CreateBug(t *testing.T) {
 	}))
 
 	bug, _, err := client.BugService.CreateBug(ctx, &CreateBugRequest{
-		WorkspaceID:   Ptr(11112222),
-		Title:         Ptr("API 创建缺陷"),
-		Description:   Ptr("缺陷详细描述"),
-		PriorityLabel: Ptr(PriorityLabelHigh),
-		Severity:      Ptr(BugSeverityFatal),
-		CurrentOwner:  Ptr("张三"),
+		WorkspaceID:   new(11112222),
+		Title:         new("API 创建缺陷"),
+		Description:   new("缺陷详细描述"),
+		PriorityLabel: new(PriorityLabelHigh),
+		Severity:      new(BugSeverityFatal),
+		CurrentOwner:  new("张三"),
 	})
 	require.NoError(t, err)
 	require.NotNil(t, bug)
@@ -85,9 +85,9 @@ func TestBugService_CopyBug(t *testing.T) {
 	}))
 
 	bug, _, err := client.BugService.CopyBug(ctx, &CopyBugRequest{
-		WorkspaceID:    Ptr(11112222),
-		SourceBugID:    Ptr[int64](1111122233301037078),
-		DstWorkspaceID: Ptr(33334444),
+		WorkspaceID:    new(11112222),
+		SourceBugID:    new(int64(1111122233301037078)),
+		DstWorkspaceID: new(33334444),
 		SyncFields:     NewMulti("title", "description", "status"),
 	})
 	require.NoError(t, err)
@@ -115,12 +115,12 @@ func TestBugService_GetBugChanges(t *testing.T) {
 	}))
 
 	changes, _, err := client.BugService.GetBugChanges(ctx, &GetBugChangesRequest{
-		WorkspaceID:   Ptr(11112222),
+		WorkspaceID:   new(11112222),
 		BugID:         NewMulti[int64](1111122233301037078, 1111122233301037079),
-		Field:         Ptr("severity"),
-		IncludeAddBug: Ptr(1),
-		Limit:         Ptr(20),
-		Page:          Ptr(1),
+		Field:         new("severity"),
+		IncludeAddBug: new(1),
+		Limit:         new(20),
+		Page:          new(1),
 		Order:         NewOrder("created", OrderByDesc),
 	})
 	require.NoError(t, err)
@@ -147,9 +147,9 @@ func TestBugService_GetBugChangesCount(t *testing.T) {
 	}))
 
 	count, _, err := client.BugService.GetBugChangesCount(ctx, &GetBugChangesCountRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		BugID:       NewMulti[int64](1111122233301037078),
-		Field:       Ptr("severity"),
+		Field:       new("severity"),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, 2, count)
@@ -166,7 +166,7 @@ func TestBugService_GetBugCustomFieldsSettings(t *testing.T) {
 	}))
 
 	settings, _, err := client.BugService.GetBugCustomFieldsSettings(ctx, &GetBugCustomFieldsSettingsRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	require.NoError(t, err)
 	require.NotEmpty(t, settings)
@@ -193,8 +193,8 @@ func TestBugService_GetBugLinkBugs(t *testing.T) {
 	}))
 
 	relations, _, err := client.BugService.GetBugLinkBugs(ctx, &GetBugLinkBugsRequest{
-		WorkspaceID: Ptr(11112222),
-		BugID:       Ptr[int64](1111122233301037078),
+		WorkspaceID: new(11112222),
+		BugID:       new(int64(1111122233301037078)),
 	})
 	require.NoError(t, err)
 	require.Len(t, relations, 2)
@@ -217,7 +217,7 @@ func TestBugService_GetBugTemplates(t *testing.T) {
 	}))
 
 	templates, _, err := client.BugService.GetBugTemplates(ctx, &GetBugTemplatesRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	require.NoError(t, err)
 	require.NotEmpty(t, templates)
@@ -243,9 +243,9 @@ func TestBugService_GetBugTemplateFields(t *testing.T) {
 	}))
 
 	fields, _, err := client.BugService.GetBugTemplateFields(ctx, &GetBugTemplateFieldsRequest{
-		WorkspaceID:      Ptr(11112222),
-		TemplateID:       Ptr[int64](1111222233300068639),
-		UsePriorityLabel: Ptr(1),
+		WorkspaceID:      new(11112222),
+		TemplateID:       new(int64(1111222233300068639)),
+		UsePriorityLabel: new(1),
 	})
 	require.NoError(t, err)
 	require.NotEmpty(t, fields)
@@ -276,13 +276,13 @@ func TestBugService_GetBugsByViewConfID(t *testing.T) {
 	}))
 
 	bugs, _, err := client.BugService.GetBugsByViewConfID(ctx, &GetBugsByViewConfIDRequest{
-		ViewConfID:  Ptr[int64](1111122233301000001),
-		CurrentUser: Ptr("xinweihe"),
+		ViewConfID:  new(int64(1111122233301000001)),
+		CurrentUser: new("xinweihe"),
 		GetBugsRequest: GetBugsRequest{
-			WorkspaceID: Ptr(11112222),
+			WorkspaceID: new(11112222),
 			Status:      NewEnum("new"),
-			Limit:       Ptr(20),
-			Page:        Ptr(1),
+			Limit:       new(20),
+			Page:        new(1),
 			Fields:      NewMulti("id", "title", "status"),
 		},
 	})
@@ -305,8 +305,8 @@ func TestBugService_GetBugFieldsInfo(t *testing.T) {
 	}))
 
 	fields, _, err := client.BugService.GetBugFieldsInfo(ctx, &GetBugFieldsInfoRequest{
-		WorkspaceID: Ptr(11112222),
-		AllOptions:  Ptr(1),
+		WorkspaceID: new(11112222),
+		AllOptions:  new(1),
 	})
 	require.NoError(t, err)
 	require.NotEmpty(t, fields)
@@ -352,8 +352,8 @@ func TestBugService_GetBugs(t *testing.T) {
 	}))
 
 	bugs, _, err := client.BugService.GetBugs(ctx, &GetBugsRequest{
-		WorkspaceID:   Ptr(11112222),
-		PriorityLabel: Ptr(PriorityLabelHigh),
+		WorkspaceID:   new(11112222),
+		PriorityLabel: new(PriorityLabelHigh),
 	})
 	require.NoError(t, err)
 	require.True(t, len(bugs) > 0)
@@ -399,9 +399,9 @@ func TestBugService_UpdateBug(t *testing.T) {
 	}))
 
 	bug, _, err := client.BugService.UpdateBug(ctx, &UpdateBugRequest{
-		WorkspaceID:   Ptr(11112222),
-		ID:            Ptr(int64(11111222330268)),
-		PriorityLabel: Ptr(PriorityLabelHigh),
+		WorkspaceID:   new(11112222),
+		ID:            new(int64(11111222330268)),
+		PriorityLabel: new(PriorityLabelHigh),
 		Severity:      NewEnum(BugSeverityFatal, BugSeveritySerious),
 	})
 	require.NoError(t, err)
@@ -430,11 +430,11 @@ func TestBugService_UpdateBugSystemSelectFieldOptions(t *testing.T) {
 	}))
 
 	result, _, err := client.BugService.UpdateBugSystemSelectFieldOptions(ctx, &UpdateBugSystemSelectFieldOptionsRequest{
-		WorkspaceID: Ptr(11112222),
-		Field:       Ptr("bugtype"),
+		WorkspaceID: new(11112222),
+		Field:       new("bugtype"),
 		Options: []*BugSystemSelectFieldOption{
-			{Value: Ptr("test")},
-			{Value: Ptr("test111")},
+			{Value: new("test")},
+			{Value: new("test111")},
 		},
 	})
 	require.NoError(t, err)
@@ -471,17 +471,17 @@ func TestBugService_BatchUpdateBugs(t *testing.T) {
 	}))
 
 	result, _, err := client.BugService.BatchUpdateBugs(ctx, &BatchUpdateBugsRequest{
-		ProjectID: Ptr(11112222),
+		ProjectID: new(11112222),
 		Workitems: []*UpdateBugRequest{
 			{
-				ID:     Ptr[int64](1111122233300103707),
-				Title:  Ptr("first bug"),
+				ID:     new(int64(1111122233300103707)),
+				Title:  new("first bug"),
 				Status: NewEnum("new"),
 			},
 			{
-				ID:           Ptr[int64](1111122233300103708),
-				Title:        Ptr("second bug"),
-				CurrentOwner: Ptr("owner"),
+				ID:           new(int64(1111122233300103708)),
+				Title:        new("second bug"),
+				CurrentOwner: new("owner"),
 			},
 		},
 	})
@@ -501,8 +501,8 @@ func TestBugService_GetBugsCount(t *testing.T) {
 	}))
 
 	count, _, err := client.BugService.GetBugsCount(ctx, &GetBugsCountRequest{
-		WorkspaceID:  Ptr(11112222),
-		CurrentOwner: Ptr("anyechen"),
+		WorkspaceID:  new(11112222),
+		CurrentOwner: new("anyechen"),
 	})
 	require.NoError(t, err)
 	assert.Equal(t, 2, count)
@@ -526,14 +526,14 @@ func TestBugService_GetRemovedBugs(t *testing.T) {
 	}))
 
 	bugs, _, err := client.BugService.GetRemovedBugs(ctx, &GetRemovedBugsRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		ID:          NewMulti[int64](1111122233300103707, 1111122233300103708),
-		Creator:     Ptr("creator"),
-		Created:     Ptr("2021-01-01"),
-		Modified:    Ptr("2021-01-02"),
-		IncludeAll:  Ptr(1),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		Creator:     new("creator"),
+		Created:     new("2021-01-01"),
+		Modified:    new("2021-01-02"),
+		IncludeAll:  new(1),
+		Limit:       new(10),
+		Page:        new(1),
 	})
 	require.NoError(t, err)
 	require.Len(t, bugs, 2)
@@ -557,7 +557,7 @@ func TestBugService_GetBugRelatedStories(t *testing.T) {
 	}))
 
 	stories, _, err := client.BugService.GetBugRelatedStories(ctx, &GetBugRelatedStoriesRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		BugID:       NewMulti[int64](1111122233301037078, 1111122233301037079),
 	})
 	require.NoError(t, err)
@@ -586,8 +586,8 @@ func TestBugService_LinkBugs(t *testing.T) {
 	}))
 
 	result, _, err := client.BugService.LinkBugs(ctx, &LinkBugsRequest{
-		WorkspaceID: Ptr(11112222),
-		BugID:       Ptr[int64](1111122233301037078),
+		WorkspaceID: new(11112222),
+		BugID:       new(int64(1111122233301037078)),
 		RelateBugs:  NewMulti[int64](1111122233301037079, 1111122233301037080),
 	})
 	require.NoError(t, err)
@@ -613,8 +613,8 @@ func TestBugService_DeleteLinkBugs(t *testing.T) {
 	}))
 
 	result, _, err := client.BugService.DeleteLinkBugs(ctx, &DeleteLinkBugsRequest{
-		WorkspaceID: Ptr(11112222),
-		BugID:       Ptr[int64](1111122233301037078),
+		WorkspaceID: new(11112222),
+		BugID:       new(int64(1111122233301037078)),
 		LinkIDs:     NewMulti[int64](1162187798001000534, 1162187798001000535),
 	})
 	require.NoError(t, err)
@@ -638,7 +638,7 @@ func TestBugService_GetConvertBugIDsToQueryToken(t *testing.T) {
 	}))
 
 	response, _, err := client.BugService.GetConvertBugIDsToQueryToken(ctx, &GetConvertBugIDsToQueryTokenRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		BugIDs:      NewMulti[int64](1111122233301037078, 1111122233301037079),
 	})
 	require.NoError(t, err)
@@ -656,7 +656,7 @@ func TestBugService_GetBugFieldsLabel(t *testing.T) {
 	}))
 
 	labels, _, err := client.BugService.GetBugFieldsLabel(ctx, &GetBugFieldsLabelRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	require.NoError(t, err)
 	require.NotEmpty(t, labels)

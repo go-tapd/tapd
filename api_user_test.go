@@ -17,7 +17,7 @@ func TestUserService_GetRoles(t *testing.T) {
 	}))
 
 	roles, _, err := client.UserService.GetRoles(ctx, &GetRolesRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 	})
 	assert.NoError(t, err)
 	assert.True(t, len(roles) > 0)

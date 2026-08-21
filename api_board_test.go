@@ -32,17 +32,17 @@ func TestBoardService_CreateBoardCard(t *testing.T) {
 	}))
 
 	card, _, err := client.BoardService.CreateBoardCard(ctx, &CreateBoardCardRequest{
-		WorkspaceID: Ptr(20355782),
-		BoardID:     Ptr[int64](1020355782000010725),
-		ColumnID:    Ptr[int64](1020355782000045509),
-		Name:        Ptr("test1"),
-		Status:      Ptr("open"),
-		Owner:       Ptr("tester"),
-		CC:          Ptr("dev"),
-		Begin:       Ptr("2019-09-11"),
-		Due:         Ptr("2019-09-19"),
-		Label:       Ptr[int64](0),
-		Description: Ptr("看板工作项描述"),
+		WorkspaceID: new(20355782),
+		BoardID:     new(int64(1020355782000010725)),
+		ColumnID:    new(int64(1020355782000045509)),
+		Name:        new("test1"),
+		Status:      new("open"),
+		Owner:       new("tester"),
+		CC:          new("dev"),
+		Begin:       new("2019-09-11"),
+		Due:         new("2019-09-19"),
+		Label:       new(int64(0)),
+		Description: new("看板工作项描述"),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, card)
@@ -72,14 +72,14 @@ func TestBoardService_GetBoardCards(t *testing.T) {
 	}))
 
 	cards, _, err := client.BoardService.GetBoardCards(ctx, &GetBoardCardsRequest{
-		WorkspaceID: Ptr(20355782),
+		WorkspaceID: new(20355782),
 		ID:          NewMulti[int64](1020355782500624163, 1020355782500624255),
-		BoardID:     Ptr[int64](1020355782000010725),
-		ColumnID:    Ptr[int64](1020355782000045509),
-		Status:      Ptr("open"),
-		Name:        Ptr("test"),
-		Limit:       Ptr(30),
-		Page:        Ptr(1),
+		BoardID:     new(int64(1020355782000010725)),
+		ColumnID:    new(int64(1020355782000045509)),
+		Status:      new("open"),
+		Name:        new("test"),
+		Limit:       new(30),
+		Page:        new(1),
 		Fields:      NewMulti("id", "name", "status"),
 	})
 	assert.NoError(t, err)
@@ -108,11 +108,11 @@ func TestBoardService_UpdateBoardCard(t *testing.T) {
 	}))
 
 	card, _, err := client.BoardService.UpdateBoardCard(ctx, &UpdateBoardCardRequest{
-		ID:          Ptr[int64](1020355782500624255),
-		WorkspaceID: Ptr(20355782),
-		ColumnID:    Ptr[int64](1020355782000045510),
-		Name:        Ptr("test1 updated"),
-		Status:      Ptr("done"),
+		ID:          new(int64(1020355782500624255)),
+		WorkspaceID: new(20355782),
+		ColumnID:    new(int64(1020355782000045510)),
+		Name:        new("test1 updated"),
+		Status:      new("done"),
 	})
 	assert.NoError(t, err)
 	require.NotNil(t, card)
@@ -139,12 +139,12 @@ func TestBoardService_GetBoardColumns(t *testing.T) {
 	}))
 
 	columns, _, err := client.BoardService.GetBoardColumns(ctx, &GetBoardColumnsRequest{
-		WorkspaceID: Ptr(10104801),
+		WorkspaceID: new(10104801),
 		ID:          NewMulti[int64](1010104801000032321, 1010104801000032319),
-		BoardID:     Ptr[int64](1010104801000007781),
-		Status:      Ptr("open"),
-		Limit:       Ptr(30),
-		Page:        Ptr(1),
+		BoardID:     new(int64(1010104801000007781)),
+		Status:      new("open"),
+		Limit:       new(30),
+		Page:        new(1),
 		Order:       NewOrder("created", OrderByDesc),
 		Fields:      NewMulti("id", "name", "status"),
 	})

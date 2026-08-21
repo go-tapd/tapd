@@ -25,13 +25,13 @@ func TestLabelService_GetLabels(t *testing.T) {
 	}))
 
 	labels, _, err := client.LabelService.GetLabels(ctx, &GetLabelsRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		ID:          NewMulti(111, 222),
-		Name:        Ptr("test"),
-		Creator:     Ptr("creator"),
-		Created:     Ptr("2024-08-26"),
-		Limit:       Ptr(10),
-		Page:        Ptr(1),
+		Name:        new("test"),
+		Creator:     new("creator"),
+		Created:     new("2024-08-26"),
+		Limit:       new(10),
+		Page:        new(1),
 		Order:       NewOrder("id", OrderByAsc),
 	})
 	assert.NoError(t, err)
@@ -62,11 +62,11 @@ func TestLabelService_GetLabelCount(t *testing.T) {
 	}))
 
 	count, _, err := client.LabelService.GetLabelsCount(ctx, &GetLabelCountRequest{
-		WorkspaceID: Ptr(11112222),
+		WorkspaceID: new(11112222),
 		ID:          NewMulti(111, 222),
-		Name:        Ptr("test"),
-		Creator:     Ptr("creator"),
-		Created:     Ptr("2024-08-26"),
+		Name:        new("test"),
+		Creator:     new("creator"),
+		Created:     new("2024-08-26"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, 15, count)
@@ -94,10 +94,10 @@ func TestLabelService_CreateLabel(t *testing.T) {
 	}))
 
 	label, _, err := client.LabelService.CreateLabel(ctx, &CreateLabelRequest{
-		WorkspaceID: Ptr(11112222),
-		Name:        Ptr("test"),
-		Color:       Ptr(LabelColor1),
-		Creator:     Ptr("creator"),
+		WorkspaceID: new(11112222),
+		Name:        new("test"),
+		Color:       new(LabelColor1),
+		Creator:     new("creator"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1134190502001000812", label.ID)
@@ -134,10 +134,10 @@ func TestLabelService_UpdateLabel(t *testing.T) {
 	}))
 
 	label, _, err := client.LabelService.UpdateLabel(ctx, &UpdateLabelRequest{
-		ID:          Ptr(1134190502001000812),
-		WorkspaceID: Ptr(11112222),
-		Color:       Ptr(LabelColor1),
-		Modifier:    Ptr("modifier"),
+		ID:          new(1134190502001000812),
+		WorkspaceID: new(11112222),
+		Color:       new(LabelColor1),
+		Modifier:    new("modifier"),
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, "1134190502001000812", label.ID)
