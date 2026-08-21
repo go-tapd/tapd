@@ -52,7 +52,11 @@ linters:
       replace-allow-list:
         - tw8591
       toolchain-forbidden: true
-      go-version-pattern: '^1\.25\.0$'
+      go-version-pattern: '^1\.26\.0$'
+    modernize:
+      # 仓库测试代码统一使用 Ptr() 辅助函数，不迁移到 Go 1.26 的 new(expr) 写法
+      disable:
+        - newexpr
     nolintlint:
       require-specific: true
     staticcheck:

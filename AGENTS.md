@@ -15,7 +15,7 @@ Use the `Makefile` as the default entry point:
 - `make test`: run `go test ./... -race` across the repo.
 - `make lint`: run `go mod tidy` and `golangci-lint`.
 - `make lint-fix`: apply auto-fixes from enabled linters/formatters.
-- `make go-mod-tidy`: normalize module dependencies for Go `1.25.0`.
+- `make go-mod-tidy`: normalize module dependencies for Go `1.26.0`.
 
 For focused work, use standard Go commands such as
 `go test . -run TestStory_GetStories -v` or
