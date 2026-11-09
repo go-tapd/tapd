@@ -1,6 +1,6 @@
 module github.com/go-tapd/tapd
 
-go 1.26.0
+go 1.26.7
 
 tool github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 
@@ -15,7 +15,7 @@ require (
 require (
 	4d63.com/gocheckcompilerdirectives v1.4.0 // indirect
 	4d63.com/gochecknoglobals v0.2.2 // indirect
-	charm.land/lipgloss/v2 v2.0.6 // indirect
+	charm.land/lipgloss/v2 v2.1.0 // indirect
 	codeberg.org/chavacava/garif v0.2.1 // indirect
 	codeberg.org/polyfloyd/go-errorlint v1.9.1 // indirect
 	dev.gaijin.team/go/exhaustruct/v4 v4.0.0 // indirect
